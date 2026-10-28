@@ -23,11 +23,13 @@ public class QuestLog
 
     public State StateOf(QuestDef q, Player p)
     {
-        if (_done.Contains(q.Id))
+        if (_done.Contains(q.Id) && !q.Repeatable)
             return State.Done;
         if (_progress.ContainsKey(q.Id))
             return IsComplete(q, p) ? State.Ready : State.Active;
-        return q.Requires == null || _done.Contains(q.Requires) ? State.Available : State.Locked;
+        if (q.Requires != null && !_done.Contains(q.Requires) || p.Level < q.MinLevel)
+            return State.Locked;
+        return State.Available;
     }
 
     public int Progress(QuestDef q, int i, Player p)

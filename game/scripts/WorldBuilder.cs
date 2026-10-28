@@ -85,7 +85,7 @@ public static partial class WorldBuilder
         BuildTemple(city, new Vector3(34f, 0f, -36f));
         BuildBus(city, new Vector3(-1.9f, 0f, 22f));
         BusStop(city, "BusStopCity", new Vector3(-7.4f, 0f, 31.4f), -Mathf.Pi * 0.5f, "wiang_mok", "ลานศาลหลักเมือง");
-        YaiJanHouse(city, new Vector3(25f, 0f, 25f));
+        YaiJanHouse(city, new Vector3(21f, 0f, 12.5f));
         CitySigns(city);
         Smithy(city, new Vector3(-20f, 0f, -12f));
         BuildBlocks(city);
@@ -153,12 +153,38 @@ public static partial class WorldBuilder
             Shapes.Sphere(g, new Vector3(x, 5.6f, -1.9f), 0.25f, new Color(1f, 0.45f, 0.25f), 3f, "GlowLantern");
             Shapes.Light(g, new Vector3(x, 5.4f, -2.4f), new Color(1f, 0.55f, 0.3f), 1.2f, 9f, "GateLight");
         }
+        // Studded double doors: swung open flat against the wall on the town side, or barred shut.
+        void Leaf(Node3D hinge, float dir)
+        {
+            Shapes.Box(hinge, new Vector3(dir * 3f, 2.9f, 0f), new Vector3(5.9f, 5.8f, 0.3f), DarkWood.Lightened(0.05f), 0f, "DoorLeaf");
+            Shapes.Solid(hinge, new Vector3(dir * 3f, 2.9f, 0f), new Vector3(5.9f, 5.8f, 0.35f));
+            foreach (var y in new[] { 1.2f, 2.9f, 4.6f })
+                Shapes.Box(hinge, new Vector3(dir * 3f, y, 0f), new Vector3(5.9f, 0.18f, 0.4f), DarkWood.Darkened(0.3f), 0f, "DoorBand");
+            for (int i = 0; i < 5; i++)
+            for (int j = 0; j < 6; j++)
+                Shapes.Sphere(hinge, new Vector3(dir * (0.7f + i * 1.1f), 0.6f + j * 0.95f, 0f), 0.07f, Gold.Darkened(0.35f), 0f, "Stud");
+        }
         if (closed)
         {
-            Shapes.Box(g, new Vector3(0f, 2.9f, 0f), new Vector3(12f, 5.8f, 0.4f), DarkWood, 0f, "Doors");
-            Shapes.Box(g, new Vector3(0f, 2.9f, -0.22f), new Vector3(0.15f, 5.8f, 0.05f), Gold.Darkened(0.4f), 0f, "DoorSeam");
-            Shapes.Box(g, new Vector3(0f, 2.6f, -0.3f), new Vector3(7f, 0.3f, 0.2f), Gold.Darkened(0.3f), 0f, "Bar");
-            Shapes.Solid(g, new Vector3(0f, 2.9f, 0f), new Vector3(12f, 5.8f, 0.6f));
+            foreach (var s in new[] { -1f, 1f })
+                Leaf(Shapes.Group(g, "Leaf", new Vector3(s * 6f, 0f, 0f), 0f), -s);
+            Shapes.Box(g, new Vector3(0f, 2.6f, 0.35f), new Vector3(9f, 0.35f, 0.25f), DarkWood.Darkened(0.2f), 0f, "Bar");
+            foreach (var x in new[] { -4.2f, 4.2f })
+                Shapes.Box(g, new Vector3(x, 2.6f, 0.4f), new Vector3(0.3f, 0.6f, 0.3f), Gold.Darkened(0.4f), 0f, "BarBracket");
+        }
+        else
+        {
+            // Hinged at the towers' town-side corners and folded back against the wall.
+            foreach (var s in new[] { -1f, 1f })
+                Leaf(Shapes.Group(g, "Leaf", new Vector3(s * 6f, 0f, 1.7f), s * 0.12f), s);
+            var beam = Shapes.Box(g, new Vector3(-4.6f, 1.6f, 2.6f), new Vector3(0.35f, 0.35f, 6.5f), DarkWood.Darkened(0.2f), 0f, "DoorBeam");
+            beam.Rotation = new Vector3(1.1f, 0.3f, 0f);
+            foreach (var x in new[] { -6.4f, 6.4f })
+            {
+                Shapes.Cylinder(g, new Vector3(x, 2.4f, 2.1f), 0.06f, 0.08f, 1.2f, DarkWood, 0f, "TorchPole");
+                Shapes.Sphere(g, new Vector3(x, 3.1f, 2.1f), 0.16f, new Color(1f, 0.55f, 0.2f), 4f, "GlowTorch");
+                Shapes.Light(g, new Vector3(x, 3.2f, 2.4f), new Color(1f, 0.55f, 0.25f), 1.4f, 9f, "TorchLight");
+            }
         }
     }
 
@@ -409,26 +435,28 @@ public static partial class WorldBuilder
             Shapes.Cylinder(s, new Vector3(3.5f + i * 0.08f, 1.3f, -2.8f), 0.025f, 0.025f, 1.2f, new Color(0.4f, 0.4f, 0.42f), 0f, "Rod");
         // Shop sign over the front.
         Shapes.Box(s, new Vector3(0f, wallH + 0.35f, -d * 0.5f - 0.2f), new Vector3(3.6f, 0.7f, 0.08f), new Color(0.5f, 0.32f, 0.18f), 0f, "SignBoard");
-        Shapes.Child(s, new Label3D
-        {
-            Text = "ร้านตีเหล็กลุงมั่น",
+        foreach (var side in new[] { -1f, 1f })
+            Shapes.Child(s, new Label3D
+            {
+                Text = "ร้านตีเหล็กลุงมั่น",
             Font = Game.ThaiFont,
             FontSize = 44,
             PixelSize = 0.004f,
             Modulate = new Color(1f, 0.85f, 0.5f),
             OutlineSize = 6,
             OutlineModulate = new Color(0.2f, 0.1f, 0.05f),
-            DoubleSided = false,
-            Position = new Vector3(0f, wallH + 0.35f, -d * 0.5f - 0.25f),
-            Rotation = new Vector3(0f, Mathf.Pi, 0f),
-        }, "SignText");
+                DoubleSided = false,
+                Position = new Vector3(0f, wallH + 0.35f, -d * 0.5f - 0.2f + side * 0.06f),
+                Rotation = new Vector3(0f, side < 0f ? Mathf.Pi : 0f, 0f),
+            }, "SignText");
     }
 
     // บ้านยายจันทร์: a medium's stilt house hung with talismans, with herb pots and a drying rack.
     static void YaiJanHouse(Node3D parent, Vector3 pos)
     {
         Occupy(pos, 7.5f);
-        var g = Shapes.Group(parent, "HouseYaiJan", pos, Mathf.Pi * 0.25f);
+        var g = Shapes.Group(parent, "HouseYaiJan", pos);
+        Shapes.Box(g, new Vector3(0f, 0.03f, -5.8f), new Vector3(2.2f, 0.05f, 3.4f), Dirt, 0f, "Yard");
         StiltHouse(g, "House", Vector3.Zero, 0f, 2f, true);
         var yellow = new Color(0.95f, 0.82f, 0.4f);
         for (int i = 0; i < 7; i++)
@@ -492,14 +520,30 @@ public static partial class WorldBuilder
         CourtWall("CourtN", new Vector3(0f, 0f, -19f), new Vector3(38f, 0f, 0.5f));
         CourtWall("CourtE", new Vector3(19f, 0f, 0f), new Vector3(0.5f, 0f, 38f));
         CourtWall("CourtW", new Vector3(-19f, 0f, 0f), new Vector3(0.5f, 0f, 38f));
-        CourtWall("CourtSW", new Vector3(-11f, 0f, 19f), new Vector3(16f, 0f, 0.5f));
-        CourtWall("CourtSE", new Vector3(11f, 0f, 19f), new Vector3(16f, 0f, 0.5f));
+        CourtWall("CourtSW", new Vector3(-11.25f, 0f, 19f), new Vector3(15.5f, 0f, 0.5f));
+        CourtWall("CourtSE", new Vector3(11.25f, 0f, 19f), new Vector3(15.5f, 0f, 0.5f));
+        // ซุ้มประตูวัด over the gap in the south wall, with a paved walk straight to the hall door.
+        var gate = Shapes.Group(t, "TempleGate", new Vector3(0f, 0f, 19f));
+        foreach (var x in new[] { -3.3f, 3.3f })
+        {
+            Shapes.Box(gate, new Vector3(x, 2.2f, 0f), new Vector3(0.9f, 4.4f, 0.9f), white, 0f, "GatePillar");
+            Shapes.Solid(gate, new Vector3(x, 2.2f, 0f), new Vector3(0.9f, 4.4f, 0.9f));
+            Shapes.Box(gate, new Vector3(x, 4.5f, 0f), new Vector3(1.1f, 0.2f, 1.1f), Gold.Darkened(0.1f), 0f, "PillarCap");
+        }
+        Shapes.Box(gate, new Vector3(0f, 4.75f, 0f), new Vector3(7.8f, 0.5f, 1.2f), white, 0f, "GateLintel");
+        Shapes.Prism(gate, new Vector3(0f, 5.8f, 0f), new Vector3(8.4f, 1.6f, 2f), Tile, "RoofGate");
+        Shapes.Prism(gate, new Vector3(0f, 6.9f, 0f), new Vector3(4.6f, 1.2f, 1.6f), Tile.Lightened(0.06f), "RoofGateTop");
+        Shapes.Cylinder(gate, new Vector3(0f, 7.75f, 0f), 0.02f, 0.14f, 0.9f, Gold, 0.4f, "Spire");
+        Shapes.Box(t, new Vector3(0f, 0.045f, 13.5f), new Vector3(3.2f, 0.05f, 11f), new Color(0.72f, 0.7f, 0.66f), 0f, "CourtPath");
         Shapes.MapTag(Shapes.Box(t, new Vector3(0f, 0.02f, 0f), new Vector3(37f, 0.04f, 37f), new Color(0.6f, 0.56f, 0.48f), 0f, "CourtFloor"), "map_temple", new Vector2(38f, 38f));
 
-        var hall = Shapes.Group(t, "Hall", new Vector3(-4f, 0f, 0f));
+        var hall = Shapes.Group(t, "Hall", new Vector3(0f, 0f, -1f));
         Shapes.Box(hall, new Vector3(0f, 0.5f, 0f), new Vector3(11f, 1f, 18f), white, 0f, "Base");
         Shapes.Box(hall, new Vector3(0f, 3f, 0.5f), new Vector3(8.5f, 4f, 15f), new Color(0.62f, 0.2f, 0.14f), 0f, "Walls");
-        Shapes.Box(hall, new Vector3(0f, 2.4f, -7.05f), new Vector3(2.2f, 2.8f, 0.1f), Gold.Darkened(0.2f), 0.3f, "Door");
+        Shapes.Box(hall, new Vector3(0f, 2.4f, 8.05f), new Vector3(2.2f, 2.8f, 0.1f), Gold.Darkened(0.2f), 0.3f, "Door");
+        Shapes.Box(hall, new Vector3(0f, 0.5f, 9.6f), new Vector3(3.4f, 1f, 1.2f), white.Darkened(0.05f), 0f, "Steps");
+        Shapes.Box(hall, new Vector3(0f, 0.25f, 10.6f), new Vector3(3.4f, 0.5f, 1f), white.Darkened(0.08f), 0f, "Steps");
+        Shapes.Solid(hall, new Vector3(0f, 0.25f, 10.6f), new Vector3(3.4f, 0.5f, 1f));
         foreach (var x in new[] { -4.6f, 4.6f })
             for (float z = -7f; z <= 7.5f; z += 2.9f)
                 Shapes.Cylinder(hall, new Vector3(x, 3f, z), 0.22f, 0.25f, 4f, white, 0f, "Column");
@@ -510,7 +554,7 @@ public static partial class WorldBuilder
         Shapes.Box(hall, new Vector3(0f, 9.3f, -1.3f), new Vector3(0.16f, 0.16f, 10.2f), Gold, 0.4f, "Ridge");
         foreach (var z in new[] { -6.3f, 3.7f })
             Shapes.Cylinder(hall, new Vector3(0f, 9.8f, z), 0.02f, 0.12f, 1.2f, Gold, 0.5f, "Chofa").Rotation = new Vector3(z < 0f ? 0.5f : -0.5f, 0f, 0f);
-        Shapes.Light(hall, new Vector3(0f, 3f, -8.5f), new Color(1f, 0.7f, 0.4f), 1.8f, 10f, "HallLight");
+        Shapes.Light(hall, new Vector3(0f, 3f, 9.5f), new Color(1f, 0.7f, 0.4f), 1.8f, 10f, "HallLight");
         Shapes.Solid(hall, new Vector3(0f, 2.6f, 0.3f), new Vector3(11f, 5.2f, 18f));
 
         var chedi = Shapes.Group(t, "Chedi", new Vector3(11f, 0f, -11f));
@@ -524,8 +568,8 @@ public static partial class WorldBuilder
         Shapes.Solid(chedi, new Vector3(0f, 2.5f, 0f), new Vector3(6f, 5f, 6f));
 
         Banyan(t, "Bodhi", new Vector3(10f, 0f, 9f), 1.1f, true);
-        LanternPost(t, "TempleLantern1", new Vector3(-4f, 0f, 14f), 2.6f, true);
-        LanternPost(t, "TempleLantern2", new Vector3(4f, 0f, 14f), 2.6f, false);
+        LanternPost(t, "TempleLantern1", new Vector3(-2.6f, 0f, 14f), 2.6f, true);
+        LanternPost(t, "TempleLantern2", new Vector3(2.6f, 0f, 14f), 2.6f, false);
     }
 
     // รถเมล์แดง parked by the plaza.
@@ -787,7 +831,7 @@ public static partial class WorldBuilder
 
     // How far the shore juts out into the lagoon at x: a wandering line, straight only by the pier.
     public static float ShoreBump(float x) =>
-        ((0.5f + 0.5f * Mathf.Sin(x * 0.045f + 1.3f)) * 6f + (0.5f + 0.5f * Mathf.Sin(x * 0.13f + 0.4f)) * 3f) * Mathf.SmoothStep(8f, 30f, Mathf.Abs(x));
+        ((0.5f + 0.5f * Mathf.Sin(x * 0.045f + 1.3f)) * 6f + (0.5f + 0.5f * Mathf.Sin(x * 0.13f + 0.4f)) * 3f) * Mathf.SmoothStep(34f, 60f, Mathf.Abs(x));
 
     // Lagoon floor depth below the water surface (y = 0) at local (x, z); land is 0.
     // The basin deepens away from the shore and rises again toward the zone's outer edges.
@@ -796,7 +840,8 @@ public static partial class WorldBuilder
         float fromShore = ThungNaShoreZ - ShoreBump(x) - z;
         if (fromShore <= 0f)
             return 0f;
-        float edge = Mathf.Min(Half - Mathf.Abs(x), Half + z);
+        // Shallows only along the east and west edges; to the north the water runs on into the marsh.
+        float edge = Half - Mathf.Abs(x);
         return 1.9f * Mathf.SmoothStep(0f, 8f, fromShore) * Mathf.SmoothStep(0f, 9f, edge);
     }
 
@@ -1316,7 +1361,38 @@ void fragment() {
         Deck(wv, "PierMainNorth", new Vector3(0f, 0f, zCross - 5.7f), new Vector2(2.6f, 8.8f), railX: true);
         // Long boardwalk north across the lagoon to the edge of บึงบัวสาย.
         float bwStart = zCross - 10.1f, bwEnd = -Half + 1.5f;
-        Deck(wv, "BoardwalkToBueng", new Vector3(0f, 0f, (bwStart + bwEnd) * 0.5f), new Vector2(2.6f, bwStart - bwEnd), railX: true);
+        float zC2 = zCross - 26f;
+        Deck(wv, "BoardwalkToBueng", new Vector3(0f, 0f, (bwStart + zC2 + pierHalf) * 0.5f), new Vector2(2.6f, bwStart - (zC2 + pierHalf)), railX: true);
+        Deck(wv, "PierCrossing2", new Vector3(0f, 0f, zC2), new Vector2(2.6f, 2.6f));
+        Deck(wv, "BoardwalkToBueng2", new Vector3(0f, 0f, (zC2 - pierHalf + bwEnd) * 0.5f), new Vector2(2.6f, zC2 - pierHalf - bwEnd), railX: true);
+        // Second row of the village along a cross pier further out.
+        float[] row2 = { -19.5f, -8f, 8f, 19.5f };
+        float north2 = zC2 - pierHalf + 0.35f - edge - run, south2 = zC2 + pierHalf - 0.35f + edge + run;
+        Deck(wv, "PierWest2", new Vector3(-13.3f, 0f, zC2), new Vector2(24f, 2.6f), railZ: true,
+            gapsNeg: row2.Where(x => x < 0f).Select(x => x + 13.3f).ToArray(), gapsPos: row2.Where(x => x < 0f).Select(x => x + 13.3f).ToArray());
+        Deck(wv, "PierEast2", new Vector3(13.3f, 0f, zC2), new Vector2(24f, 2.6f), railZ: true,
+            gapsNeg: row2.Where(x => x > 0f).Select(x => x - 13.3f).ToArray(), gapsPos: row2.Where(x => x > 0f).Select(x => x - 13.3f).ToArray());
+        int m = 20;
+        foreach (var x in row2)
+        {
+            StiltHouse(wv, $"WaterHouse{m++}", new Vector3(x, 0f, north2), Mathf.Pi, stilt, m % 3 == 0, DeckTop, bed);
+            StiltHouse(wv, $"WaterHouse{m++}", new Vector3(x, 0f, south2), 0f, stilt, m % 3 == 1, DeckTop, bed);
+        }
+        for (int i = 0; i < 4; i++)
+            LanternPost(wv, $"PierLantern2_{i}", new Vector3(-22f + i * 14.6f, DeckTop, zC2 + (i % 2 == 0 ? 1.4f : -1.4f)), 2.4f, i % 2 == 0);
+        // Floating market raft off the west end of the first pier, with a stall and boats tied up.
+        Deck(wv, "RaftMarket", new Vector3(-35.3f, 0f, zCross), new Vector2(8.6f, 6f));
+        var stall = Shapes.Group(wv, "RaftStall", new Vector3(-37.5f, DeckTop, zCross - 1.5f));
+        foreach (var px in new[] { -1.8f, 1.8f })
+        foreach (var pz in new[] { -1f, 1f })
+            Shapes.Box(stall, new Vector3(px, 1.1f, pz), new Vector3(0.1f, 2.2f, 0.1f), DarkWood, 0f, "Post");
+        Shapes.Box(stall, new Vector3(0f, 2.25f, 0f), new Vector3(4.2f, 0.1f, 2.6f), Thatch, 0f, "Roof");
+        Shapes.Box(stall, new Vector3(0f, 0.45f, 0.6f), new Vector3(3.4f, 0.9f, 0.6f), Wood, 0f, "Counter");
+        foreach (var (fx, fc) in new[] { (-1f, new Color(1f, 0.5f, 0.1f)), (0f, new Color(0.9f, 0.85f, 0.3f)), (1f, new Color(0.4f, 0.7f, 0.25f)) })
+            Shapes.Sphere(stall, new Vector3(fx, 1f, 0.6f), 0.18f, fc, 0f, "Fruit");
+        Shapes.Light(stall, new Vector3(0f, 1.9f, 0f), WindowGlow, 1.2f, 7f, "StallLight");
+        Boat(wv, "MarketBoat1", new Vector3(-41.5f, 0f, zCross + 4.5f), 1.4f, true);
+        Boat(wv, "MarketBoat2", new Vector3(-42f, 0f, zCross - 5f), 1.7f, false);
         for (float z = bwStart - 12f; z > bwEnd + 4f; z -= 16f)
             LanternPost(wv, $"BoardwalkLantern{z:0}", new Vector3(1.4f, DeckTop, z), 2.4f, ((int)z / 16) % 2 == 0);
         Deck(wv, "PierWest", new Vector3(-16.15f, 0f, zCross), new Vector2(29.7f, 2.6f), railZ: true,

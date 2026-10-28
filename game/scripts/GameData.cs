@@ -150,6 +150,9 @@ public class QuestDef
     public string Giver { get; set; } = "";
     public string Description { get; set; } = "";
     public string Requires { get; set; }
+    // Open world: side quests unlock by level only. repeatable = can be taken again after handing in.
+    public int MinLevel { get; set; }
+    public bool Repeatable { get; set; }
     public string TurnIn { get; set; }
     public bool Main { get; set; }
     public int Chapter { get; set; }
@@ -197,6 +200,8 @@ public class NpcDef
     // idle / sell / sweep / sit / wander / fish / farm / chat
     public string Activity { get; set; } = "idle";
     public float WanderRadius { get; set; } = 5f;
+    // Height above the zone ground, for people standing on piers and rafts.
+    public float Y { get; set; }
 }
 
 public class CutsceneLineDef
@@ -213,6 +218,9 @@ public class CutsceneShotDef
     public float Duration { get; set; } = 5f;
     public string Prop { get; set; }
     public float[] PropAt { get; set; }
+    // Drone shot: circle "look" at this radius (metres) for "orbitDegrees", rising from From[1] to To[1].
+    public float Orbit { get; set; }
+    public float OrbitDegrees { get; set; } = 120f;
     public List<CutsceneLineDef> Lines { get; set; } = new();
 }
 

@@ -84,6 +84,8 @@ public partial class MapView : Control
         DrawRect(area, Grass);
         DrawTagged("map_water", Water);
         DrawTagged("map_land", Grass);
+        if (zone.Scene == "bueng_bua")
+            DrawTextureRect(WorldBuilder.BuengMapTexture(), area, false);
         DrawTagged("map_grove", new Color(0.08f, 0.12f, 0.08f));
         DrawTagged("map_park", new Color(0.2f, 0.32f, 0.18f));
         DrawTagged("map_graveyard", new Color(0.22f, 0.2f, 0.24f));

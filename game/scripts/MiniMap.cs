@@ -53,6 +53,13 @@ public partial class MiniMap : Control
         var c = player.GlobalPosition;
         float s = MapScale;
         DrawRect(new Rect2(Vector2.Zero, Size), new Color(0.14f, 0.18f, 0.12f));
+        foreach (var z in GameData.Zones.Where(z => z.Scene == "bueng_bua"))
+        {
+            var a = ToMap(z.Center - new Vector3(z.SizeX * 0.5f, 0f, z.SizeZ * 0.5f), c);
+            var b = ToMap(z.Center + new Vector3(z.SizeX * 0.5f, 0f, z.SizeZ * 0.5f), c);
+            DrawRect(new Rect2(a, b - a), new Color(0.1f, 0.22f, 0.32f));
+            DrawTextureRect(WorldBuilder.BuengMapTexture(), new Rect2(a, b - a), false);
+        }
         foreach (var (group, color) in Layers)
             foreach (var node in GetTree().GetNodesInGroup(group).OfType<Node3D>())
             {

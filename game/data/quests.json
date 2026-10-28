@@ -126,7 +126,7 @@
 
   // ---------- เควสเสริม ----------
   {
-    "id": "s_alley_voices", "name": "เสียงในซอย", "giver": "lung_man", "requires": "m2_first_talisman",
+    "id": "s_alley_voices", "name": "เสียงในซอย", "giver": "lung_man", "minLevel": 1,
     "description": "ลูกค้าลุงมั่นไม่กล้าเดินผ่านซอยมืดตอนกลางคืน ช่วยจัดการวิญญาณหลงซอยอีกห้าดวง",
     "objectives": [ { "type": "resolve", "target": "winyan_long_soi", "count": 5, "text": "จัดการวิญญาณหลงซอย" } ],
     "rewards": { "exp": 90, "items": { "sai_sin_khat": 2 } },
@@ -137,7 +137,7 @@
     }
   },
   {
-    "id": "s_herbs", "name": "ยาหอมตำรับยาย", "giver": "yai_jan", "requires": "m2_first_talisman",
+    "id": "s_herbs", "name": "ยาหอมตำรับยาย", "giver": "yai_jan", "minLevel": 1,
     "description": "ฟางสาปหรือด้ายสายสิญจน์บดทำยาหอมได้ ลองคราฟต์ยาหอมสักขวด (กด C)",
     "objectives": [ { "type": "craft", "target": "ya_hom", "count": 1, "text": "คราฟต์ยาหอม" } ],
     "rewards": { "exp": 50, "items": { "fang_sap": 2 } },
@@ -148,7 +148,7 @@
     }
   },
   {
-    "id": "s_weapon", "name": "อาวุธปลุกเสก", "giver": "lung_man", "requires": "m4_shrine",
+    "id": "s_weapon", "name": "อาวุธปลุกเสก", "giver": "lung_man", "minLevel": 3,
     "description": "ของธรรมดาสู้ผีได้ไม่นาน รวบรวมวัตถุดิบแล้วคราฟต์อาวุธของอาชีพตัวเองสักชิ้น",
     "objectives": [ { "type": "craft", "target": "weapon", "count": 1, "text": "คราฟต์อาวุธ" } ],
     "rewards": { "exp": 160, "items": { "ya_hom": 2 } },
@@ -159,7 +159,7 @@
     }
   },
   {
-    "id": "s_green_light", "name": "แสงเขียวกลางทุ่ง", "giver": "ta_saeng", "requires": "m6_field",
+    "id": "s_green_light", "name": "แสงเขียวกลางทุ่ง", "giver": "ta_saeng", "minLevel": 4,
     "description": "พอตกค่ำ ผีโพงจะออกมาส่องแสงเขียวหากิน มันกลัวข้าวสารเสก จัดการให้ได้สามตัว",
     "objectives": [ { "type": "resolve", "target": "phi_pong", "count": 3, "text": "จัดการผีโพง (กลางคืน)" } ],
     "rewards": { "exp": 140, "items": { "takiang_pong": 1 } },
@@ -170,7 +170,7 @@
     }
   },
   {
-    "id": "s_straw", "name": "ฟางสำหรับพิธี", "giver": "ta_saeng", "requires": "m6_field",
+    "id": "s_straw", "name": "ฟางสำหรับพิธี", "giver": "ta_saeng", "minLevel": 4,
     "description": "ตาแสงจะทำพิธีเสริมวงโคม ต้องใช้ฟางสาปห้ากำ (ของจะถูกใช้ไป)",
     "objectives": [ { "type": "collect", "target": "fang_sap", "count": 5, "text": "ส่งฟางสาป" } ],
     "rewards": { "exp": 120, "items": { "saeng_winyan": 2 } },
@@ -181,7 +181,7 @@
     }
   },
   {
-    "id": "s_merit", "name": "ส่งวิญญาณกลับบ้าน", "giver": "thongdee", "requires": "m5_master",
+    "id": "s_merit", "name": "ส่งวิญญาณกลับบ้าน", "giver": "thongdee", "minLevel": 3,
     "description": "บุญจากการปลดปล่อยวิญญาณช่วยให้ม่านราตรีแข็งแรงขึ้น ปลดปล่อยวิญญาณอีกสามดวง",
     "objectives": [ { "type": "release", "target": "any", "count": 3, "text": "ปลดปล่อยวิญญาณ" } ],
     "rewards": { "exp": 100, "items": { "saeng_winyan": 2 } },
@@ -318,7 +318,7 @@
 
   // ---------- เควสเสริม (ชาวบ้าน) ----------
   {
-    "id": "s_ploy_bamboo", "name": "แผงข้าวเหนียวพัง", "giver": "mae_ploy", "requires": "m2_first_talisman",
+    "id": "s_ploy_bamboo", "name": "แผงข้าวเหนียวพัง", "giver": "mae_ploy", "minLevel": 1,
     "description": "วิญญาณหลงซอยชนแผงของแม่พลอยพังตอนกลางคืน หาไม้ผุมาซ่อมแผงให้หน่อย",
     "objectives": [ { "type": "collect", "target": "mai_phu", "count": 4, "text": "ส่งไม้ผุ" } ],
     "rewards": { "exp": 80, "items": { "ya_hom": 3 } },
@@ -329,7 +329,7 @@
     }
   },
   {
-    "id": "s_noi_lights", "name": "ดวงไฟของน้องน้อย", "giver": "dek_noi", "requires": "m3_listen",
+    "id": "s_noi_lights", "name": "ดวงไฟของน้องน้อย", "giver": "dek_noi", "minLevel": 2,
     "description": "น้องน้อยอยากได้ดวงไฟวิญญาณสวยๆ ที่ลอยอยู่หลังปลดปล่อยวิญญาณ ไปเก็บมาให้สองดวง",
     "objectives": [ { "type": "collect", "target": "saeng_winyan", "count": 2, "text": "ส่งแสงวิญญาณ" } ],
     "rewards": { "exp": 120, "items": { "soi_prakham": 1 } },
@@ -340,7 +340,7 @@
     }
   },
   {
-    "id": "s_thong_clip", "name": "คลิปล่าผีโพง", "giver": "nai_thong", "requires": "m6_field",
+    "id": "s_thong_clip", "name": "คลิปล่าผีโพง", "giver": "nai_thong", "minLevel": 4,
     "description": "ไทม์ทองอยากได้คลิปปราบผีโพงในทุ่งนา แต่ตัวเองไม่กล้าเข้าใกล้ ช่วยจัดการผีโพงสามตัวให้เขาถ่าย",
     "objectives": [ { "type": "resolve", "target": "phi_pong", "count": 3, "text": "จัดการผีโพง (ให้ไทม์ทองถ่ายคลิป)" } ],
     "rewards": { "exp": 220, "items": { "waen_phirot": 1 } },
@@ -351,7 +351,7 @@
     }
   },
   {
-    "id": "s_khiao_straw", "name": "เผาฟางสาป", "giver": "lung_khiao", "requires": "m6_field",
+    "id": "s_khiao_straw", "name": "เผาฟางสาป", "giver": "lung_khiao", "minLevel": 4,
     "description": "ลุงเขียวเชื่อว่าเผาฟางจากหุ่นไล่กาสาปแล้วหุ่นจะไม่กล้าเข้าแปลง เก็บฟางสาปมาให้หกกำ",
     "objectives": [ { "type": "collect", "target": "fang_sap", "count": 6, "text": "ส่งฟางสาป" } ],
     "rewards": { "exp": 200, "items": { "ya_hom": 3, "khao_san_sek": 1 } },
@@ -362,7 +362,7 @@
     }
   },
   {
-    "id": "s_choi_pong", "name": "ปลาย่างหาย", "giver": "lung_pla", "requires": "m6_field",
+    "id": "s_choi_pong", "name": "ปลาย่างหาย", "giver": "lung_pla", "minLevel": 4,
     "description": "ผีโพงชอบขโมยปลาย่างของลุงจ่อยตอนกลางคืน ช่วยจัดการให้หน่อย",
     "objectives": [ { "type": "resolve", "target": "phi_pong", "count": 4, "text": "จัดการผีโพง" } ],
     "rewards": { "exp": 240, "items": { "ya_hom_yai": 1 } },
@@ -373,7 +373,7 @@
     }
   },
   {
-    "id": "s_hun_yak", "name": "หุ่นไล่กายักษ์", "giver": "ta_saeng", "requires": "m7_seal_clue",
+    "id": "s_hun_yak", "name": "หุ่นไล่กายักษ์", "giver": "ta_saeng", "minLevel": 12,
     "description": "ทางตะวันออกของทุ่งมีหุ่นไล่กายักษ์ตัวแรกที่หมู่บ้านช่วยกันสร้าง วิญญาณหุ่นทุกตัวไหลไปรวมที่มัน จัดการมันซะ",
     "objectives": [ { "type": "resolve", "target": "boss_hun_yak", "count": 1, "text": "จัดการหุ่นไล่กายักษ์" } ],
     "rewards": { "exp": 1200, "items": { "takrut": 1 } },
@@ -384,7 +384,7 @@
     }
   },
   {
-    "id": "s_puk_krahang", "name": "ปลาย่างบนหลังคา", "giver": "lung_puk", "requires": "m9_village",
+    "id": "s_puk_krahang", "name": "ปลาย่างบนหลังคา", "giver": "lung_puk", "minLevel": 15,
     "description": "ผีกระหังบินมาขโมยปลาที่ตากไว้บนหลังคาทุกคืน จัดการผีกระหังสี่ตัว",
     "objectives": [ { "type": "resolve", "target": "phi_krahang", "count": 4, "text": "จัดการผีกระหัง" } ],
     "rewards": { "exp": 800, "items": { "lek_nam_phi": 2 } },
@@ -395,7 +395,7 @@
     }
   },
   {
-    "id": "s_yaem_herbs", "name": "สายบัวทำยา", "giver": "pa_yaem", "requires": "m9_village",
+    "id": "s_yaem_herbs", "name": "สายบัวทำยา", "giver": "pa_yaem", "minLevel": 15,
     "description": "ป้าแย้มต้องใช้สายบัวจากก้นบึงทำยาหอมตำรับใหญ่",
     "objectives": [ { "type": "collect", "target": "sai_bua", "count": 5, "text": "ส่งสายบัวแช่ผี" } ],
     "rewards": { "exp": 600, "items": { "ya_hom_yai": 3 } },
@@ -406,7 +406,7 @@
     }
   },
   {
-    "id": "s_tee_tani", "name": "ดงกล้วยของไอ้ตี๋", "giver": "ai_tee", "requires": "m9_village",
+    "id": "s_tee_tani", "name": "ดงกล้วยของไอ้ตี๋", "giver": "ai_tee", "minLevel": 16,
     "description": "ไอ้ตี๋อยากกลับไปเก็บกล้วยที่ดงกล้วยบนเกาะ แต่นางตานียืนเฝ้าอยู่ จัดการนางตานีสองตัว",
     "objectives": [ { "type": "resolve", "target": "nang_tani", "count": 2, "text": "จัดการนางตานี" } ],
     "rewards": { "exp": 700, "items": { "bai_tani": 2, "saeng_winyan": 2 } },
@@ -414,6 +414,118 @@
       "offer": [ "พี่ครับ ช่วยหน่อย ดงกล้วยมีผู้หญิงชุดเขียวยืนนิ่งๆ ตลอด", "ผมได้ยินว่าถ้าตัดต้นกล้วยนางจะตามไม่เลิก ผมเลยไม่กล้าเข้าไป" ],
       "progress": [ "นางออกแต่กลางคืนครับ" ],
       "complete": [ "ขอบคุณครับ! เอาใบตองนี่ไป ผมเก็บมาได้ตอนนางหายไป" ]
+    }
+  },
+
+  // ---------- งานนอกเนื้อเรื่อง (open world): ค่าหัวผีรับซ้ำได้ · งานจิปาถะ · สำรวจ · สะสม ----------
+  {
+    "id": "q_bounty_soi", "name": "ค่าหัว: วิญญาณหลงซอย", "giver": "pa_som", "minLevel": 1, "repeatable": true,
+    "description": "ป้าส้มรวบรวมเงินจากคนในซอยมาตั้งค่าหัว ใครจัดการวิญญาณหลงซอยได้สี่ดวงรับรางวัลไป รับซ้ำได้",
+    "objectives": [ { "type": "resolve", "target": "winyan_long_soi", "count": 4, "text": "จัดการวิญญาณหลงซอย" } ],
+    "rewards": { "exp": 60, "items": { "ya_hom": 1 } },
+    "dialogue": {
+      "offer": [ "ชาวซอยลงขันกันตั้งค่าหัวไว้ จัดการได้เท่าไหร่ก็มารับได้เรื่อยๆ" ],
+      "progress": [ "สี่ดวงนะ แล้วค่อยมาเอารางวัล" ],
+      "complete": [ "ป้าจะไปบอกชาวซอย คืนนี้หลับสบายแน่" ]
+    }
+  },
+  {
+    "id": "q_bounty_pong", "name": "ค่าหัว: ผีโพง", "giver": "mae_khai_rua", "minLevel": 5, "repeatable": true,
+    "description": "ผีโพงลอยมาขโมยปลาจากแพทุกคืน แม่จันทร์เพ็ญตั้งค่าหัวไว้ รับซ้ำได้",
+    "objectives": [ { "type": "resolve", "target": "phi_pong", "count": 5, "text": "จัดการผีโพง" } ],
+    "rewards": { "exp": 220, "items": { "saeng_winyan": 1, "ya_hom": 1 } },
+    "dialogue": {
+      "offer": [ "ผีโพงมันชอบของคาว แพของแม่เลยโดนก่อนใคร", "จัดการได้ห้าตัว แม่ให้รางวัลทุกรอบ" ],
+      "progress": [ "มันออกตอนค่ำ แถวทุ่งริมทะเลสาบ" ],
+      "complete": [ "คืนนี้ปลาแม่ยังอยู่ครบ ขอบใจจ้ะ" ]
+    }
+  },
+  {
+    "id": "q_bounty_phrai", "name": "ค่าหัว: ผีพราย", "giver": "phu_yai_lueang", "minLevel": 15, "repeatable": true,
+    "description": "ผีพรายในบึงยังไม่หมด ผู้ใหญ่เหลืองจ่ายค่าหัวทุกห้าตัว รับซ้ำได้",
+    "objectives": [ { "type": "resolve", "target": "phi_phrai", "count": 5, "text": "จัดการผีพราย" } ],
+    "rewards": { "exp": 700, "items": { "sai_bua": 2 } },
+    "dialogue": {
+      "offer": [ "ชาวบ้านยังไม่กล้าลงน้ำ ข้าจะจ่ายให้ทุกห้าตัวที่เอ็งจัดการได้" ],
+      "progress": [ "มันอยู่ในน้ำลึกระหว่างเกาะ" ],
+      "complete": [ "เอ็งทำให้หมู่บ้านนี้หายใจได้อีกนิด" ]
+    }
+  },
+  {
+    "id": "q_net", "name": "ด้ายซ่อมแห", "giver": "ta_hae", "minLevel": 2,
+    "description": "แหของตาเพิ่มขาดทุกคืน ต้องการด้ายสายสิญจน์ที่ผีทิ้งไว้มาซ่อม",
+    "objectives": [ { "type": "collect", "target": "sai_sin_khat", "count": 4, "text": "ส่งด้ายสายสิญจน์ขาด" } ],
+    "rewards": { "exp": 150, "items": { "ya_hom": 2 } },
+    "dialogue": {
+      "offer": [ "ด้ายธรรมดาซ่อมแล้วก็ขาดอีก ต้องด้ายที่ผ่านพิธีมา", "วิญญาณในซอยเมืองมักมีติดตัว" ],
+      "progress": [ "สี่เส้นพอ" ],
+      "complete": [ "แหผืนนี้ผีดึงไม่ขาดแน่ ขอบใจหลาน" ]
+    }
+  },
+  {
+    "id": "q_fruit", "name": "ตะกร้าผลไม้ถวายวัด", "giver": "mae_khai_rua", "turnIn": "thongdee", "minLevel": 1,
+    "description": "แม่จันทร์เพ็ญฝากตะกร้าผลไม้ไปถวายพระอาจารย์ทองดีที่วัดกลางเวียง",
+    "objectives": [ { "type": "talk", "target": "thongdee", "count": 1, "text": "เอาผลไม้ไปถวายพระอาจารย์ทองดี" } ],
+    "rewards": { "exp": 80, "items": { "khao_san_sek": 1 } },
+    "dialogue": {
+      "offer": [ "แม่ไปวัดไม่ได้ ต้องเฝ้าแพ", "ฝากตะกร้านี่ไปถวายพระอาจารย์ทองดีหน่อยนะ" ],
+      "progress": [ "วัดกลางเวียงอยู่ในเมือง ทางทิศตะวันออกของลานศาล" ],
+      "complete": [ "เจริญพร บุญนี้ขอให้ถึงทั้งคนฝากและคนส่ง", "อาตมาให้ข้าวสารเสกไว้ป้องกันตัว" ]
+    }
+  },
+  {
+    "id": "q_rice_box", "name": "ข้าวกล่องให้ลุงเขียว", "giver": "pa_bua", "turnIn": "lung_khiao", "minLevel": 1, "repeatable": true,
+    "description": "ป้าบัวคำห่อข้าวไว้ให้ลุงเขียวที่ดำนาอยู่ท้ายหมู่บ้าน ช่วยเอาไปส่งที รับซ้ำได้",
+    "objectives": [ { "type": "talk", "target": "lung_khiao", "count": 1, "text": "เอาข้าวกล่องไปให้ลุงเขียว" } ],
+    "rewards": { "exp": 40, "items": { "ya_hom": 1 } },
+    "dialogue": {
+      "offer": [ "ลุงเขียวลืมกินข้าวอีกแล้ว ป้าห่อไว้ให้ ฝากไปหน่อยนะลูก" ],
+      "progress": [ "ลุงเขียวอยู่แปลงนาข้างหมู่บ้าน" ],
+      "complete": [ "แกงหน่อไม้ของป้าบัวคำ! เอ็งได้กินด้วยไหม" ]
+    }
+  },
+  {
+    "id": "q_explore_bamboo", "name": "เกาะไผ่ในหมอก", "giver": "dek_bet", "minLevel": 12,
+    "description": "เจ้าเบ็ดได้ยินว่าในบึงบัวสายมีเกาะไผ่ที่มีศาลเก่า อยู่ไม่ไกลจากเกาะตะเคียน ไปหาให้เจอแล้วไหว้ศาลไว้",
+    "objectives": [ { "type": "bind", "target": "bueng_takian", "count": 1, "text": "ไหว้ศาลเกาะไผ่ (ตั้งจุดเกิด)" } ],
+    "rewards": { "exp": 600, "items": { "ya_hom_yai": 1 } },
+    "dialogue": {
+      "offer": [ "ลุงพุกเล่าว่ามีศาลเก่าบนเกาะไผ่ในบึง ใกล้เกาะตะเคียนน่ะ", "พี่ไปหาให้ผมทีได้ไหม ผมอยากรู้ว่ามีจริงหรือเปล่า" ],
+      "progress": [ "มันอยู่ทางตะวันออกเฉียงเหนือของบึงนะพี่" ],
+      "complete": [ "มีจริงด้วย! พี่เท่สุดๆ" ]
+    }
+  },
+  {
+    "id": "q_explore_bueng", "name": "คลิปทัวร์บึงบัวสาย", "giver": "nai_thong", "minLevel": 10,
+    "description": "ไทม์ทองอยากทำคลิปทัวร์บึงบัวสายแต่ไม่กล้าไปเอง ไปให้ถึงบึงแล้วกลับมาเล่าให้ฟัง",
+    "objectives": [ { "type": "reach", "target": "bueng_bua", "count": 1, "text": "ไปถึงบึงบัวสาย" } ],
+    "rewards": { "exp": 400, "items": { "saeng_winyan": 2 } },
+    "dialogue": {
+      "offer": [ "ผมได้ยินว่าบึงบัวสายสวยมาก ตอนกลางวันนะ", "พี่ไปดูให้หน่อย แล้วกลับมาเล่าให้ผมฟัง ผมจะเอาไปทำคลิป" ],
+      "progress": [ "เดินสะพานไม้จากหมู่บ้านกลางน้ำไปทางเหนือครับ" ],
+      "complete": [ "บัวสายบานกลางหมอก... ฟังดูเป็นชื่อคลิปที่ดีมาก!" ]
+    }
+  },
+  {
+    "id": "q_collect_bua", "name": "สายบัวให้น้องน้อย", "giver": "dek_noi", "minLevel": 14,
+    "description": "น้องน้อยอยากได้สายบัวจากบึงบัวสายมาปลูกในบ่อที่สวน",
+    "objectives": [ { "type": "collect", "target": "sai_bua", "count": 3, "text": "ส่งสายบัวแช่ผี" } ],
+    "rewards": { "exp": 500, "items": { "waen_phirot": 1 } },
+    "dialogue": {
+      "offer": [ "บ่อในสวนมีแต่บัวธรรมดา น้อยอยากได้บัวสายจากบึงไกลๆ", "พี่เอามาให้สามต้นได้ไหม" ],
+      "progress": [ "บัวสายอยู่บึงทางเหนือนะ" ],
+      "complete": [ "ปลูกแล้ว! ปีหน้ามันจะบานไหมนะ เอาแหวนนี่ไป ของเล่นน้อยเอง" ]
+    }
+  },
+  {
+    "id": "q_daily_tani", "name": "ใบตองทำยา", "giver": "pa_yaem", "minLevel": 15, "repeatable": true,
+    "description": "ป้าแย้มใช้ใบตองตานีห่อยาทุกวัน หามาให้สองใบ รับซ้ำได้",
+    "objectives": [ { "type": "collect", "target": "bai_tani", "count": 2, "text": "ส่งใบตองตานี" } ],
+    "rewards": { "exp": 400, "items": { "ya_hom_yai": 1 } },
+    "dialogue": {
+      "offer": [ "ห่อยาด้วยใบตองตานี ยาจะไม่เสียไปเป็นเดือน" ],
+      "progress": [ "นางตานีมีติดตัวนะหลาน" ],
+      "complete": [ "เอายาไปห่อหนึ่ง ใช้ตอนลำบาก" ]
     }
   }
 ]

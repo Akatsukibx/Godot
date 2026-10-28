@@ -21,7 +21,7 @@ public partial class Hud : CanvasLayer
 
     class Window
     {
-        public PanelContainer Root;
+        public Control Root;
         public VBoxContainer Body;
         public System.Action Refresh;
     }
@@ -187,23 +187,23 @@ public partial class Hud : CanvasLayer
     void BuildClock()
     {
         var mini = new MiniMap();
-        Place(mini, 1f, 0f, -18f, 78f, Control.GrowDirection.Begin, Control.GrowDirection.End);
+        Place(mini, 1f, 0f, -18f, 18f, Control.GrowDirection.Begin, Control.GrowDirection.End);
         AddGameplay(mini);
-        var panel = UiTheme.Panel();
-        panel.AddThemeStyleboxOverride("panel", UiTheme.Glass(10, 0.72f));
-        Place(panel, 1f, 0f, -18f, 18f, Control.GrowDirection.Begin, Control.GrowDirection.End);
-        var h = new HBoxContainer();
-        h.AddThemeConstantOverride("separation", 10);
-        panel.AddChild(h);
-        _phaseIcon = UiTheme.IconRect("sun", 34f);
+        // Clock under the minimap: no frame, centred on its width.
+        var h = new HBoxContainer { Alignment = BoxContainer.AlignmentMode.Center, CustomMinimumSize = new Vector2(176f, 0f), MouseFilter = Control.MouseFilterEnum.Ignore };
+        h.AddThemeConstantOverride("separation", 6);
+        Place(h, 1f, 0f, -18f, 200f, Control.GrowDirection.Begin, Control.GrowDirection.End);
+        _phaseIcon = UiTheme.IconRect("sun", 22f);
         h.AddChild(_phaseIcon);
-        _clockLabel = UiTheme.Label("", 28);
+        _clockLabel = UiTheme.Label("", 19);
         _clockLabel.VerticalAlignment = VerticalAlignment.Center;
+        _clockLabel.AddThemeConstantOverride("outline_size", 5);
+        _clockLabel.AddThemeColorOverride("font_outline_color", new Color(0f, 0f, 0f, 0.85f));
         h.AddChild(_clockLabel);
-        _rainIcon = UiTheme.IconRect("rain", 30f);
+        _rainIcon = UiTheme.IconRect("rain", 20f);
         _rainIcon.TooltipText = "ฝนตก";
         h.AddChild(_rainIcon);
-        AddGameplay(panel);
+        AddGameplay(h);
     }
 
     // Quest tracker on the left, middle of the screen: pinned quests (or the active ones), collapsible.
@@ -851,30 +851,70 @@ public partial class Hud : CanvasLayer
     VBoxContainer _dlgOptions;
     Npc _dlgNpc;
 
+    // What a left click anywhere does while talking: the next line, or closing a plain greeting.
+    // Null while a question is waiting for an answer.
+    System.Action _dlgAdvance;
+    Label _dlgHint;
+
     void BuildDialogue()
     {
-        var panel = new PanelContainer { MouseFilter = Control.MouseFilterEnum.Stop, Visible = false, CustomMinimumSize = new Vector2(660f, 0f) };
-        panel.AddThemeStyleboxOverride("panel", UiTheme.Glass(14, 0.74f));
-        Place(panel, 0.5f, 1f, 0f, -140f, Control.GrowDirection.Both, Control.GrowDirection.Begin);
-        var v = new VBoxContainer();
-        v.AddThemeConstantOverride("separation", 8);
+        // A full-screen catcher so a click anywhere moves the conversation on; the box sits at the bottom.
+        var root = new Control { MouseFilter = Control.MouseFilterEnum.Stop, Visible = false };
+        root.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
+        root.GuiInput += e =>
+        {
+            if (e is InputEventMouseButton { Pressed: true, ButtonIndex: MouseButton.Left } && _dlgAdvance != null)
+            {
+                var a = _dlgAdvance;
+                _dlgAdvance = null;
+                a();
+                root.AcceptEvent();
+            }
+        };
+        var bottom = new MarginContainer { MouseFilter = Control.MouseFilterEnum.Pass };
+        bottom.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
+        bottom.AddThemeConstantOverride("margin_bottom", 120);
+        root.AddChild(bottom);
+        var panel = new PanelContainer
+        {
+            MouseFilter = Control.MouseFilterEnum.Pass,
+            CustomMinimumSize = new Vector2(820f, 0f),
+            SizeFlagsHorizontal = Control.SizeFlags.ShrinkCenter,
+            SizeFlagsVertical = Control.SizeFlags.ShrinkEnd,
+        };
+        panel.AddThemeStyleboxOverride("panel", UiTheme.Glass(16, 0.93f));
+        bottom.AddChild(panel);
+        var v = new VBoxContainer { MouseFilter = Control.MouseFilterEnum.Pass };
+        v.AddThemeConstantOverride("separation", 10);
         panel.AddChild(v);
-        var header = new HBoxContainer();
-        _dlgName = UiTheme.Label("", 19, UiTheme.Gold);
+        var header = new HBoxContainer { MouseFilter = Control.MouseFilterEnum.Pass };
+        _dlgName = UiTheme.Label("", 23, UiTheme.Gold);
         header.AddChild(_dlgName);
-        header.AddChild(new Control { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill });
+        header.AddChild(new Control { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill, MouseFilter = Control.MouseFilterEnum.Pass });
         header.AddChild(UiTheme.KeyChip("Esc", ""));
         v.AddChild(header);
         v.AddChild(UiTheme.Dashed(8f));
-        _dlgText = UiTheme.Label("", 16, Colors.White);
+        _dlgText = UiTheme.Label("", 21, Colors.White);
         _dlgText.AutowrapMode = TextServer.AutowrapMode.WordSmart;
-        _dlgText.CustomMinimumSize = new Vector2(630f, 40f);
+        _dlgText.CustomMinimumSize = new Vector2(780f, 56f);
+        _dlgText.AddThemeConstantOverride("outline_size", 4);
+        _dlgText.AddThemeColorOverride("font_outline_color", new Color(0f, 0f, 0f, 0.9f));
+        _dlgText.AddThemeConstantOverride("line_spacing", 4);
         v.AddChild(_dlgText);
-        _dlgOptions = new VBoxContainer();
-        _dlgOptions.AddThemeConstantOverride("separation", 6);
+        _dlgOptions = new VBoxContainer { MouseFilter = Control.MouseFilterEnum.Pass };
+        _dlgOptions.AddThemeConstantOverride("separation", 7);
         v.AddChild(_dlgOptions);
-        _root.AddChild(panel);
-        _windows["dialogue"] = new Window { Root = panel, Body = v };
+        _dlgHint = UiTheme.Label("", 13, UiTheme.Muted);
+        _dlgHint.HorizontalAlignment = HorizontalAlignment.Right;
+        v.AddChild(_dlgHint);
+        _root.AddChild(root);
+        _windows["dialogue"] = new Window { Root = root, Body = v };
+    }
+
+    void SetAdvance(System.Action advance, string hint)
+    {
+        _dlgAdvance = advance;
+        _dlgHint.Text = advance != null ? hint : "เลือกคำตอบด้านบน";
     }
 
     public void ShowDialogue(Npc npc)
@@ -891,8 +931,8 @@ public partial class Hud : CanvasLayer
     {
         var b = UiTheme.Button(text, action, 0f);
         b.Alignment = HorizontalAlignment.Left;
-        b.CustomMinimumSize = new Vector2(0f, 32f);
-        b.AddThemeFontSizeOverride("font_size", 15);
+        b.CustomMinimumSize = new Vector2(0f, 42f);
+        b.AddThemeFontSizeOverride("font_size", 19);
         if (primary)
             b.AddThemeColorOverride("font_color", UiTheme.Gold);
         _dlgOptions.AddChild(b);
@@ -940,6 +980,7 @@ public partial class Hud : CanvasLayer
                         DialogueMenu("ฝากด้วยนะ");
                     }, true);
                     Option("ไว้ก่อน", () => DialogueMenu(_dlgNpc.Greeting()));
+                    SetAdvance(null, "");
                 }), true);
         }
         if (id == "lung_man")
@@ -947,6 +988,8 @@ public partial class Hud : CanvasLayer
         if (id == "khon_khap")
             Option("▸  นั่งรถเมล์สายสุดท้าย", () => { CloseWindows(); Game.Main.ShowBusMenu("wiang_mok"); });
         Option("ลาก่อน", () => CloseWindows());
+        // Nothing to choose but goodbye: a click closes the conversation.
+        SetAdvance(_dlgOptions.GetChildCount() == 1 ? () => CloseWindows() : null, "คลิกเพื่อปิด");
     }
 
 
@@ -965,6 +1008,7 @@ public partial class Hud : CanvasLayer
             Option(label, () => { CloseWindows(); a(); }, true);
         }
         Option("ปิด", () => CloseWindows());
+        SetAdvance(null, "");
     }
 
     // Fades to black with a line of text, runs `during` while hidden, then fades back.
@@ -999,6 +1043,7 @@ public partial class Hud : CanvasLayer
         _dlgText.Text = lines[index];
         ClearOptions();
         Option(index + 1 < lines.Count ? "ต่อไป ▸" : "▸", () => Say(lines, then, index + 1), true);
+        SetAdvance(() => Say(lines, then, index + 1), "คลิกเพื่อไปต่อ");
     }
 
     // ---------- overlays ----------
@@ -1038,10 +1083,12 @@ public partial class Hud : CanvasLayer
         dim.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
         _root.AddChild(dim);
         _nameDialog = dim;
+        var center = new CenterContainer();
+        center.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
+        dim.AddChild(center);
         var panel = UiTheme.Panel();
         panel.CustomMinimumSize = new Vector2(440f, 0f);
-        dim.AddChild(panel);
-        panel.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.Center, Control.LayoutPresetMode.Minsize);
+        center.AddChild(panel);
         var col = new VBoxContainer();
         col.AddThemeConstantOverride("separation", 12);
         panel.AddChild(col);

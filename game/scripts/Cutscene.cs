@@ -166,6 +166,15 @@ public partial class Cutscene : Node
 
         float t = Mathf.SmoothStep(0f, 1f, Mathf.Clamp(_shotTime / Mathf.Max(0.1f, s.Duration), 0f, 1f));
         var pos = GameData.ToV3(s.From).Lerp(GameData.ToV3(s.To), t);
+        if (s.Orbit > 0f)
+        {
+            // Circle the focus point like a drone, starting from the From side and climbing as it goes.
+            var look = GameData.ToV3(s.Look);
+            var start = GameData.ToV3(s.From) - look;
+            float a = Mathf.Atan2(start.Z, start.X) + Mathf.DegToRad(s.OrbitDegrees) * t;
+            float y = Mathf.Lerp(s.From[1], s.To[1], t);
+            pos = new Vector3(look.X + Mathf.Cos(a) * s.Orbit, y, look.Z + Mathf.Sin(a) * s.Orbit);
+        }
         _cam.GlobalTransform = new Transform3D(Basis.Identity, pos).LookingAt(GameData.ToV3(s.Look), Vector3.Up);
         if (_prop != null)
             _prop.Position = GameData.ToV3(s.PropAt) + Vector3.Up * Mathf.Sin(_shotTime * 1.6f) * 0.25f;

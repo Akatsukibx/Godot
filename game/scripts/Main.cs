@@ -107,11 +107,11 @@ public partial class Main : Node3D
             scene.Position = zone.Center;
             AddChild(scene);
         }
-        Textures.Apply(this);
         WorldBuilder.ApplyDistanceCulling(this);
         AddChild(WorldBuilder.BuildRice(GetTree().GetNodesInGroup("map_plot").OfType<Node3D>()));
         AddChild(WorldBuilder.BuildForest(WorldBuilder.WorldBounds()));
         AddChild(WorldBuilder.BuildLilies(GetTree().GetNodesInGroup("lily_field").OfType<Node3D>()));
+        Textures.Apply(this);
         foreach (var shrine in GetTree().GetNodesInGroup("shrine").OfType<Node3D>())
             _shrines[(string)shrine.GetMeta("shrine_id")] = shrine;
         foreach (var stop in GetTree().GetNodesInGroup("bus_stop").OfType<Node3D>())
@@ -132,7 +132,7 @@ public partial class Main : Node3D
             var npc = new Npc();
             AddChild(npc);
             npc.Init(def);
-            npc.GlobalPosition = zone.Center + new Vector3(def.X, zone.Scene == "bueng_bua" ? Mathf.Max(0f, WorldBuilder.BuengHeight(def.X, def.Z)) : 0f, def.Z);
+            npc.GlobalPosition = zone.Center + new Vector3(def.X, def.Y != 0f ? def.Y : zone.Scene == "bueng_bua" ? Mathf.Max(0f, WorldBuilder.BuengHeight(def.X, def.Z)) : 0f, def.Z);
             _npcs.Add(npc);
         }
     }
@@ -150,6 +150,12 @@ public partial class Main : Node3D
             var g = WorldBuilder.BuildGrass(zone, GetTree(), density, water);
             AddChild(g);
             _grass.Add(g);
+            // Woodland and undergrowth, as dense as the graphics preset allows.
+            var wild = WorldBuilder.BuildWilds(zone, GetTree(), Settings.Graphics switch { 0 => 0.35f, 1 => 0.7f, _ => 1f }, water,
+                GameData.Npcs.Values.Where(n => n.Zone == zone.Id).Select(n => zone.Center + new Vector3(n.X, 0f, n.Z)));
+            AddChild(wild);
+            Textures.Apply(wild);
+            _grass.Add(wild);
         }
     }
 

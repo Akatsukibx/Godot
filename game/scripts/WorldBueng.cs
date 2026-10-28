@@ -13,9 +13,13 @@ public static partial class WorldBuilder
     static readonly (Vector2 c, float r, float level)[] BuengBlobs =
     {
         (new(-30f, 140f), 26f, 0.35f), (new(-95f, 60f), 34f, 0.38f), (new(70f, 20f), 22f, 0.36f),
-        (new(-110f, -110f), 40f, 0.34f), (new(90f, -120f), 30f, 0.36f), (new(25f, 166f), 20f, 0.3f),
+        (new(-110f, -110f), 40f, 0.34f), (new(90f, -120f), 30f, 0.36f), (new(18f, 158f), 12f, 0.32f),
         (new(-150f, 10f), 10f, 0.3f), (new(140f, 90f), 12f, 0.3f), (new(-40f, -150f), 9f, 0.3f), (new(150f, -40f), 11f, 0.3f),
         (new(-20f, 62f), 8f, 0.3f), (new(40f, -92f), 9f, 0.3f), (new(120f, 150f), 12f, 0.3f), (new(-150f, 150f), 14f, 0.3f),
+        (new(58f, -150f), 12f, 0.32f), (new(-60f, -20f), 16f, 0.32f), (new(40f, 62f), 14f, 0.32f), (new(120f, -80f), 15f, 0.32f),
+        (new(-150f, -110f), 14f, 0.3f), (new(0f, -92f), 13f, 0.32f), (new(-82f, 140f), 12f, 0.3f), (new(100f, 112f), 15f, 0.32f),
+        (new(-30f, 30f), 10f, 0.3f), (new(135f, -150f), 12f, 0.3f), (new(-125f, 105f), 11f, 0.3f), (new(-160f, 60f), 10f, 0.3f),
+        (new(75f, 160f), 11f, 0.3f), (new(-40f, -110f), 10f, 0.3f), (new(155f, 40f), 10f, 0.3f), (new(30f, -40f), 9f, 0.3f),
         (new(10f, -20f), 65f, -0.55f), (new(-60f, 20f), 30f, -0.7f), (new(40f, 110f), 28f, -0.6f),
         (new(-140f, -40f), 26f, -0.65f), (new(130f, 40f), 30f, -0.6f), (new(-5f, 115f), 22f, -0.75f),
     };
@@ -32,10 +36,32 @@ public static partial class WorldBuilder
             float d = new Vector2(x, z).DistanceTo(c) + n * r * 0.3f;
             h = Mathf.Max(h, Mathf.Lerp(BuengDeep, level, Mathf.SmoothStep(r, r * 0.65f, d)));
         }
-        float edge = Mathf.Min(Half - Mathf.Abs(x), Half - Mathf.Abs(z));
+        // Banks along the east, west and north edges; the south edge stays open water that runs on
+        // into the lagoon, matching its depth at the seam.
+        float edge = Mathf.Min(Half - Mathf.Abs(x), Half + z);
         h = Mathf.Max(h, Mathf.Lerp(BuengDeep, 0.12f, Mathf.SmoothStep(16f, 5f, edge)));
-        h = Mathf.Max(h, Mathf.Lerp(BuengDeep, 0.12f, Mathf.SmoothStep(150f, 168f, z)));
+        if (h < 0f)
+            h = Mathf.Lerp(h, -1.9f, Mathf.SmoothStep(170f, Half, z));
         return h;
+    }
+
+    // Map image of the marsh: islands drawn in their real shapes (1 px = 2 m), water left clear.
+    static ImageTexture _buengMap;
+
+    public static ImageTexture BuengMapTexture()
+    {
+        if (_buengMap != null)
+            return _buengMap;
+        int n = (int)Half;
+        var img = Image.CreateEmpty(n, n, false, Image.Format.Rgba8);
+        for (int y = 0; y < n; y++)
+        for (int x = 0; x < n; x++)
+        {
+            float h = BuengHeight(-Half + (x + 0.5f) * 2f, -Half + (y + 0.5f) * 2f);
+            img.SetPixel(x, y, h > 0.02f ? new Color(0.16f, 0.2f, 0.13f) : h > -0.8f ? new Color(0.11f, 0.22f, 0.3f) : new Color(0.08f, 0.17f, 0.25f));
+        }
+        _buengMap = ImageTexture.CreateFromImage(img);
+        return _buengMap;
     }
 
     static Vector3 OnGround(float x, float z) => new(x, Mathf.Max(0f, BuengHeight(x, z)), z);
@@ -93,16 +119,11 @@ public static partial class WorldBuilder
         var body = Shapes.Child(ground, new StaticBody3D { CollisionLayer = Layers.World, CollisionMask = 0 }, "TerrainCollider");
         Shapes.Child(body, new CollisionShape3D { Shape = mesh.CreateTrimeshShape() });
 
-        // Islands on the map (approximate squares; the water fills the rest).
-        foreach (var (c, r, level) in BuengBlobs.Where(b => b.level > 0f))
-            Shapes.MapTag(Shapes.Group(ground, "Island", new Vector3(c.X, 0f, c.Y)), "map_land", new Vector2(r * 1.5f, r * 1.5f));
-        Shapes.MapTag(Shapes.Group(ground, "SouthShore", new Vector3(0f, 0f, 176f)), "map_land", new Vector2(Half * 2f, 20f));
     }
 
     static void BuildBuengWater(Node3D world)
     {
         var water = Shapes.Group(world, "Marsh");
-        Shapes.MapTag(water, "map_water", new Vector2(Half * 2f, Half * 2f));
         water.AddToGroup("water_area", true);
         var surface = Shapes.Child(water, new MeshInstance3D
         {
@@ -148,7 +169,13 @@ public static partial class WorldBuilder
         new Vector3[] { new(-95f, 0f, 60f), new(-116f, 0f, 2f), new(-110f, 0f, -100f) },
         new Vector3[] { new(70f, 0f, 20f), new(98f, 0f, -48f), new(90f, 0f, -110f) },
         new Vector3[] { new(30f, 0f, 42f), new(8f, 0f, -18f), new(-44f, 0f, -62f), new(-100f, 0f, -104f) },
-        new Vector3[] { new(-6f, 0f, 160f), new(25f, 0f, 168f) },
+        new Vector3[] { new(-6f, 0f, 160f), new(14f, 0f, 158f) },
+        new Vector3[] { new(90f, 0f, -110f), new(72f, 0f, -138f), new(58f, 0f, -150f) },
+        new Vector3[] { new(30f, 0f, 42f), new(40f, 0f, 62f), new(70f, 0f, 92f), new(100f, 0f, 112f) },
+        new Vector3[] { new(8f, 0f, -18f), new(0f, 0f, -92f), new(-40f, 0f, -110f) },
+        new Vector3[] { new(-44f, 0f, -62f), new(-60f, 0f, -20f), new(-30f, 0f, 30f) },
+        new Vector3[] { new(-116f, 0f, 2f), new(-160f, 0f, 60f) },
+        new Vector3[] { new(98f, 0f, -48f), new(120f, 0f, -80f) },
     };
 
     static void BuildBoardwalks(Node3D world)
@@ -159,6 +186,7 @@ public static partial class WorldBuilder
         {
             var pts = route.Length == 2 ? route.ToList() : Meander(route, 7f, 6f);
             var walk = Shapes.Group(root, $"Walk{k++}");
+            DeckRibbon(walk, pts, 2.2f, Wood.Darkened(_rng.RandfRange(0f, 0.1f)));
             for (int i = 0; i < pts.Count - 1; i++)
             {
                 var a = pts[i];
@@ -166,35 +194,64 @@ public static partial class WorldBuilder
                 var d = b - a;
                 float len = d.Length();
                 var mid = (a + b) * 0.5f;
-                var seg = Shapes.Group(walk, "Segment", new Vector3(mid.X, 0f, mid.Z), Mathf.Atan2(d.X, d.Z));
-                Shapes.MapTag(seg, "map_deck", new Vector2(2.2f, len));
-                Shapes.Box(seg, new Vector3(0f, DeckTop - 0.08f, 0f), new Vector3(2.2f, 0.16f, len + 0.25f), Wood.Darkened(_rng.RandfRange(0f, 0.12f)), 0f, "Planks");
-                Shapes.Solid(seg, new Vector3(0f, DeckTop - 0.1f, 0f), new Vector3(2.2f, 0.2f, len + 0.25f), "DeckCollider");
-                for (float t = -len * 0.5f + 0.45f; t < len * 0.5f; t += 0.55f)
-                    Shapes.Box(seg, new Vector3(0f, DeckTop + 0.001f, t), new Vector3(2.2f, 0.004f, 0.03f), DarkWood, 0f, "Seam");
-                foreach (var side in new[] { -1f, 1f })
-                {
-                    float bed = BuengHeight(a.X, a.Z);
-                    float top = DeckTop - 0.1f;
-                    if (bed < top - 0.1f)
-                        Shapes.Cylinder(seg, new Vector3(side * 1f, (top + bed - 0.3f) * 0.5f, -len * 0.5f), 0.09f, 0.1f, top - bed + 0.3f, DarkWood, 0f, "Piling");
-                }
+                // Map and grass outline per segment (no mesh of its own).
+                Shapes.MapTag(Shapes.Group(walk, "Segment", new Vector3(mid.X, 0f, mid.Z), Mathf.Atan2(d.X, d.Z)), "map_deck", new Vector2(2.2f, len));
+                var right = new Vector3(d.Z, 0f, -d.X) / len;
+                float bed = BuengHeight(a.X, a.Z);
+                float top = DeckTop - 0.16f;
+                if (bed < top - 0.1f)
+                    foreach (var side in new[] { -1f, 1f })
+                    {
+                        var p = a + right * side * 1f;
+                        Shapes.Cylinder(walk, new Vector3(p.X, (top + bed - 0.3f) * 0.5f, p.Z), 0.09f, 0.1f, top - bed + 0.3f, DarkWood, 0f, "Piling");
+                    }
                 AddRoad(a, b, 1.1f);
-                if (i > 0)
-                {
-                    // A round landing at every bend so the walk has no notches to catch on.
-                    Shapes.Cylinder(walk, new Vector3(a.X, DeckTop - 0.08f, a.Z), 1.15f, 1.15f, 0.16f, Wood.Darkened(0.06f), 0f, "Planks");
-                    var joint = Shapes.Child(walk, new StaticBody3D { CollisionLayer = Layers.World, CollisionMask = 0, Position = new Vector3(a.X, DeckTop - 0.1f, a.Z) }, "JointCollider");
-                    Shapes.Child(joint, new CollisionShape3D { Shape = new CylinderShape3D { Radius = 1.15f, Height = 0.2f } });
-                }
                 if (i % 5 == 2)
                 {
                     float side = lamp++ % 2 == 0 ? 1.25f : -1.25f;
-                    var right = new Vector3(d.Z, 0f, -d.X) / len;
                     LanternPost(walk, $"WalkLantern{lamp}", new Vector3(mid.X, DeckTop, mid.Z) + right * side, 2.4f, lamp % 3 == 0);
                 }
             }
         }
+    }
+
+    // One continuous deck along a winding line: a mitred ribbon (top and edges) with a matching
+    // trimesh collider, so there are no overlapping planks or notches at the bends.
+    static void DeckRibbon(Node3D parent, List<Vector3> pts, float width, Color color)
+    {
+        var st = new SurfaceTool();
+        st.Begin(Mesh.PrimitiveType.Triangles);
+        var left = new List<Vector3>();
+        var right = new List<Vector3>();
+        for (int i = 0; i < pts.Count; i++)
+        {
+            var dIn = i > 0 ? (pts[i] - pts[i - 1]).Normalized() : (pts[1] - pts[0]).Normalized();
+            var dOut = i < pts.Count - 1 ? (pts[i + 1] - pts[i]).Normalized() : dIn;
+            var nIn = new Vector3(dIn.Z, 0f, -dIn.X);
+            var miter = (nIn + new Vector3(dOut.Z, 0f, -dOut.X)).Normalized();
+            float scale = 1f / Mathf.Max(0.5f, miter.Dot(nIn)); // keep the width constant through bends
+            var p = new Vector3(pts[i].X, DeckTop, pts[i].Z);
+            right.Add(p + miter * width * 0.5f * scale);
+            left.Add(p - miter * width * 0.5f * scale);
+        }
+        const float thick = 0.16f;
+        void Quad(Vector3 a, Vector3 b, Vector3 c, Vector3 d)
+        {
+            foreach (var v in new[] { a, b, c, a, c, d })
+                st.AddVertex(v);
+        }
+        var down = Vector3.Down * thick;
+        for (int i = 0; i < pts.Count - 1; i++)
+        {
+            Quad(left[i], right[i], right[i + 1], left[i + 1]);
+            Quad(right[i], right[i] + down, right[i + 1] + down, right[i + 1]);
+            Quad(left[i + 1], left[i + 1] + down, left[i] + down, left[i]);
+        }
+        st.GenerateNormals();
+        var mesh = st.Commit();
+        Shapes.Child(parent, new MeshInstance3D { Mesh = mesh, MaterialOverride = Shapes.Material(color) }, "Planks");
+        var body = Shapes.Child(parent, new StaticBody3D { CollisionLayer = Layers.World, CollisionMask = 0 }, "DeckCollider");
+        Shapes.Child(body, new CollisionShape3D { Shape = mesh.CreateTrimeshShape() });
     }
 
     // A small fishing hamlet on the western island: stilt houses facing a yard, with paths to the boardwalk.
@@ -229,13 +286,21 @@ public static partial class WorldBuilder
     {
         var s = Shapes.Group(world, "Sights");
 
-        // Shrine and signpost where the boardwalk from the lagoon arrives.
-        var shrine = Shapes.Group(s, "ShrineBueng", OnGround(25f, 172f));
-        PhraPhumShrine(shrine, "bueng_bua", "ศาลริมบึง");
-        Occupy(new Vector3(25f, 0f, 172f), 3f);
-        Sanctuary(s, new Vector3(25f, 0f, 172f), 16f);
-        _landmarks.Add((new Vector2(25f, 172f), 16f));
-        SignPost(s, OnGround(-9f, 170f), ("ทุ่งนาหุ่นไล่กา", new Vector3(0.2f, 0f, 1f)), ("หมู่บ้านชาวบึง", new Vector3(-1f, 0f, -0.7f)),
+        // Shrines to bind at: the islet where the boardwalk from the lagoon arrives, the fishing
+        // hamlet, the ruined sala and an islet within reach of the ตะเคียน.
+        void BuengShrine(string id, string label, float x, float z)
+        {
+            var shrine = Shapes.Group(s, $"Shrine_{id}", OnGround(x, z));
+            PhraPhumShrine(shrine, id, label);
+            Occupy(new Vector3(x, 0f, z), 3f);
+            Sanctuary(s, new Vector3(x, 0f, z), 12f);
+            _landmarks.Add((new Vector2(x, z), 12f));
+        }
+        BuengShrine("bueng_bua", "ศาลริมบึง", 22f, 156f);
+        BuengShrine("bueng_village", "ศาลชาวบึง", -106f, 50f);
+        BuengShrine("bueng_sala", "ศาลข้างศาลาร้าง", 62f, 30f);
+        BuengShrine("bueng_takian", "ศาลเกาะไผ่", 58f, -150f);
+        SignPost(s, OnGround(9f, 152f), ("ทุ่งนาหุ่นไล่กา", new Vector3(0.2f, 0f, 1f)), ("หมู่บ้านชาวบึง", new Vector3(-1f, 0f, -0.7f)),
             ("ศาลาร้างกลางบึง", new Vector3(1f, 0f, -1.2f)));
 
         // ศาลาร้าง: a ruined sala and a broken chedi on the eastern island.

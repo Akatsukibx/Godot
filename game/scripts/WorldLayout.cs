@@ -283,7 +283,7 @@ public static partial class WorldBuilder
     {
         var roads = Shapes.Group(world, "Roads");
         Sanctuary(world, Vector3.Zero, 30f);
-        Sanctuary(world, new Vector3(0f, 0f, ThungNaShoreZ - 8f), 30f);
+        Sanctuary(world, new Vector3(0f, 0f, ThungNaShoreZ - 22f), 42f);
         foreach (var h in HamletCenters)
             Sanctuary(world, h, 32f);
         foreach (var c in ForestPatches)
