@@ -109,5 +109,80 @@
     ],
     "story": "คนเดินทางที่ตกคันนาตายกลางพายุ ไม่มีใครทำบุญไปให้ จึงเดินวนหาทางกลับบ้านทั้งวันทั้งคืน แพ้ของที่ผ่านการปลุกเสก",
     "releaseText": "บ้านอยู่ทางนั้น... ขอบใจที่ชี้ทางให้"
+  },
+
+  // ---------- บึงบัวสาย (Lv 15–25): ผีน้ำ ไม่ซ้ำกับโซนอื่น ----------
+  {
+    "id": "phi_phrai", "name": "ผีพราย", "behavior": "chaser", "aquatic": true, "color": "#7fd6c0",
+    "maxHp": 110, "speed": 3.4, "damage": 16, "attackRange": 3.2, "attackCooldown": 1.5, "aggroRange": 14, "exp": 34,
+    "activeAtDay": true, "despawnAtDawn": false, "spawnWeightDay": 2, "spawnWeightNight": 3,
+    "weakness": { "rice": 1.6, "fire": 0.6, "blessed": 1.2 },
+    "drops": [
+      { "item": "sai_bua", "chance": 0.35 },
+      { "item": "khi_phueng", "chance": 0.2 },
+      { "item": "namkhang_ratri", "chance": 0.05, "nightOnly": true },
+      { "item": "ya_hom_yai", "chance": 0.06 }
+    ],
+    "story": "หญิงสาวที่จมน้ำในบึงเมื่อหลายสิบปีก่อน อยู่ได้แต่ในน้ำ คอยดึงขาคนที่เดินใกล้ริมสะพาน",
+    "releaseText": "น้ำมันเย็นเหลือเกิน... ขอบใจที่ดึงฉันขึ้นมา"
+  },
+  {
+    "id": "phi_krahang", "name": "ผีกระหัง", "behavior": "chaser", "flying": true, "color": "#c9a46a",
+    "maxHp": 120, "speed": 4.6, "damage": 17, "attackRange": 1.9, "attackCooldown": 1.2, "aggroRange": 18, "exp": 36,
+    "activeAtDay": false, "despawnAtDawn": false, "spawnWeightDay": 0, "spawnWeightNight": 3,
+    "weakness": { "fire": 1.5, "rice": 1.0, "blessed": 1.2 },
+    "drops": [
+      { "item": "takiang_pong", "chance": 0.3 },
+      { "item": "lek_nam_phi", "chance": 0.2 },
+      { "item": "phlueak_winyan", "chance": 0.08, "minLevel": 18 },
+      { "item": "set_tra_phanuek", "chance": 0.02, "minLevel": 20 }
+    ],
+    "story": "ชายที่เล่นของจนกลายเป็นผี ใช้กระด้งต่างปีก สากต่างหาง บินข้ามบึงหาของคาวกินกลางดึก",
+    "releaseText": "วิชาที่ร่ำเรียนมา... สุดท้ายก็กินตัวเอง"
+  },
+  {
+    "id": "nang_tani", "name": "นางตานี", "behavior": "brute", "color": "#8fcf7a",
+    "maxHp": 150, "speed": 2.8, "damage": 21, "attackRange": 2.0, "attackCooldown": 1.5, "aggroRange": 13, "exp": 40,
+    "activeAtDay": false, "despawnAtDawn": false, "spawnWeightDay": 0, "spawnWeightNight": 2,
+    "weakness": { "blessed": 1.7, "fire": 1.1, "rice": 0.9 },
+    "drops": [
+      { "item": "bai_tani", "chance": 0.35 },
+      { "item": "pha_yan_kao", "chance": 0.2 },
+      { "item": "saeng_winyan", "chance": 0.12 },
+      { "item": "set_tra_phanuek", "chance": 0.02, "minLevel": 20 }
+    ],
+    "story": "ผีนางในดงกล้วยตานีบนเกาะกลางบึง ชุดเขียวเหมือนใบตอง ใครตัดต้นกล้วยของนางจะถูกตามไม่เลิก",
+    "releaseText": "ต้นกล้วยของฉันยังอยู่... ขอบใจที่ไม่ตัดมัน"
+  },
+
+  // ---------- บอสประจำโซน (เกิดที่รังของตัวเอง ดู "boss" ใน zones.json) ----------
+  {
+    "id": "boss_hun_yak", "name": "หุ่นไล่กายักษ์", "behavior": "brute", "boss": true, "scale": 2.3, "color": "#6a3a24",
+    "maxHp": 900, "speed": 3.4, "damage": 26, "attackRange": 3.4, "attackCooldown": 2.2, "aggroRange": 22, "exp": 420,
+    "activeAtDay": true, "despawnAtDawn": false, "spawnWeightDay": 0, "spawnWeightNight": 0,
+    "weakness": { "fire": 1.8, "rice": 0.8, "blessed": 1.0 },
+    "drops": [
+      { "item": "fang_sap", "chance": 1 },
+      { "item": "khao_rueang", "chance": 0.6 },
+      { "item": "namkhang_ratri", "chance": 0.4 },
+      { "item": "set_tra_phanuek", "chance": 0.35 },
+      { "item": "takrut", "chance": 0.15 }
+    ],
+    "story": "หุ่นไล่กาตัวแรกของทุ่ง ชาวนาทั้งหมู่บ้านช่วยกันสาน วิญญาณที่ติดในหุ่นตัวเล็กทั้งหมดไหลมารวมกันที่นี่",
+    "releaseText": "ข้าวปีนี้... ยังเกี่ยวทันอยู่ใช่ไหม"
+  },
+  {
+    "id": "boss_krasue", "name": "กระสือแม่บัว", "behavior": "chaser", "boss": true, "flying": true, "scale": 2.0, "color": "#ff4a3a",
+    "maxHp": 1600, "speed": 4.2, "damage": 34, "attackRange": 3.0, "attackCooldown": 1.9, "aggroRange": 24, "exp": 900,
+    "activeAtDay": false, "despawnAtDawn": false, "spawnWeightDay": 0, "spawnWeightNight": 0,
+    "weakness": { "fire": 0.7, "rice": 1.5, "blessed": 1.8 },
+    "drops": [
+      { "item": "phom_krasue", "chance": 1 },
+      { "item": "phlueak_winyan", "chance": 0.6 },
+      { "item": "set_tra_phanuek", "chance": 0.6 },
+      { "item": "waen_phirot", "chance": 0.2 }
+    ],
+    "story": "แม่บัว หญิงหมอยาริมบึงที่ชาวบ้านกล่าวหาว่าเป็นกระสือจนถูกไล่ลงน้ำตาย ความแค้นทำให้คำกล่าวหากลายเป็นจริง",
+    "releaseText": "มีคนเชื่อแล้ว... ว่าฉันไม่ได้ทำ"
   }
 ]

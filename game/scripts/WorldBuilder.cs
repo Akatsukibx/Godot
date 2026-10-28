@@ -55,6 +55,17 @@ public static partial class WorldBuilder
     {
         _rng = new RandomNumberGenerator { Seed = 1100 };
         var city = new Node3D { Name = "Zone_WiangMok" };
+        ResetLayout();
+        foreach (var line in StreetLines)
+        {
+            AddRoad(new Vector3(line, 0f, -Wall), new Vector3(line, 0f, Wall), StreetWidth(line) * 0.5f);
+            AddRoad(new Vector3(-Wall, 0f, line), new Vector3(Wall, 0f, line), StreetWidth(line) * 0.5f);
+        }
+        Occupy(Vector3.Zero, 16f);
+        Occupy(new Vector3(34f, 0f, -36f), 21f);
+        foreach (var n in GameData.Npcs.Values.Where(n => n.Zone == "wiang_mok"))
+            Occupy(new Vector3(n.X, 0f, n.Z), n.Activity == "wander" ? n.WanderRadius + 1f : 2.5f);
+        Occupy(new Vector3(-1.9f, 0f, 22f), 5.5f);
 
         var ground = Shapes.Group(city, "Ground");
         Shapes.Add(ground, new PlaneMesh { Size = new Vector2(Half * 2f, Half * 2f) }, Vector3.Zero, GroundGreen, 0f, "Grass");
@@ -73,7 +84,7 @@ public static partial class WorldBuilder
         BuildStreetLife(city);
         BuildTemple(city, new Vector3(34f, 0f, -36f));
         BuildBus(city, new Vector3(-1.9f, 0f, 22f));
-        BusStop(city, "BusStopCity", new Vector3(-7.4f, 0f, 30f), -Mathf.Pi * 0.5f, "wiang_mok", "ลานศาลหลักเมือง");
+        BusStop(city, "BusStopCity", new Vector3(-7.4f, 0f, 31.4f), -Mathf.Pi * 0.5f, "wiang_mok", "ลานศาลหลักเมือง");
         YaiJanHouse(city, new Vector3(25f, 0f, 25f));
         CitySigns(city);
         Smithy(city, new Vector3(-20f, 0f, -12f));
@@ -273,6 +284,7 @@ public static partial class WorldBuilder
     // Two-storey wooden shophouse (ห้องแถวไม้): folding plank doors, balcony, gable facing the street.
     static void Shophouse(Node3D parent, string name, Vector3 pos, float yaw, int variant)
     {
+        Occupy(pos, 4.8f);
         var h = Shapes.Group(parent, name, pos, yaw);
         Shapes.MapTag(h, "map_house", new Vector2(5.8f, 7.6f));
         var wood = Wood.Lightened((variant % 4) * 0.04f - 0.04f);
@@ -308,29 +320,46 @@ public static partial class WorldBuilder
         Shapes.Solid(h, new Vector3(0f, storey, 0.2f), new Vector3(w, storey * 2f, d - 0.4f));
     }
 
-    // โรงตีเหล็กลุงมั่น: open forge shed with a chimney and smoke, anvil, weapon rack and quench trough.
+    // โรงตีเหล็กลุงมั่น: a proper blacksmith's house. A tiled gable roof covers a forge hall open at the
+    // front; a brick forge is built into the back wall with its chimney, plus bellows, an anvil, racks
+    // of swords, knives and sickles, a coal heap, a quench trough and a shop sign.
     static void Smithy(Node3D parent, Vector3 pos)
     {
+        Occupy(pos, 9f);
         var s = Shapes.Group(parent, "SmithyLungMan", pos, Mathf.Pi);
-        Shapes.MapTag(s, "map_house", new Vector2(9f, 9f));
-        Shapes.Box(s, new Vector3(0f, 0.04f, 0f), new Vector3(9f, 0.08f, 9f), Stone.Darkened(0.2f), 0f, "Floor");
-        Shapes.Box(s, new Vector3(0f, 1.8f, 3.6f), new Vector3(8.6f, 3.6f, 1.2f), DarkWood, 0f, "BackWall");
-        Shapes.Solid(s, new Vector3(0f, 1.8f, 3.6f), new Vector3(8.6f, 3.6f, 1.2f));
-        foreach (var x in new[] { -4.2f, 0f, 4.2f })
-            Shapes.Box(s, new Vector3(x, 1.8f, -3.8f), new Vector3(0.25f, 3.6f, 0.25f), DarkWood, 0f, "Post");
-        var roof = Shapes.Box(s, new Vector3(0f, 3.9f, 0f), new Vector3(9.4f, 0.14f, 9.4f), Thatch, 0f, "Roof");
-        roof.Rotation = new Vector3(-0.12f, 0f, 0f);
-        // Brick forge with chimney, glowing coals and rising smoke.
-        Shapes.Box(s, new Vector3(2.6f, 0.75f, 2f), new Vector3(2f, 1.5f, 1.6f), Brick.Darkened(0.2f), 0f, "Forge");
-        Shapes.Box(s, new Vector3(2.6f, 1.52f, 1.9f), new Vector3(1.3f, 0.06f, 0.9f), new Color(1f, 0.4f, 0.1f), 4f, "GlowCoals");
-        Shapes.Box(s, new Vector3(2.6f, 3.6f, 2.4f), new Vector3(0.9f, 4.2f, 0.9f), Brick.Darkened(0.3f), 0f, "Chimney");
-        Shapes.Light(s, new Vector3(2.6f, 2f, 1.4f), new Color(1f, 0.45f, 0.15f), 2.4f, 9f, "ForgeLight");
-        Shapes.Solid(s, new Vector3(2.6f, 0.75f, 2f), new Vector3(2f, 1.5f, 1.6f));
+        Shapes.MapTag(s, "map_house", new Vector2(11f, 9f));
+        const float w = 10f, d = 8f, wallH = 3.4f;
+        var plank = new Color(0.36f, 0.24f, 0.16f);
+        Shapes.Box(s, new Vector3(0f, 0.05f, 0f), new Vector3(w + 1f, 0.1f, d + 2f), Stone.Darkened(0.25f), 0f, "Floor");
+        // Back wall with the forge, side walls with a glowing window each, posts and a lintel in front.
+        Shapes.Box(s, new Vector3(0f, wallH * 0.5f, d * 0.5f), new Vector3(w, wallH, 0.25f), plank, 0f, "BackWall");
+        Shapes.Solid(s, new Vector3(0f, wallH * 0.5f, d * 0.5f), new Vector3(w, wallH, 0.25f));
+        foreach (var x in new[] { -w * 0.5f, w * 0.5f })
+        {
+            Shapes.Box(s, new Vector3(x, wallH * 0.5f, 0f), new Vector3(0.25f, wallH, d), plank.Darkened(0.05f), 0f, "SideWall");
+            Shapes.Solid(s, new Vector3(x, wallH * 0.5f, 0f), new Vector3(0.25f, wallH, d));
+            Shapes.Box(s, new Vector3(x * 1.01f, 1.9f, -1f), new Vector3(0.05f, 0.9f, 1.4f), new Color(1f, 0.5f, 0.2f), 1.2f, "GlowWindow");
+        }
+        for (int i = -8; i <= 8; i++)
+            Shapes.Box(s, new Vector3(i * 0.6f, wallH * 0.5f, d * 0.5f - 0.14f), new Vector3(0.05f, wallH, 0.02f), DarkWood, 0f, "Seam");
+        foreach (var x in new[] { -w * 0.5f, -1.6f, 1.6f, w * 0.5f })
+            Shapes.Box(s, new Vector3(x, wallH * 0.5f, -d * 0.5f), new Vector3(0.3f, wallH, 0.3f), DarkWood, 0f, "FrontPost");
+        Shapes.Box(s, new Vector3(0f, wallH - 0.15f, -d * 0.5f), new Vector3(w + 0.3f, 0.3f, 0.3f), DarkWood, 0f, "Lintel");
+        GableRoof(s, wallH, w, d + 1.2f, 0f, Tile.Darkened(0.35f), plank, false);
+
+        // Brick forge against the back wall, chimney through the roof, glowing coals and smoke.
+        Shapes.Box(s, new Vector3(2.4f, 0.8f, 2.9f), new Vector3(2.4f, 1.6f, 1.8f), Brick.Darkened(0.2f), 0f, "Forge");
+        Shapes.Box(s, new Vector3(2.4f, 1.62f, 2.8f), new Vector3(1.6f, 0.06f, 1f), new Color(1f, 0.4f, 0.1f), 4f, "GlowCoals");
+        Shapes.Box(s, new Vector3(2.4f, 1.2f, 2f), new Vector3(1f, 0.6f, 0.06f), new Color(1f, 0.35f, 0.08f), 3f, "GlowMouth");
+        Shapes.Box(s, new Vector3(2.4f, 4.6f, 3.4f), new Vector3(1f, 6.2f, 1f), Brick.Darkened(0.3f), 0f, "Chimney");
+        Shapes.Box(s, new Vector3(2.4f, 7.75f, 3.4f), new Vector3(1.2f, 0.15f, 1.2f), Brick.Darkened(0.4f), 0f, "ChimneyCap");
+        Shapes.Solid(s, new Vector3(2.4f, 0.8f, 2.9f), new Vector3(2.4f, 1.6f, 1.8f));
+        Shapes.Light(s, new Vector3(2.4f, 2f, 1.6f), new Color(1f, 0.45f, 0.15f), 2.6f, 11f, "ForgeLight");
         Shapes.Child(s, new GpuParticles3D
         {
             Amount = 24,
             Lifetime = 4f,
-            Position = new Vector3(2.6f, 5.8f, 2.4f),
+            Position = new Vector3(2.4f, 8f, 3.4f),
             ProcessMaterial = new ParticleProcessMaterial
             {
                 Direction = Vector3.Up,
@@ -348,20 +377,57 @@ public static partial class WorldBuilder
                 Material = new StandardMaterial3D { Transparency = BaseMaterial3D.TransparencyEnum.Alpha, VertexColorUseAsAlbedo = true, ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded },
             },
         }, "Smoke");
-        Shapes.Box(s, new Vector3(-0.5f, 0.45f, 0f), new Vector3(0.6f, 0.9f, 0.5f), DarkWood, 0f, "AnvilStand");
-        Shapes.Box(s, new Vector3(-0.5f, 1f, 0f), new Vector3(1f, 0.28f, 0.42f), new Color(0.22f, 0.22f, 0.24f), 0f, "Anvil");
-        Shapes.Solid(s, new Vector3(-0.5f, 0.6f, 0f), new Vector3(1f, 1.2f, 0.6f));
-        // Weapon rack
-        Shapes.Box(s, new Vector3(-3.4f, 1.2f, 2.9f), new Vector3(1.8f, 0.1f, 0.3f), DarkWood, 0f, "RackBar");
+        // Bellows (สูบลม): two tall wooden cylinders beside the forge.
+        foreach (var z in new[] { 2.4f, 3.2f })
+            Shapes.Cylinder(s, new Vector3(4.2f, 0.75f, z), 0.28f, 0.28f, 1.5f, DarkWood, 0f, "Bellows");
+        Shapes.Box(s, new Vector3(3.7f, 0.4f, 2.8f), new Vector3(0.9f, 0.12f, 0.12f), DarkWood, 0f, "BellowsPipe");
+        // Anvil on a stump with a hammer and a blade still glowing.
+        Shapes.Cylinder(s, new Vector3(0f, 0.4f, 0.6f), 0.4f, 0.45f, 0.8f, new Color(0.3f, 0.22f, 0.15f), 0f, "AnvilStump");
+        Shapes.Box(s, new Vector3(0f, 0.92f, 0.6f), new Vector3(1f, 0.25f, 0.42f), new Color(0.2f, 0.2f, 0.22f), 0f, "Anvil");
+        Shapes.Box(s, new Vector3(0.58f, 0.95f, 0.6f), new Vector3(0.2f, 0.14f, 0.2f), new Color(0.2f, 0.2f, 0.22f), 0f, "AnvilHorn");
+        Shapes.Box(s, new Vector3(-0.2f, 1.08f, 0.55f), new Vector3(0.08f, 0.08f, 0.5f), new Color(0.5f, 0.5f, 0.55f), 0f, "Hammer");
+        Shapes.Box(s, new Vector3(0.2f, 1.07f, 0.65f), new Vector3(0.7f, 0.12f, 0.04f), new Color(1f, 0.45f, 0.15f), 2.5f, "GlowHotBlade");
+        Shapes.Solid(s, new Vector3(0f, 0.55f, 0.6f), new Vector3(1f, 1.1f, 0.6f));
+        // Racks on the side wall: swords, knives, sickles.
+        Shapes.Box(s, new Vector3(-4.6f, 2f, 0.5f), new Vector3(0.12f, 0.12f, 5f), DarkWood, 0f, "RackBar");
+        for (int i = 0; i < 9; i++)
+        {
+            float z = -1.6f + i * 0.5f;
+            if (i % 3 == 2)
+                Shapes.Cylinder(s, new Vector3(-4.5f, 1.65f, z), 0.22f, 0.22f, 0.04f, new Color(0.75f, 0.78f, 0.82f), 0.2f, "Sickle").Rotation = new Vector3(0f, 0f, Mathf.Pi * 0.5f);
+            else
+                Shapes.Box(s, new Vector3(-4.5f, 1.4f, z), new Vector3(0.05f, i % 3 == 0 ? 1.2f : 0.6f, 0.07f), new Color(0.8f, 0.82f, 0.88f), 0.2f, i % 3 == 0 ? "RackSword" : "RackKnife");
+        }
+        Shapes.Box(s, new Vector3(-3.4f, 0.45f, 2.6f), new Vector3(1.8f, 0.9f, 1.2f), DarkWood, 0f, "Workbench");
+        Shapes.Solid(s, new Vector3(-3.4f, 0.45f, 2.6f), new Vector3(1.8f, 0.9f, 1.2f));
+        // Coal heap, quench trough and a barrel of iron rods.
+        Shapes.Sphere(s, new Vector3(3.8f, 0.2f, 0.4f), 0.7f, new Color(0.08f, 0.08f, 0.09f), 0f, "CoalHeap").Scale = new Vector3(1.3f, 0.45f, 1f);
+        Shapes.Box(s, new Vector3(-1.9f, 0.32f, -1.8f), new Vector3(1.6f, 0.64f, 0.7f), DarkWood, 0f, "Trough");
+        Shapes.Box(s, new Vector3(-1.9f, 0.6f, -1.8f), new Vector3(1.4f, 0.04f, 0.5f), new Color(0.1f, 0.18f, 0.22f), 0f, "TroughWater");
+        Shapes.Cylinder(s, new Vector3(3.6f, 0.5f, -2.8f), 0.4f, 0.45f, 1f, new Color(0.35f, 0.25f, 0.15f), 0f, "Barrel");
         for (int i = 0; i < 4; i++)
-            Shapes.Box(s, new Vector3(-4.1f + i * 0.45f, 1.1f, 2.85f), new Vector3(0.05f, 1.6f, 0.05f), new Color(0.8f, 0.82f, 0.88f), 0.2f, "RackBlade");
-        Shapes.Box(s, new Vector3(-2f, 0.3f, -2.2f), new Vector3(1.6f, 0.6f, 0.7f), DarkWood, 0f, "Trough");
-        Shapes.Box(s, new Vector3(-2f, 0.56f, -2.2f), new Vector3(1.4f, 0.04f, 0.5f), new Color(0.1f, 0.18f, 0.22f), 0f, "TroughWater");
+            Shapes.Cylinder(s, new Vector3(3.5f + i * 0.08f, 1.3f, -2.8f), 0.025f, 0.025f, 1.2f, new Color(0.4f, 0.4f, 0.42f), 0f, "Rod");
+        // Shop sign over the front.
+        Shapes.Box(s, new Vector3(0f, wallH + 0.35f, -d * 0.5f - 0.2f), new Vector3(3.6f, 0.7f, 0.08f), new Color(0.5f, 0.32f, 0.18f), 0f, "SignBoard");
+        Shapes.Child(s, new Label3D
+        {
+            Text = "ร้านตีเหล็กลุงมั่น",
+            Font = Game.ThaiFont,
+            FontSize = 44,
+            PixelSize = 0.004f,
+            Modulate = new Color(1f, 0.85f, 0.5f),
+            OutlineSize = 6,
+            OutlineModulate = new Color(0.2f, 0.1f, 0.05f),
+            DoubleSided = false,
+            Position = new Vector3(0f, wallH + 0.35f, -d * 0.5f - 0.25f),
+            Rotation = new Vector3(0f, Mathf.Pi, 0f),
+        }, "SignText");
     }
 
     // บ้านยายจันทร์: a medium's stilt house hung with talismans, with herb pots and a drying rack.
     static void YaiJanHouse(Node3D parent, Vector3 pos)
     {
+        Occupy(pos, 7.5f);
         var g = Shapes.Group(parent, "HouseYaiJan", pos, Mathf.Pi * 0.25f);
         StiltHouse(g, "House", Vector3.Zero, 0f, 2f, true);
         var yellow = new Color(0.95f, 0.82f, 0.4f);
@@ -497,6 +563,7 @@ public static partial class WorldBuilder
     static void BuildBlocks(Node3D city)
     {
         var root = Shapes.Group(city, "Blocks");
+        var houses = Shapes.Group(city, "BlockHouses");
         var edges = new List<float> { -Wall + 2f };
         edges.AddRange(StreetLines);
         edges.Add(Wall - 2f);
@@ -527,70 +594,104 @@ public static partial class WorldBuilder
             // Keep clear of the shophouses that front the main street and avenue.
             float clearX = Mathf.Abs(c.X) < 62f ? 21f : 0f;
             float clearZ = Mathf.Abs(c.Z) < 62f ? 21f : 0f;
-            HouseLots(g, c, w, d, clearX, clearZ, dark, core && c.X > 0f && c.Z > 0f);
+            HouseLots(g, houses, c, w, d, clearX, clearZ, dark, core && c.X > 0f && c.Z > 0f);
         }
     }
 
-    // Houses on a grid of lots with dirt alleys between them.
-    static void HouseLots(Node3D g, Vector3 center, float w, float d, float clearX, float clearZ, bool dark, bool skipCorner)
+    // A block of houses along a winding lane that runs between the streets on either side.
+    // Every house faces the lane (or the nearest street) and has a short path out to it.
+    static void HouseLots(Node3D g, Node3D houses, Vector3 center, float w, float d, float clearX, float clearZ, bool dark, bool skipCorner)
     {
-        const float pitch = 16f;
-        int nx = Mathf.Max(1, (int)(w / pitch)), nz = Mathf.Max(1, (int)(d / pitch));
-        float sx = w / nx, sz = d / nz;
-        for (int i = 0; i < nx; i++)
-        for (int j = 0; j < nz; j++)
+        // Usable area in city coordinates, kept clear of the street-front shophouses.
+        float x0 = center.X - w * 0.5f, x1 = center.X + w * 0.5f, z0 = center.Z - d * 0.5f, z1 = center.Z + d * 0.5f;
+        if (clearX > 0f)
         {
-            var local = new Vector3(-w * 0.5f + sx * (i + 0.5f), 0f, -d * 0.5f + sz * (j + 0.5f));
-            var world = center + local;
-            // Leave room for the street-front shophouses, the plaza corner and the smithy.
-            if (clearX > 0f && Mathf.Abs(world.X) < clearX)
-                continue;
-            if (clearZ > 0f && Mathf.Abs(world.Z) < clearZ)
-                continue;
-            if (skipCorner && world.X < 32f && world.Z < 32f)
-                continue;
-            if (world.DistanceTo(new Vector3(-20f, 0f, -12f)) < 13f)
-                continue;
-            float yaw = _rng.RandiRange(0, 3) * Mathf.Pi * 0.5f;
-            string n = $"House_{i}_{j}";
-            switch (_rng.RandiRange(0, 5))
-            {
-                case 0: StiltHouse(g, n, local, yaw, 2.3f, true); break;
-                case 1: Hut(g, n, local, yaw); break;
-                case 2: TwinHouse(g, n, local, yaw); break;
-                case 3: Granary(g, n + "_Granary", local + new Vector3(3f, 0f, 2.5f), yaw); Hut(g, n, local - new Vector3(2.5f, 0f, 2.5f), yaw); break;
-                case 4: StiltHouse(g, n, local, yaw, 2.0f, false); break;
-                default:
-                    if (dark)
-                        DeadTree(g, "DeadTree", local, _rng.RandfRange(1f, 1.4f));
-                    else
-                        Tree(g, "YardTree", local, _rng.RandfRange(1.1f, 1.5f));
-                    break;
-            }
+            if (center.X > 0f) x0 = Mathf.Max(x0, clearX); else x1 = Mathf.Min(x1, -clearX);
         }
-        // Alleys between lot rows; lanterns where they cross unless the quarter is dark.
-        for (int i = 1; i < nx; i++)
-            Shapes.Box(g, new Vector3(-w * 0.5f + sx * i, 0.015f, 0f), new Vector3(3f, 0.03f, d), Dirt, 0f, "AlleyNS");
-        for (int j = 1; j < nz; j++)
-            Shapes.Box(g, new Vector3(0f, 0.016f, -d * 0.5f + sz * j), new Vector3(w, 0.03f, 3f), Dirt, 0f, "AlleyEW");
-        for (int i = 1; i < nx; i++)
-        for (int j = 1; j < nz; j++)
+        if (clearZ > 0f)
         {
-            var p = new Vector3(-w * 0.5f + sx * i, 0f, -d * 0.5f + sz * j);
+            if (center.Z > 0f) z0 = Mathf.Max(z0, clearZ); else z1 = Mathf.Min(z1, -clearZ);
+        }
+        if (skipCorner)
+        {
+            x0 = Mathf.Max(x0, 32f);
+            z0 = Mathf.Max(z0, 4f);
+        }
+        float uw = x1 - x0, ud = z1 - z0;
+        if (uw < 14f || ud < 14f)
+            return;
+        var c = new Vector3((x0 + x1) * 0.5f, 0f, (z0 + z1) * 0.5f);
+
+        // The lane follows the block's longer side, edge to edge, wandering through the middle.
+        bool alongX = uw >= ud;
+        float edgeA = alongX ? x0 - 2f : z0 - 2f, edgeB = alongX ? x1 + 2f : z1 + 2f;
+        float across = alongX ? c.Z : c.X, spread = (alongX ? ud : uw) * 0.25f;
+        Vector3 P(float along, float side) => alongX ? new Vector3(along, 0f, side) : new Vector3(side, 0f, along);
+        var way = new[]
+        {
+            P(edgeA, across + _rng.RandfRange(-spread, spread)),
+            P(Mathf.Lerp(edgeA, edgeB, 0.35f), across + _rng.RandfRange(-spread, spread)),
+            P(Mathf.Lerp(edgeA, edgeB, 0.7f), across + _rng.RandfRange(-spread, spread)),
+            P(edgeB, across + _rng.RandfRange(-spread, spread)),
+        };
+        var lane = Meander(way, 4f, 4f);
+        DrawRoad(houses, $"Lane_{center.X:0}_{center.Z:0}", lane, 3f, Dirt);
+        // Big blocks get a branch from the lane out to a side street.
+        if ((alongX ? ud : uw) > 44f)
+        {
+            var from = lane[lane.Count / 2];
+            float sideEdge = _rng.Randf() < 0.5f ? (alongX ? z0 - 2f : x0 - 2f) : (alongX ? z1 + 2f : x1 + 2f);
+            var to = alongX ? new Vector3(from.X + _rng.RandfRange(-8f, 8f), 0f, sideEdge) : new Vector3(sideEdge, 0f, from.Z + _rng.RandfRange(-8f, 8f));
+            DrawRoad(houses, $"Branch_{center.X:0}_{center.Z:0}", Meander(new[] { from, to }, 3f, 4f), 2.6f, Dirt);
+        }
+
+        int target = Mathf.Max(2, (int)(uw * ud / 260f));
+        int built = 0;
+        for (int attempt = 0; attempt < target * 10 && built < target; attempt++)
+        {
+            var p = new Vector3(_rng.RandfRange(x0 + 5f, x1 - 5f), 0f, _rng.RandfRange(z0 + 5f, z1 - 5f));
+            var kind = RandomHouse();
+            if (Mathf.Abs(p.X) > Wall - 8f - HouseRadius(kind) || Mathf.Abs(p.Z) > Wall - 8f - HouseRadius(kind))
+                continue;
+            if (TryHouse(houses, $"House_{center.X:0}_{center.Z:0}_{built}", p, kind))
+                built++;
+        }
+        // Yard trees in the gaps (dead ones in the dark quarter).
+        for (int i = 0; i < target; i++)
+        {
+            var p = new Vector3(_rng.RandfRange(x0 + 3f, x1 - 3f), 0f, _rng.RandfRange(z0 + 3f, z1 - 3f));
+            if (Blocked(p, 2f) || DistToRoads(p) < 2f)
+                continue;
+            if (dark)
+                DeadTree(houses, "DeadTree", p, _rng.RandfRange(1f, 1.4f));
+            else
+                Tree(houses, "YardTree", p, _rng.RandfRange(1.1f, 1.5f));
+            Occupy(p, 2f);
+        }
+
+        // Along the lane: ghost spots and fog in the dark quarter, lanterns elsewhere.
+        for (int i = 3; i < lane.Count - 2; i += 4)
+        {
+            var p = lane[i];
             if (dark)
             {
-                var spawn = Shapes.Group(g, $"AlleySpawn_{i}_{j}", p);
+                var spawn = Shapes.Group(houses, $"AlleySpawn_{center.X:0}_{center.Z:0}_{i}", p);
                 spawn.AddToGroup("alley_spawn", true);
                 Shapes.MapTag(spawn, "map_alley_dark", new Vector2(3f, 3f));
-                Shapes.Child(g, new FogVolume
+                Shapes.Child(houses, new FogVolume
                 {
                     Position = p + new Vector3(0f, 1.2f, 0f),
                     Size = new Vector3(7f, 3f, 7f),
                     Material = new FogMaterial { Density = 0.35f, Albedo = new Color(0.6f, 0.68f, 0.85f) },
                 }, "AlleyFog");
             }
-            else if ((i + j) % 2 == 0)
-                LanternPost(g, $"AlleyLantern_{i}_{j}", p + new Vector3(1.3f, 0f, 1.3f), 2.6f, (i * 3 + j) % 3 == 0);
+            else if (i % 8 == 3)
+            {
+                var d2 = lane[i + 1] - lane[i];
+                var side = new Vector3(-d2.Z, 0f, d2.X).Normalized() * 2.1f;
+                if (!Blocked(p + side, 0.5f))
+                    LanternPost(houses, $"LaneLantern_{center.X:0}_{center.Z:0}_{i}", p + side, 2.6f, i % 16 == 3);
+            }
         }
     }
 
@@ -684,11 +785,15 @@ public static partial class WorldBuilder
         return world;
     }
 
+    // How far the shore juts out into the lagoon at x: a wandering line, straight only by the pier.
+    public static float ShoreBump(float x) =>
+        ((0.5f + 0.5f * Mathf.Sin(x * 0.045f + 1.3f)) * 6f + (0.5f + 0.5f * Mathf.Sin(x * 0.13f + 0.4f)) * 3f) * Mathf.SmoothStep(8f, 30f, Mathf.Abs(x));
+
     // Lagoon floor depth below the water surface (y = 0) at local (x, z); land is 0.
     // The basin deepens away from the shore and rises again toward the zone's outer edges.
     public static float LagoonDepth(float x, float z)
     {
-        float fromShore = ThungNaShoreZ - z;
+        float fromShore = ThungNaShoreZ - ShoreBump(x) - z;
         if (fromShore <= 0f)
             return 0f;
         float edge = Mathf.Min(Half - Mathf.Abs(x), Half + z);
@@ -704,7 +809,9 @@ public static partial class WorldBuilder
         Vector3 V(int i, int j)
         {
             float x = -Half + i * cell, z = -Half + j * cell;
-            return new Vector3(x, -LagoonDepth(x, z), z);
+            float depth = LagoonDepth(x, z);
+            // Land inside the water's rectangle sits just above the surface so the two never fight.
+            return new Vector3(x, depth > 0.02f ? -depth : z < ThungNaShoreZ + 1.5f ? 0.1f : 0f, z);
         }
         Color C(Vector3 v)
         {

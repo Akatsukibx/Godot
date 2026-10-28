@@ -13,6 +13,14 @@ public static partial class WorldBuilder
     static readonly List<Vector3> _plots = new();
     static int _roadCount;
 
+    // A village or shrine yard that ghosts will not enter (read at runtime by Main).
+    static void Sanctuary(Node3D parent, Vector3 pos, float radius)
+    {
+        var s = Shapes.Group(parent, "Sanctuary", pos);
+        s.AddToGroup("sanctuary", true);
+        s.SetMeta("radius", radius);
+    }
+
     static void ResetLayout()
     {
         _roads.Clear();
@@ -244,7 +252,7 @@ public static partial class WorldBuilder
 
     static void CitySigns(Node3D city)
     {
-        SignPost(city, new Vector3(-9.5f, 0f, -11.5f),
+        SignPost(city, new Vector3(-6.5f, 0f, -7.5f),
             ("ทุ่งนาหุ่นไล่กา (ประตูเหนือ)", new Vector3(0f, 0f, -1f)), ("ประตูทิศใต้ (ปิดอยู่)", new Vector3(0f, 0f, 1f)),
             ("โรงตีเหล็กลุงมั่น", new Vector3(-1f, 0f, 0f)), ("วัดกลางเวียง", new Vector3(1f, 0f, -0.4f)));
         SignPost(city, new Vector3(6f, 0f, -168f), ("ทุ่งนาหุ่นไล่กา", new Vector3(0f, 0f, -1f)), ("ลานศาลหลักเมือง", new Vector3(0f, 0f, 1f)));
@@ -274,6 +282,10 @@ public static partial class WorldBuilder
     static void BuildFieldRoads(Node3D world)
     {
         var roads = Shapes.Group(world, "Roads");
+        Sanctuary(world, Vector3.Zero, 30f);
+        Sanctuary(world, new Vector3(0f, 0f, ThungNaShoreZ - 8f), 30f);
+        foreach (var h in HamletCenters)
+            Sanctuary(world, h, 32f);
         foreach (var c in ForestPatches)
             Occupy(c, 24f);
         _landmarks.Add((Vector2.Zero, 36f));
@@ -290,6 +302,9 @@ public static partial class WorldBuilder
         for (int i = 0; i < FieldLanes.Length; i++)
             DrawRoad(roads, $"Lane{i}", Meander(FieldLanes[i], 7f), 2.6f, Dirt.Lerp(GroundGreen, 0.2f));
         Occupy(new Vector3(5.2f, 0f, 26f), 3f);
+        // Spots where villagers stand (data/npcs.json) stay clear of houses and trees.
+        foreach (var n in GameData.Npcs.Values.Where(n => n.Zone == "thung_na"))
+            Occupy(new Vector3(n.X, 0f, n.Z), 2.5f);
     }
 
     static bool InFieldBounds(Vector3 p, float r) =>

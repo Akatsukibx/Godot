@@ -180,6 +180,13 @@ public static partial class WorldBuilder
                         Shapes.Cylinder(seg, new Vector3(side * 1f, (top + bed - 0.3f) * 0.5f, -len * 0.5f), 0.09f, 0.1f, top - bed + 0.3f, DarkWood, 0f, "Piling");
                 }
                 AddRoad(a, b, 1.1f);
+                if (i > 0)
+                {
+                    // A round landing at every bend so the walk has no notches to catch on.
+                    Shapes.Cylinder(walk, new Vector3(a.X, DeckTop - 0.08f, a.Z), 1.15f, 1.15f, 0.16f, Wood.Darkened(0.06f), 0f, "Planks");
+                    var joint = Shapes.Child(walk, new StaticBody3D { CollisionLayer = Layers.World, CollisionMask = 0, Position = new Vector3(a.X, DeckTop - 0.1f, a.Z) }, "JointCollider");
+                    Shapes.Child(joint, new CollisionShape3D { Shape = new CylinderShape3D { Radius = 1.15f, Height = 0.2f } });
+                }
                 if (i % 5 == 2)
                 {
                     float side = lamp++ % 2 == 0 ? 1.25f : -1.25f;
@@ -195,6 +202,9 @@ public static partial class WorldBuilder
     {
         var g = Shapes.Group(world, "BuengHamlet");
         var c = new Vector3(-95f, 0f, 60f);
+        Sanctuary(g, c, 32f);
+        foreach (var n in GameData.Npcs.Values.Where(n => n.Zone == "bueng_bua"))
+            Occupy(new Vector3(n.X, 0f, n.Z), n.Activity == "wander" ? n.WanderRadius + 1f : 2.5f);
         _landmarks.Add((Flat(c), 20f));
         int built = 0;
         for (int attempt = 0; attempt < 120 && built < 7; attempt++)
@@ -223,6 +233,7 @@ public static partial class WorldBuilder
         var shrine = Shapes.Group(s, "ShrineBueng", OnGround(25f, 172f));
         PhraPhumShrine(shrine, "bueng_bua", "ศาลริมบึง");
         Occupy(new Vector3(25f, 0f, 172f), 3f);
+        Sanctuary(s, new Vector3(25f, 0f, 172f), 16f);
         _landmarks.Add((new Vector2(25f, 172f), 16f));
         SignPost(s, OnGround(-9f, 170f), ("ทุ่งนาหุ่นไล่กา", new Vector3(0.2f, 0f, 1f)), ("หมู่บ้านชาวบึง", new Vector3(-1f, 0f, -0.7f)),
             ("ศาลาร้างกลางบึง", new Vector3(1f, 0f, -1.2f)));

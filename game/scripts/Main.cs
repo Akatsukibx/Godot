@@ -107,6 +107,7 @@ public partial class Main : Node3D
             scene.Position = zone.Center;
             AddChild(scene);
         }
+        Textures.Apply(this);
         WorldBuilder.ApplyDistanceCulling(this);
         AddChild(WorldBuilder.BuildRice(GetTree().GetNodesInGroup("map_plot").OfType<Node3D>()));
         AddChild(WorldBuilder.BuildForest(WorldBuilder.WorldBounds()));
@@ -115,6 +116,8 @@ public partial class Main : Node3D
             _shrines[(string)shrine.GetMeta("shrine_id")] = shrine;
         foreach (var stop in GetTree().GetNodesInGroup("bus_stop").OfType<Node3D>())
             _busStops[(string)stop.GetMeta("stop_id")] = stop;
+        foreach (var s in GetTree().GetNodesInGroup("sanctuary").OfType<Node3D>())
+            _sanctuaries.Add((s.GlobalPosition, (float)s.GetMeta("radius", 25f)));
         foreach (var w in GetTree().GetNodesInGroup("water_area").OfType<Node3D>())
         {
             var size = (Vector2)w.GetMeta("map_size", Vector2.One);
@@ -129,7 +132,7 @@ public partial class Main : Node3D
             var npc = new Npc();
             AddChild(npc);
             npc.Init(def);
-            npc.GlobalPosition = zone.Center + new Vector3(def.X, 0f, def.Z);
+            npc.GlobalPosition = zone.Center + new Vector3(def.X, zone.Scene == "bueng_bua" ? Mathf.Max(0f, WorldBuilder.BuengHeight(def.X, def.Z)) : 0f, def.Z);
             _npcs.Add(npc);
         }
     }
@@ -177,7 +180,7 @@ public partial class Main : Node3D
             ff.Amount = q == 0 ? 30 : 70;
     }
 
-    public void OpenClassSelect() => Hud.ShowClassSelect(GameData.Classes, def => StartGame(def, null));
+    public void OpenClassSelect() => Hud.ShowClassSelect(GameData.Classes, def => Hud.AskName(def, name => StartGame(def, null, name)));
 
     public void ContinueGame()
     {
@@ -230,6 +233,7 @@ public partial class Main : Node3D
             _seenCutscenes.Add("opening");
             OpenClassSelect();
             Hud.ChooseClass(GameData.Classes[int.Parse(cls)]);
+            Hud.ConfirmName(args.TryGetValue("name", out var nm) ? nm : "");
         }
         if (args.ContainsKey("continue"))
             ContinueGame();
@@ -331,13 +335,15 @@ public partial class Main : Node3D
             $"yai={yai.GlobalPosition}");
     }
 
-    void StartGame(ClassDef def, SaveData save)
+    void StartGame(ClassDef def, SaveData save, string name = null)
     {
         // Set the clock before the player exists so leaving the night-time menu does not announce dawn.
         DayNight.SetHour(save?.Hour ?? Cfg.StartHour);
         Player = new Player { Name = "Player" };
         AddChild(Player);
         Player.Init(def);
+        if (name != null)
+            Player.SetName(name);
         if (save != null)
         {
             Player.LoadSave(save);
@@ -452,6 +458,49 @@ public partial class Main : Node3D
             return Mathf.Max(0f, surface - ((Vector3)hit["position"]).Y);
         }
         return 0f;
+    }
+
+    // Water surface height at a point, or null on dry land.
+    public float? WaterSurfaceAt(Vector3 p)
+    {
+        foreach (var (rect, surface) in _water)
+            if (rect.HasPoint(new Vector2(p.X, p.Z)))
+                return surface;
+        return null;
+    }
+
+    // Where a shot from `muzzle` should go: a ghost close to the crosshair (light aim assist), else
+    // whatever the crosshair ray hits, else far along it.
+    public Vector3 AimTarget(Vector3 muzzle, float range)
+    {
+        var origin = _cam.GlobalPosition;
+        var ray = -_cam.GlobalBasis.Z;
+        Ghost best = null;
+        float bestAngle = Mathf.DegToRad(7f);
+        foreach (var g in Ghost.All)
+        {
+            if (g.Gone || g.Weakened)
+                continue;
+            var chest = g.GlobalPosition + Vector3.Up * 1.1f;
+            if (chest.DistanceTo(muzzle) > range + 2f)
+                continue;
+            float angle = ray.AngleTo(chest - origin);
+            if (angle < bestAngle)
+            {
+                bestAngle = angle;
+                best = g;
+            }
+        }
+        if (best != null)
+            return best.GlobalPosition + Vector3.Up * 1.1f;
+        var query = PhysicsRayQueryParameters3D.Create(origin, origin + ray * (range + 20f), Layers.World | Layers.Ghost);
+        var hit = GetWorld3D().DirectSpaceState.IntersectRay(query);
+        var point = hit.Count > 0 ? (Vector3)hit["position"] : origin + ray * (range + 20f);
+        // Never shoot backwards at something between the camera and the player.
+        var flat = new Vector3(ray.X, 0f, ray.Z).Normalized();
+        if ((point - muzzle).Dot(flat) < 1f)
+            point = muzzle + flat * range;
+        return point;
     }
 
     // ---------- interaction ----------
@@ -578,6 +627,13 @@ public partial class Main : Node3D
         yield return ("หมู่บ้านกลางน้ำ", new Vector3(0f, 0.8f, -372f + WorldBuilder.ThungNaShoreZ - 11f));
         yield return ("ซอยมืด", new Vector3(-31f, 0.3f, 31f));
         yield return ("ป่าช้าเก่า", new Vector3(93f, 0.3f, -153f));
+        foreach (var zone in GameData.Zones.Where(z => z.Boss != null && z.Scene != null))
+            yield return ($"บอส {GameData.GhostName(zone.Boss.Ghost)}", zone.Center + new Vector3(zone.Boss.X + 12f, 0.5f, zone.Boss.Z + 12f));
+        var bueng = new Vector3(0f, 0f, -744f);
+        yield return ("บึงบัวสาย: ทางเข้า", bueng + new Vector3(-6f, 0.6f, 174f));
+        yield return ("บึงบัวสาย: หมู่บ้านชาวบึง", bueng + new Vector3(-95f, 0.8f, 60f));
+        yield return ("บึงบัวสาย: ศาลาร้าง", bueng + new Vector3(70f, 0.8f, 30f));
+        yield return ("บึงบัวสาย: ป่าไม้ตาย", bueng + new Vector3(-110f, 0.8f, -100f));
     }
 
     // Admin warp for testing (Settings > ทดสอบ, or clicking the map while admin mode is on).
@@ -731,6 +787,7 @@ public partial class Main : Node3D
         {
             _slowTick = 0.3f;
             DiscoverBusStops();
+            UpdateBosses();
             UpdateNavigation();
         }
         UpdateZone();
@@ -744,7 +801,7 @@ public partial class Main : Node3D
     {
         // Ghosts far from the player fade away so each zone only keeps the ones nearby.
         foreach (var g in Ghost.All.ToArray())
-            if (!g.Gone && !g.Weakened && g.GlobalPosition.DistanceTo(Player.GlobalPosition) > 85f)
+            if (!g.Gone && !g.Weakened && g.GlobalPosition.DistanceTo(Player.GlobalPosition) > (g.Def.Boss ? 130f : 85f))
                 g.Vanish();
 
         _spawnTimer -= dt;
@@ -780,53 +837,100 @@ public partial class Main : Node3D
         return pool.Last().def;
     }
 
-    void SpawnGhost(ZoneDef zone, GhostDef def)
+    void SpawnGhost(ZoneDef zone, GhostDef def, Vector3? at = null)
     {
-        Vector3? found = null;
-        if (zone.AlleyOnly)
+        Vector3? found = at;
+        if (found == null && zone.AlleyOnly)
         {
-            // Town ghosts only appear in dark alleys, never right next to the player.
+            // Town ghosts appear in dark alleys spread across the city, away from the central plaza
+            // and never right next to the player.
             var spots = GetTree().GetNodesInGroup("alley_spawn").OfType<Node3D>()
                 .Where(s => zone.Contains(s.GlobalPosition))
                 .Select(s => s.GlobalPosition)
-                .Where(p => p.DistanceTo(Player.GlobalPosition) is > 8f and < 60f)
+                .Where(p => p.DistanceTo(Player.GlobalPosition) is > 12f and < 80f)
                 .ToList();
+            var far = spots.Where(p => p.DistanceTo(zone.Center) > 45f).ToList();
+            if (far.Count > 0)
+                spots = far;
             if (spots.Count > 0)
                 found = spots[_rng.RandiRange(0, spots.Count - 1)];
         }
-        else
+        else if (found == null)
         {
             var plots = GetTree().GetNodesInGroup("map_plot").OfType<Node3D>().Where(n => zone.Contains(n.GlobalPosition)).ToList();
-            for (int attempt = 0; attempt < 16 && found == null; attempt++)
+            for (int attempt = 0; attempt < 20 && found == null; attempt++)
             {
                 Vector3 pos;
-                // Scarecrows stand in paddies; everything else appears around the player, on land.
+                // Scarecrows stand in paddies; everything else appears around the player.
                 if (def.Behavior == "statue" && plots.Count > 0)
                     pos = plots[_rng.RandiRange(0, plots.Count - 1)].GlobalPosition + new Vector3(_rng.RandfRange(-4f, 4f), 0f, _rng.RandfRange(-4f, 4f));
                 else
                 {
                     float angle = _rng.Randf() * Mathf.Tau;
-                    pos = Player.GlobalPosition + new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * _rng.RandfRange(16f, 24f);
+                    pos = Player.GlobalPosition + new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * _rng.RandfRange(16f, 26f);
                 }
-                pos.Y = 0f;
-                bool ok = zone.Contains(pos) && WaterDepthAt(pos) <= 0f
+                float depth = WaterDepthAt(pos);
+                bool terrainOk = def.Aquatic ? depth > 0.9f : def.Flying || depth <= 0f;
+                bool ok = zone.Contains(pos) && terrainOk && !InSanctuary(pos)
                     && pos.DistanceTo(zone.Center) > Cfg.SafeZoneRadius + 7f
                     && pos.DistanceTo(Player.GlobalPosition) > 10f
                     && Mathf.Abs(pos.X - zone.CenterX) < zone.SizeX * 0.5f - 3f;
                 if (ok)
-                    found = pos;
+                    found = def.Aquatic && WaterSurfaceAt(pos) is float s ? pos with { Y = s - 0.85f } : pos with { Y = GroundAt(pos) };
             }
         }
-        if (found is not Vector3 at)
+        if (found is not Vector3 spot)
             return;
 
         var ghost = new Ghost { Name = def.Id };
         AddChild(ghost);
-        ghost.Init(def, GhostLevel(zone, at));
+        ghost.Init(def, def.Boss ? zone.LevelMax + 2 : GhostLevel(zone, spot));
         ghost.Zone = zone.Id;
-        ghost.GlobalPosition = at + Vector3.Up * 0.2f;
-        ghost.Home = at;
+        ghost.GlobalPosition = spot + Vector3.Up * 0.2f;
+        ghost.Home = spot;
     }
+
+    // Height of the ground (or a pier) under a point.
+    public float GroundAt(Vector3 p)
+    {
+        var query = PhysicsRayQueryParameters3D.Create(new Vector3(p.X, p.Y + 6f, p.Z), new Vector3(p.X, p.Y - 8f, p.Z), Layers.World);
+        var hit = GetWorld3D().DirectSpaceState.IntersectRay(query);
+        return hit.Count > 0 ? ((Vector3)hit["position"]).Y : p.Y;
+    }
+
+    // ---------- villages (no ghosts) and zone bosses ----------
+
+    readonly List<(Vector3 c, float r)> _sanctuaries = new();
+    readonly Dictionary<string, double> _bossRespawnAt = new();
+
+    public bool InSanctuary(Vector3 p) => _sanctuaries.Any(s => new Vector2(p.X - s.c.X, p.Z - s.c.Z).Length() < s.r);
+
+    // Each zone's boss waits at its lair; it appears when the player comes near and returns some
+    // minutes after being banished or released.
+    void UpdateBosses()
+    {
+        double now = Time.GetTicksMsec() / 1000.0;
+        foreach (var zone in GameData.Zones.Where(z => z.Boss != null && z.Scene != null))
+        {
+            var lair = zone.Center + new Vector3(zone.Boss.X, 0f, zone.Boss.Z);
+            bool alive = Ghost.All.Any(g => !g.Gone && g.Def.Id == zone.Boss.Ghost);
+            if (alive)
+            {
+                _bossRespawnAt[zone.Id] = -1;
+                continue;
+            }
+            if (_bossRespawnAt.TryGetValue(zone.Id, out var at) && at < 0)
+                _bossRespawnAt[zone.Id] = at = now + zone.Boss.Respawn; // just went down
+            if (now < at || Player.GlobalPosition.DistanceTo(lair) > 70f || !GameData.Ghosts.TryGetValue(zone.Boss.Ghost, out var def))
+                continue;
+            SpawnGhost(zone, def, lair with { Y = GroundAt(lair) });
+            _bossRespawnAt[zone.Id] = -1;
+        }
+    }
+
+    public Ghost NearestBoss(float range) => Ghost.All
+        .Where(g => g.Def.Boss && !g.Gone && g.GlobalPosition.DistanceTo(Player.GlobalPosition) < range)
+        .OrderBy(g => g.GlobalPosition.DistanceTo(Player.GlobalPosition)).FirstOrDefault();
 
     // Ghosts get stronger the further they are from the zone's entrance (its south edge, toward the city).
     int GhostLevel(ZoneDef zone, Vector3 at)

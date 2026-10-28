@@ -22,6 +22,8 @@ public class StackSave
 public class SaveData
 {
     public string ClassId { get; set; }
+    public string Name { get; set; }
+    public bool StarterGiven { get; set; }
     public int Level { get; set; } = 1;
     public int Exp { get; set; }
     public int StatPoints { get; set; }

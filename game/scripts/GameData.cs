@@ -55,6 +55,7 @@ public class ClassDef
     public int Difficulty { get; set; } = 1;
     public string Emblem { get; set; }
     public string Offhand { get; set; }
+    public string StarterWeapon { get; set; }
     public bool Locked { get; set; }
     public Dictionary<string, int> Ratings { get; set; } = new();
     public List<SkillDef> Skills { get; set; } = new();
@@ -89,6 +90,11 @@ public class GhostDef
     public List<DropDef> Drops { get; set; } = new();
     public string Story { get; set; } = "";
     public string ReleaseText { get; set; } = "";
+    // aquatic = lives only in water (ผีพราย) · flying = crosses water and floats over it · boss = zone boss
+    public bool Aquatic { get; set; }
+    public bool Flying { get; set; }
+    public bool Boss { get; set; }
+    public float Scale { get; set; } = 1f;
 }
 
 public class ItemDef
@@ -188,6 +194,9 @@ public class NpcDef
     public float Yaw { get; set; }
     public NpcLookDef Look { get; set; } = new();
     public List<string> Lines { get; set; } = new();
+    // idle / sell / sweep / sit / wander / fish / farm / chat
+    public string Activity { get; set; } = "idle";
+    public float WanderRadius { get; set; } = 5f;
 }
 
 public class CutsceneLineDef
@@ -220,8 +229,18 @@ public class ExitDef
     public string Label { get; set; } = "";
 }
 
+public class BossDef
+{
+    public string Ghost { get; set; }
+    public float X { get; set; }
+    public float Z { get; set; }
+    public float Respawn { get; set; } = 600f;
+    public string Lair { get; set; } = "";
+}
+
 public class ZoneDef
 {
+    public BossDef Boss { get; set; }
     public string Id { get; set; }
     public string Name { get; set; }
     public bool Open { get; set; }
@@ -276,6 +295,17 @@ public class GameConfig
     public float ComboWindowSec { get; set; } = 1.2f;
     public float ComboFinisherMult { get; set; } = 1.8f;
     public float MaxWadeDepth { get; set; } = 1.05f;
+    public float SwimDepth { get; set; } = 1.15f;
+    public float BossHpMult { get; set; } = 1f;
+    public float UnarmedDamage { get; set; } = 6f;
+    public float UnarmedCooldown { get; set; } = 0.42f;
+    public float BossDamageMult { get; set; } = 1f;
+    public float SwimFloat { get; set; } = 1.3f;
+    public float SwimMultiplier { get; set; } = 0.6f;
+    public float SwimStaminaDrain { get; set; } = 3f;
+    public float ClimbOutHeight { get; set; } = 1.9f;
+    public float CrouchMultiplier { get; set; } = 0.45f;
+    public float FlySpeed { get; set; } = 14f;
     public float WadeSlowAtMaxDepth { get; set; } = 0.45f;
     public float GhostHpPerLevel { get; set; } = 0.18f;
     public float GhostDamagePerLevel { get; set; } = 0.12f;
@@ -343,6 +373,49 @@ public static class GameData
 
     public static string ItemName(string id) => Items.TryGetValue(id, out var item) ? item.Name : id;
     public static string ItemIcon(string id) => Items.TryGetValue(id, out var item) ? item.Icon : null;
+    // Hover text for a material: what it is and every way to get it (ghost drops with zone, level and
+    // night conditions, recipes, quest rewards), built from the data files.
+    public static string ItemSourceText(string id, int have)
+    {
+        if (!Items.TryGetValue(id, out var item))
+            return id;
+        var sb = new System.Text.StringBuilder();
+        sb.AppendLine($"{item.Name}  [{RarityNames[item.Rarity]}]");
+        if (!string.IsNullOrEmpty(item.Description))
+            sb.AppendLine(item.Description);
+        sb.AppendLine($"มีในกระเป๋า {have} ชิ้น");
+        sb.AppendLine();
+        sb.AppendLine("หาได้จาก:");
+        int n = 0;
+        foreach (var g in Ghosts.Values)
+            foreach (var d in g.Drops.Where(d => d.Item == id))
+            {
+                var where = Zones.Where(z => z.Ghosts.Contains(g.Id)).Select(z => z.Name)
+                    .Concat(Zones.Where(z => z.Boss?.Ghost == g.Id).Select(z => $"{z.Name} · {z.Boss.Lair}"));
+                string cond = (d.MinLevel > 1 ? $" · ผี Lv {d.MinLevel}+" : "") + (d.NightOnly ? " · กลางคืนเท่านั้น" : "");
+                sb.AppendLine($"• ปราบ{g.Name} ({string.Join(", ", where)}) โอกาส {d.Chance * 100f:0.#}%{cond}");
+                n++;
+            }
+        if (id == "saeng_winyan")
+        {
+            sb.AppendLine("• ปลดปล่อยวิญญาณตัวไหนก็ได้ (ได้ทุกครั้ง)");
+            n++;
+        }
+        foreach (var r in Recipes.Where(r => r.Result == id))
+        {
+            sb.AppendLine($"• คราฟต์ (หมวด{r.Category})");
+            n++;
+        }
+        foreach (var q in Quests.Where(q => q.Rewards.Items.ContainsKey(id)))
+        {
+            sb.AppendLine($"• รางวัลเควส \"{q.Name}\" ({NpcName(q.TurnInNpc)})");
+            n++;
+        }
+        if (n == 0)
+            sb.AppendLine("• ยังไม่มีแหล่งที่รู้จัก");
+        return sb.ToString().TrimEnd();
+    }
+
     public static string GhostName(string id) => Ghosts.TryGetValue(id, out var g) ? g.Name : id;
     public static string NpcName(string id) => Npcs.TryGetValue(id, out var n) ? n.Name : id;
     public static ZoneDef Zone(string id) => Zones.FirstOrDefault(z => z.Id == id);

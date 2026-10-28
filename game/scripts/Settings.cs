@@ -6,7 +6,7 @@ using System.Linq;
 public static class Settings
 {
     const string FilePath = "user://settings.cfg";
-    const int KeysVersion = 4;
+    const int KeysVersion = 5;
 
     public static float MasterVolume { get; set; } = 0.8f;
     public static float SfxVolume { get; set; } = 1f;
@@ -54,7 +54,8 @@ public static class Settings
         ("navigate", "เส้นนำทางเควส"),
         ("emote_wai", "ท่าไหว้"),
         ("emote_wave", "ท่าโบกมือ"),
-        ("emote_sit", "ท่านั่ง"),
+        ("emote_sit", "ย่อตัว (เดินย่อง)"),
+        ("fly", "โหมดบิน (แอดมิน)"),
         ("respawn", "ฟื้นคืนสติ"),
     };
 
@@ -103,6 +104,7 @@ public static class Settings
         Bind("emote_wai", K(Key.Z));
         Bind("emote_wave", K(Key.X));
         Bind("emote_sit", K(Key.Ctrl));
+        Bind("fly", K(Key.V));
         Bind("respawn", K(Key.R));
         Bind("pause", K(Key.Escape));
     }

@@ -315,6 +315,8 @@ public partial class Player
         Attr = Attr.ToArray(),
         Bag = Enumerable.Range(0, BagSize).Where(i => Bag[i] != null)
             .Select(i => new StackSave { Slot = i, Id = Bag[i].Id, Count = Bag[i].Count, Plus = Bag[i].Plus }).ToList(),
+        Name = CharacterName,
+        StarterGiven = true,
         Gear = Equipped.ToDictionary(kv => kv.Key, kv => new StackSave { Id = kv.Value.Id, Count = 1, Plus = kv.Value.Plus }),
         Codex = Codex.ToList(),
         Banished = Banished,
@@ -347,6 +349,11 @@ public partial class Player
         foreach (var (slot, id) in s.Equipped ?? new())
             if (GameData.Items.ContainsKey(id))
                 Equipped[slot] = new ItemStack { Id = id };
+        // Saves from before starter weapons: hand out the class weapon once.
+        if (!s.StarterGiven && !Equipped.ContainsKey("weapon") && Def.StarterWeapon != null && GameData.Items.ContainsKey(Def.StarterWeapon))
+            Equipped["weapon"] = new ItemStack { Id = Def.StarterWeapon };
+        if (!string.IsNullOrWhiteSpace(s.Name))
+            SetName(s.Name);
         Codex.Clear();
         foreach (var c in s.Codex ?? new())
             Codex.Add(c);

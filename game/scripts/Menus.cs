@@ -422,6 +422,8 @@ public partial class Menus : CanvasLayer
             SelectCategory(4);
         });
         if (Settings.AdminMode && Game.Player != null)
+            ToggleRow("โหมดบิน", $"บินทะลุสิ่งกีดขวาง · Space ขึ้น · Ctrl ลง · Shift บินเร็ว · เปิด/ปิดด้วยปุ่ม {Settings.BindingText("fly")}", Game.Player.Flying, on => Game.Player.SetFlying(on));
+        if (Settings.AdminMode && Game.Player != null)
             foreach (var (name, pos) in Game.Main.WarpPoints())
             {
                 var p = pos;

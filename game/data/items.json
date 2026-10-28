@@ -23,8 +23,15 @@
   { "id": "namkhang_ratri", "name": "น้ำค้างราตรี", "icon": "dew", "rarity": 3, "description": "หยดน้ำค้างที่เกิดเฉพาะคืนม่านบาง ได้จากผีเลเวล 10 ขึ้นไปตอนกลางคืน" },
   { "id": "phlueak_winyan", "name": "ผลึกวิญญาณ", "icon": "crystal", "rarity": 3, "description": "แสงวิญญาณที่ตกผลึก ได้จากการปลดปล่อยผีเลเวล 8 ขึ้นไป" },
   { "id": "set_tra_phanuek", "name": "เศษตราผนึก", "icon": "seal", "rarity": 4, "description": "เศษของตราศักดิ์สิทธิ์ที่แตก หายากมาก" },
+  { "id": "sai_bua", "name": "สายบัวแช่ผี", "icon": "cloth", "rarity": 1, "description": "สายบัวจากก้นบึง เหนียวและเย็นเฉียบ" },
+  { "id": "bai_tani", "name": "ใบตองตานี", "icon": "cloth", "rarity": 2, "description": "ใบตองจากดงกล้วยของนางตานี ไม่เคยเหี่ยว" },
+  { "id": "khao_rueang", "name": "รวงข้าวเรืองแสง", "icon": "rice", "rarity": 3, "description": "รวงข้าวที่หุ่นไล่กายักษ์เฝ้าไว้ มีแสงอ่อนๆ" },
+  { "id": "phom_krasue", "name": "ปอยผมแม่บัว", "icon": "seal", "rarity": 4, "description": "ปอยผมของกระสือแม่บัว ใช้ทำเครื่องรางชั้นสูง" },
 
   // ---------- อาวุธ ----------
+  { "id": "yan_kradat", "name": "ยันต์กระดาษ", "icon": "fire_talisman", "rarity": 0, "description": "ยันต์เขียนมือแผ่นแรกของหมอยันต์ ถอดออกจะต้องใช้มือเปล่า", "equip": "weapon", "class": "mor_yan", "attack": 0 },
+  { "id": "dab_mai", "name": "ดาบไม้ลงยันต์", "icon": "sword_iron", "color": "#9a7a50", "rarity": 0, "description": "ดาบไม้ฝึกหัดที่ยายจันทร์ลงยันต์ให้", "equip": "weapon", "class": "nak_dab", "attack": 0 },
+  { "id": "mit_lek", "name": "มีดเหล็กคู่ฝึก", "icon": "dagger", "rarity": 0, "description": "มีดเหล็กธรรมดาคู่แรกของนักฆ่า", "equip": "weapon", "class": "nak_kha", "attack": 0 },
   { "id": "dab_nam_phi", "name": "ดาบเหล็กน้ำพี้", "icon": "sword_iron", "rarity": 1, "description": "ดาบเหล็กลงยันต์", "equip": "weapon", "class": "nak_dab", "attack": 8 },
   { "id": "dab_saksit", "name": "ดาบศักดิ์สิทธิ์", "icon": "sword_holy", "rarity": 3, "description": "ดาบที่ปลุกเสกด้วยแสงวิญญาณ", "equip": "weapon", "class": "nak_dab", "attack": 20, "skill": 0.1 },
   { "id": "yan_takiang", "name": "ยันต์ตะเกียงผี", "icon": "talisman_green", "rarity": 1, "description": "ยันต์หมึกผสมไฟผีโพง", "equip": "weapon", "class": "mor_yan", "attack": 6 },
@@ -52,5 +59,7 @@
   // ---------- เครื่องประดับ ----------
   { "id": "soi_prakham", "name": "สร้อยประคำ", "icon": "necklace", "rarity": 1, "description": "ประคำไม้ร้อยด้ายแดง", "equip": "necklace", "hp": 15, "skill": 0.05 },
   { "id": "waen_phirot", "name": "แหวนพิรอด", "icon": "ring", "rarity": 2, "description": "แหวนถักลงคาถา", "equip": "ring", "attack": 4, "stamina": 10 },
-  { "id": "takrut", "name": "ตะกรุดสายสิญจน์", "icon": "takrut", "rarity": 2, "description": "ตะกรุดถักสายสิญจน์", "equip": "charm", "hp": 30, "stamina": 20 }
+  { "id": "takrut", "name": "ตะกรุดสายสิญจน์", "icon": "takrut", "rarity": 2, "description": "ตะกรุดถักสายสิญจน์", "equip": "charm", "hp": 30, "stamina": 20 },
+  { "id": "khrueang_rang_khao", "name": "เครื่องรางรวงข้าว", "icon": "takrut", "rarity": 3, "description": "รวงข้าวเรืองแสงผูกสายบัว คุ้มกันคนทำนา", "equip": "charm", "hp": 50, "attack": 6 },
+  { "id": "takrut_mae_bua", "name": "ตะกรุดผมแม่บัว", "icon": "takrut", "rarity": 4, "description": "ถักจากปอยผมแม่บัว ขลังที่สุดในบึง", "equip": "charm", "hp": 80, "stamina": 30, "skill": 0.15 }
 ]

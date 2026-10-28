@@ -20,6 +20,7 @@
     "scene": "thung_na", "centerX": 0, "centerZ": -372, "sizeX": 372, "sizeZ": 372,
     "levelMin": 1, "levelMax": 15, "levelText": "1–15",
     "ghosts": [ "hun_lai_ka", "phi_pong", "phi_tai_hong" ], "alleyOnly": false, "maxGhostsDay": 10, "maxGhostsNight": 16,
+    "boss": { "ghost": "boss_hun_yak", "x": 100, "z": -30, "respawn": 600, "lair": "ทุ่งตะวันออก" },
     "rainChance": 0.3, "worldX": 1, "worldY": 0,
     "exits": [
       { "to": "wiang_mok", "side": "south", "label": "ทางลงเวียงหมอก" },
@@ -31,7 +32,8 @@
     "id": "bueng_bua", "name": "บึงบัวสาย", "subtitle": "บัวสายบานกลางหมอก · อย่าก้าวพ้นสะพาน", "open": true,
     "scene": "bueng_bua", "centerX": 0, "centerZ": -744, "sizeX": 372, "sizeZ": 372,
     "levelMin": 15, "levelMax": 25, "levelText": "15–25",
-    "ghosts": [ "phi_tai_hong", "phi_pong" ], "alleyOnly": false, "maxGhostsDay": 8, "maxGhostsNight": 14,
+    "ghosts": [ "phi_phrai", "phi_krahang", "nang_tani" ], "alleyOnly": false, "maxGhostsDay": 8, "maxGhostsNight": 14,
+    "boss": { "ghost": "boss_krasue", "x": 90, "z": -112, "respawn": 900, "lair": "เกาะตะเคียน" },
     "rainChance": 0.4, "worldX": 1, "worldY": -1,
     "exits": [ { "to": "thung_na", "side": "south", "label": "สะพานไม้สู่ทุ่งนา" } ]
   },

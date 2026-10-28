@@ -34,11 +34,16 @@ public partial class Player : CharacterBody3D
     public bool Dead { get; private set; }
     public bool Sprinting { get; private set; }
     public float WaterDepth { get; private set; }
+    public bool Swimming { get; private set; }
+    public bool Crouching { get; private set; }
+    public bool Flying { get; private set; }
     public string SpawnShrine { get; set; } = "lak_mueang";
     public Vector3 Facing { get; private set; } = Vector3.Forward;
     public HashSet<string> Codex { get; } = new();
     public QuestLog Quests { get; } = new();
     public HashSet<string> BusStops { get; } = new();
+    public string CharacterName { get; private set; } = "";
+    public bool HasWeapon => Equipped.ContainsKey("weapon");
     public event System.Action Died;
 
     float LevelMult => 1f + Def.DamagePerLevel * (Level - 1);
@@ -48,7 +53,7 @@ public partial class Player : CharacterBody3D
     public float MaxStamina => Cfg.MaxStamina + Attr[Sta] * 10f + GearStat(i => i.Stamina, b => b.Stamina);
     public float WeaponBonus => GearStat(i => i.Attack, b => b.Attack);
     public float Defense => GearStat(i => i.Defense, b => b.Defense);
-    public float AttackDamage => (Def.Attack.Damage + WeaponBonus) * StrMult;
+    public float AttackDamage => (HasWeapon ? Def.Attack.Damage + WeaponBonus : Cfg.UnarmedDamage) * StrMult;
     public float SpecialDamage => (Def.Special.Damage + WeaponBonus) * StrMult;
     public float SkillMult => LevelMult * (1f + Attr[Spi] * 0.08f + GearStat(i => i.Skill, b => b.Skill));
     public float StaminaRegen => Cfg.StaminaRegen * (1f + Attr[Sta] * 0.05f);
@@ -98,6 +103,20 @@ public partial class Player : CharacterBody3D
         Stamina = MaxStamina;
         foreach (var (id, count) in Cfg.StartingItems)
             AddItem(id, count);
+        if (def.StarterWeapon != null && GameData.Items.ContainsKey(def.StarterWeapon))
+            Equipped["weapon"] = new ItemStack { Id = def.StarterWeapon };
+        _nameplate = new Label3D
+        {
+            Position = new Vector3(0f, 2.25f, 0f),
+            Billboard = BaseMaterial3D.BillboardModeEnum.Enabled,
+            Font = Game.ThaiFont,
+            FontSize = 40,
+            OutlineSize = 10,
+            PixelSize = 0.0045f,
+            Modulate = new Color(1f, 0.95f, 0.8f),
+        };
+        AddChild(_nameplate);
+        SetName(def.Name);
         RefreshEquipmentVisuals();
     }
 
@@ -136,7 +155,7 @@ public partial class Player : CharacterBody3D
         bool onFloor = IsOnFloor();
         WaterDepth = Game.Main.WaterDepthAt(GlobalPosition);
 
-        if (controls && Input.IsActionJustPressed("dash") && _dashCd <= 0f && _dashTimer <= 0f)
+        if (controls && Input.IsActionJustPressed("dash") && _dashCd <= 0f && _dashTimer <= 0f && !Swimming && !Flying)
             TryRoll(moving ? move.Normalized() : Facing);
 
         Vector3 v;
@@ -151,24 +170,46 @@ public partial class Player : CharacterBody3D
             // Backpedal and strafe are slower than running forward; only forward running can sprint.
             float mult = forwardInput < -0.1f ? Cfg.BackpedalMultiplier
                 : Mathf.Abs(input.X) > Mathf.Abs(forwardInput) ? Cfg.StrafeMultiplier : 1f;
-            Sprinting = moving && forwardInput > 0.3f && Input.IsActionPressed("sprint");
-            v = move.LimitLength(1f) * MoveSpeed * mult * (Sprinting ? Cfg.SprintMultiplier : 1f) * WadeFactor();
+            Sprinting = moving && forwardInput > 0.3f && Input.IsActionPressed("sprint") && !Crouching && !Swimming;
+            if (Crouching)
+                mult *= Cfg.CrouchMultiplier;
+            float water = Swimming ? (Stamina > 0f ? Cfg.SwimMultiplier : Cfg.SwimMultiplier * 0.5f) : WadeFactor();
+            v = move.LimitLength(1f) * MoveSpeed * mult * (Sprinting ? Cfg.SprintMultiplier : 1f) * water;
         }
 
-        // Too deep to wade: refuse to go any deeper than we already are.
-        var ahead = GlobalPosition + new Vector3(v.X, 0f, v.Z).Normalized() * 0.6f;
-        if (v.LengthSquared() > 0.01f && Game.Main.WaterDepthAt(ahead) is float deep && deep > Cfg.MaxWadeDepth && deep > WaterDepth + 0.01f)
+        // Deep water: float with the head above the surface and swim (slowly, using stamina).
+        var surface = Game.Main.WaterSurfaceAt(GlobalPosition);
+        Swimming = !Flying && surface is float && WaterDepth > Cfg.SwimDepth;
+        if (Swimming)
         {
-            v.X = 0f;
-            v.Z = 0f;
+            Crouching = false;
+            float target = (float)surface - Cfg.SwimFloat;
+            v.Y = Mathf.Clamp((target - GlobalPosition.Y) * 5f, -4f, 3f);
+            if (moving)
+            {
+                Stamina = Mathf.Max(0f, Stamina - Cfg.SwimStaminaDrain * dt);
+                _staminaDelay = 0.6f;
+            }
         }
-
-        if (controls && onFloor && Input.IsActionJustPressed("jump") && _dashTimer <= 0f && WaterDepth < 0.8f)
+        else if (Flying)
+        {
+            float up = (Input.IsActionPressed("jump") ? 1f : 0f) - (Input.IsKeyPressed(Key.Ctrl) ? 1f : 0f);
+            float fast = Input.IsActionPressed("sprint") ? 3.5f : 1f;
+            v = move.LimitLength(1f) * Cfg.FlySpeed * fast;
+            v.Y = up * Cfg.FlySpeed * fast;
+        }
+        else if (controls && onFloor && Input.IsActionJustPressed("jump") && _dashTimer <= 0f && WaterDepth < 0.8f)
+        {
             v.Y = Cfg.JumpVelocity;
+            Crouching = false;
+        }
         else
             v.Y = onFloor ? 0f : Velocity.Y - 20f * dt;
-        if (onFloor && v.Y <= 0f)
-            TryStepUp(new Vector3(v.X, 0f, v.Z) * dt);
+        if (onFloor && v.Y <= 0f && !Flying)
+            TryStepUp(new Vector3(v.X, 0f, v.Z) * dt, Cfg.StepHeight);
+        // Swimming into a pier or a bank: haul out if the top is within reach.
+        if (Swimming && moving)
+            TryStepUp(new Vector3(v.X, 0f, v.Z).Normalized() * 0.3f, Cfg.ClimbOutHeight);
         Velocity = v;
         MoveAndSlide();
 
@@ -207,14 +248,16 @@ public partial class Player : CharacterBody3D
                 ToggleEmote("wai");
             if (Input.IsActionJustPressed("emote_wave"))
                 ToggleEmote("wave");
-            if (Input.IsActionJustPressed("emote_sit"))
-                ToggleEmote("sit");
+            if (Input.IsActionJustPressed("emote_sit") && !Flying && !Swimming)
+                Crouching = !Crouching;
+            if (Input.IsActionJustPressed("fly") && Settings.AdminMode)
+                SetFlying(!Flying);
         }
     }
 
     // Climbs kerbs, steps and plinths up to Config.StepHeight without jumping: if the way ahead is
     // blocked but clear one step higher, lift the body; floor snapping settles it on the step.
-    void TryStepUp(Vector3 motion)
+    void TryStepUp(Vector3 motion, float height)
     {
         if (motion.LengthSquared() < 1e-6f)
             return;
@@ -222,7 +265,7 @@ public partial class Player : CharacterBody3D
         var from = GlobalTransform;
         if (!TestMove(from, probe))
             return;
-        var lift = Vector3.Up * Cfg.StepHeight;
+        var lift = Vector3.Up * height;
         if (TestMove(from, lift))
             return;
         var raised = from.Translated(lift);
@@ -250,8 +293,27 @@ public partial class Player : CharacterBody3D
             DebugAnimate(dt);
             return;
         }
+        _rig.Crouch = Crouching;
+        _rig.Swim = Swimming || Flying;
         bool airborne = !IsOnFloor() && Velocity.Y > -4f && !_rig.Rolling && !Dead;
+        airborne &= !Swimming && !Flying;
         _rig.Animate(dt, Dead ? Vector2.Zero : _localVel, Sprinting, Dead, airborne && Mathf.Abs(Velocity.Y) > 0.5f);
+    }
+
+    Label3D _nameplate;
+
+    public void SetName(string name)
+    {
+        CharacterName = string.IsNullOrWhiteSpace(name) ? Def.Name : name.Trim();
+        _nameplate.Text = CharacterName;
+    }
+
+    public void SetFlying(bool on)
+    {
+        Flying = on;
+        CollisionMask = on ? 0u : Layers.World | Layers.Npc;
+        Velocity = Vector3.Zero;
+        Game.Toast(on ? "โหมดบิน: Space ขึ้น · Ctrl ลง · Shift เร็ว" : "ปิดโหมดบิน");
     }
 
     void ToggleEmote(string emote) => _rig.Emote = _rig.Emote == emote ? null : emote;
@@ -363,11 +425,21 @@ public partial class Player : CharacterBody3D
         var a = Def.Attack;
         _attackCd = AttackCooldown;
         var dir = Aim();
+        if (!HasWeapon)
+        {
+            // Bare hands: quick alternating punches, short reach.
+            _attackCd = Cfg.UnarmedCooldown;
+            _leftHand = !_leftHand;
+            _rig.Play(_leftHand ? PlayerRig.Act.StabL : PlayerRig.Act.StabR, 0.25f);
+            Audio.Play("swing", -6f);
+            HitArc(dir, 1.5f, 80f, AttackDamage, "none");
+            return;
+        }
         if (a.Type == "projectile")
         {
             _rig.Play(PlayerRig.Act.Throw, Mathf.Min(0.3f, _attackCd));
             Audio.Play("throw", -4f);
-            Shoot(dir, a, AttackDamage);
+            Shoot(AimedDir(a.Range), a, AttackDamage);
             return;
         }
 
@@ -418,10 +490,11 @@ public partial class Player : CharacterBody3D
             _rig.Play(PlayerRig.Act.Throw, 0.35f);
             Audio.Play("throw", -1f, 0f);
             float arc = Mathf.DegToRad(s.Arc);
+            var aimed = AimedDir(s.Range);
             for (int i = 0; i < s.Count; i++)
             {
                 float t = s.Count == 1 ? 0f : i / (float)(s.Count - 1) - 0.5f;
-                Shoot(dir.Rotated(Vector3.Up, t * arc), s, SpecialDamage);
+                Shoot(aimed.Rotated(Vector3.Up, t * arc), s, SpecialDamage);
             }
             return;
         }
@@ -433,11 +506,20 @@ public partial class Player : CharacterBody3D
         Fx.Ring(GetParent(), GlobalPosition + dir * s.Distance, 1.6f, new Color(1f, 0.9f, 0.6f), 0.25f);
     }
 
+    Vector3 Muzzle => GlobalPosition + new Vector3(0f, 1.2f, 0f) + Facing * 0.6f;
+
+    // Projectiles fly from the hand to whatever the crosshair points at.
+    Vector3 AimedDir(float range)
+    {
+        var d = Game.Main.AimTarget(Muzzle, range) - Muzzle;
+        return d.LengthSquared() > 0.01f ? d.Normalized() : Facing;
+    }
+
     void Shoot(Vector3 dir, AttackDef a, float damage)
     {
         var p = new Projectile();
         GetParent().AddChild(p);
-        p.GlobalPosition = GlobalPosition + new Vector3(0f, 1.2f, 0f) + dir * 0.6f;
+        p.GlobalPosition = Muzzle;
         p.Setup(dir, a.ProjectileSpeed, a.Range, damage, a.Element);
     }
 

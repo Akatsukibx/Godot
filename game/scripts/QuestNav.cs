@@ -62,6 +62,9 @@ public static class QuestNav
             .OrderBy(g => g.GlobalPosition.DistanceTo(p.GlobalPosition)).FirstOrDefault();
         if (ghost != null)
             return new Target(ghost.GlobalPosition, name, q);
+        var bossZone = GameData.Zones.FirstOrDefault(z => z.Boss?.Ghost == ghostId && z.Scene != null);
+        if (bossZone != null)
+            return new Target(bossZone.Center + new Vector3(bossZone.Boss.X, 0f, bossZone.Boss.Z), $"{name} ({bossZone.Boss.Lair})", q);
         var zone = GameData.Zones.FirstOrDefault(z => z.Scene != null && (ghostId == "any" ? z.Contains(p.GlobalPosition) : z.Ghosts.Contains(ghostId)));
         if (zone == null)
             return null;

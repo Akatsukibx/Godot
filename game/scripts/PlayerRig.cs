@@ -1,5 +1,6 @@
 using Godot;
 using System.Collections.Generic;
+using System.Linq;
 
 // Animates a humanoid model (Models.BuildHumanoid) procedurally by its named joints: locomotion in any
 // direction (walk/run/backpedal/strafe with knees and elbows), jump, roll, a four-swing sword combo,
@@ -10,6 +11,8 @@ public partial class PlayerRig : Node3D
 
     public float Yaw { get; set; }
     public string Emote { get; set; }
+    public bool Crouch { get; set; }
+    public bool Swim { get; set; }
 
     struct Pose
     {
@@ -137,6 +140,16 @@ public partial class PlayerRig : Node3D
             p.KneeL = p.KneeR = -0.05f;
             ApplyEmote(ref p);
         }
+        if (Swim && !dead)
+            SwimPose(ref p, speed, dt);
+        else if (Crouch && !dead)
+        {
+            p.HipsY -= 0.36f;
+            p.LegL += 0.75f; p.LegR += 0.75f;
+            p.KneeL -= 1.1f; p.KneeR -= 1.1f;
+            p.TorsoX -= 0.3f;
+            p.HeadX += 0.2f;
+        }
         ApplyAction(ref p, t);
 
         float k = 1f - Mathf.Exp(-(_act != Act.None ? 30f : 16f) * dt);
@@ -212,6 +225,24 @@ public partial class PlayerRig : Node3D
         p.HipsY = 0.95f - (running ? 0.06f : 0.02f) + Mathf.Abs(c) * (running ? 0.09f : 0.035f);
     }
 
+    // Treading water: breaststroke arms and a frog kick, faster while moving.
+    void SwimPose(ref Pose p, float speed, float dt)
+    {
+        _phase += dt * (speed > 0.2f ? 7f : 3f);
+        float s = Mathf.Sin(_phase), c = Mathf.Cos(_phase);
+        p.HipsY = 0.95f + s * 0.03f;
+        p.TorsoX = speed > 0.2f ? -0.45f : -0.15f;
+        p.HeadX = -p.TorsoX * 0.8f;
+        p.ArmLx = p.ArmRx = 1.5f + c * 0.25f;
+        p.ArmLz = -0.4f - s * 0.6f;
+        p.ArmRz = 0.4f + s * 0.6f;
+        p.ElbowL = p.ElbowR = 0.5f + Mathf.Max(0f, -s) * 0.8f;
+        p.LegL = p.LegR = -0.2f + Mathf.Max(0f, c) * 0.5f;
+        p.KneeL = p.KneeR = -0.4f - Mathf.Max(0f, c) * 0.9f;
+        p.LegLz = -0.25f * Mathf.Max(0f, s);
+        p.LegRz = 0.25f * Mathf.Max(0f, s);
+    }
+
     void ApplyEmote(ref Pose p)
     {
         switch (Emote)
@@ -228,6 +259,48 @@ public partial class PlayerRig : Node3D
                 p.ArmRz = 2.4f;
                 p.ElbowR = 0.6f + Mathf.Sin(_time * 9f) * 0.45f;
                 p.HeadX = 0.1f;
+                break;
+            case "sweep": // both hands low on a broom, swishing side to side
+                p.ArmLx = p.ArmRx = 0.7f;
+                p.ArmLz = 0.3f + Mathf.Sin(_time * 2.4f) * 0.25f;
+                p.ArmRz = -0.1f + Mathf.Sin(_time * 2.4f) * 0.25f;
+                p.ElbowL = p.ElbowR = 0.4f;
+                p.TorsoX = -0.3f;
+                p.TorsoY = Mathf.Sin(_time * 2.4f) * 0.2f;
+                break;
+            case "fish": // sitting with a rod held out over the water
+                p.HipsY = 0.3f;
+                p.LegL = p.LegR = 1.5f;
+                p.KneeL = p.KneeR = -1.5f;
+                p.ArmLx = p.ArmRx = 1.0f + Mathf.Sin(_time * 0.7f) * 0.05f;
+                p.ArmLz = 0.25f;
+                p.ArmRz = -0.25f;
+                p.ElbowL = p.ElbowR = 0.5f;
+                break;
+            case "farm": // bent over planting seedlings
+                p.TorsoX = -0.95f;
+                p.HeadX = 0.5f;
+                p.LegL = 0.35f; p.LegR = -0.1f;
+                p.KneeL = -0.5f; p.KneeR = -0.3f;
+                p.ArmRx = 1.2f + Mathf.Max(0f, Mathf.Sin(_time * 1.8f)) * 0.5f;
+                p.ArmLx = 0.9f;
+                p.ElbowR = 0.3f;
+                p.HipsY = 0.85f;
+                break;
+            case "sell": // calling out to passers-by, now and then waving them over
+                p.ArmLx = 0.6f; p.ElbowL = 1.4f;
+                if (Mathf.Sin(_time * 0.6f) > 0.6f)
+                {
+                    p.ArmRz = 2.2f;
+                    p.ElbowR = 0.5f + Mathf.Sin(_time * 8f) * 0.4f;
+                }
+                break;
+            case "chat": // talking with the hands
+                p.ArmRx = 0.6f + Mathf.Sin(_time * 2.2f) * 0.3f;
+                p.ElbowR = 1.2f;
+                p.ArmLx = 0.4f + Mathf.Sin(_time * 1.7f + 1f) * 0.2f;
+                p.ElbowL = 1f;
+                p.HeadY = Mathf.Sin(_time * 0.9f) * 0.2f;
                 break;
             case "sit":
                 p.HipsY = 0.3f;
@@ -359,6 +432,35 @@ public partial class PlayerRig : Node3D
             return g;
         }
         Color ColorOf(ItemStack s) => s.Def.Color != null ? Color.FromHtml(s.Def.Color) : GameData.RarityColor(s.Def.Rarity);
+
+        // Worn gear replaces the body part it covers instead of sitting on top of it.
+        static void Show(Node3D joint, bool visible, params string[] names)
+        {
+            if (joint == null)
+                return;
+            foreach (var n in names)
+                if (joint.GetNodeOrNull<Node3D>(n) is { } part)
+                    part.Visible = visible;
+        }
+        bool hasHelmet = equipped.ContainsKey("helmet"), hasArmor = equipped.ContainsKey("armor");
+        bool hasPants = equipped.ContainsKey("pants"), hasBoots = equipped.ContainsKey("boots");
+        Show(_head, !hasHelmet, "Hood", "HoodTip", "Headband", "HeadbandTail", "Hair", "Bun", "Cap", "Visor", "Ngob");
+        Show(_torso, !hasArmor, "Chest", "PauldronL", "PauldronR");
+        foreach (var leg in new[] { _legL, _legR })
+            Show(leg, !hasPants, "Thigh");
+        foreach (var knee in new[] { _kneeL, _kneeR })
+        {
+            Show(knee, !hasPants, "Shin");
+            Show(knee, !hasBoots, "Foot");
+        }
+        // Bare hands when no weapon is worn; the class's own off-hand dagger only with one equipped.
+        if (_weapon != null)
+            foreach (var child in _weapon.GetChildren().OfType<Node3D>())
+                child.Visible = equipped.ContainsKey("weapon");
+        if (_offhand != null)
+            foreach (var child in _offhand.GetChildren().OfType<Node3D>())
+                if (!child.Name.ToString().StartsWith("Gear"))
+                    child.Visible = equipped.TryGetValue("offhand", out var oh) && oh.Def.OffhandType != "shield";
 
         if (equipped.TryGetValue("helmet", out var helmet))
         {

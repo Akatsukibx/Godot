@@ -4,6 +4,7 @@
   // special.distance = ระยะพุ่งของท่า lunge · skill type: aoe / heal / guard / frenzy (เร่งการโจมตี)
   {
     "id": "mor_yan",
+    "starterWeapon": "yan_kradat",
     "name": "หมอยันต์",
     "role": "ซัพพอร์ต · ระยะไกล",
     "range": "ไกล", "difficulty": 2, "emblem": "fire_talisman",
@@ -23,6 +24,7 @@
   },
   {
     "id": "nak_dab",
+    "starterWeapon": "dab_mai",
     "name": "นักดาบปลุกเสก",
     "role": "แทงก์ · ระยะประชิด",
     "range": "ใกล้", "difficulty": 1, "emblem": "sword", "offhand": "shield",
@@ -42,6 +44,7 @@
   },
   {
     "id": "nak_kha",
+    "starterWeapon": "mit_lek",
     "name": "นักฆ่าเงาจันทร์",
     "role": "ดาเมจ · ระยะประชิด",
     "range": "ใกล้", "difficulty": 3, "emblem": "dagger_moon", "offhand": "dagger",

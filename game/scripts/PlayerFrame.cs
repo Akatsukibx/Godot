@@ -129,7 +129,7 @@ void fragment() {
         if (p == null || _hp == null)
             return;
         _level.Text = $"Lv {p.Level}";
-        _name.Text = p.Def.Name;
+        _name.Text = p.CharacterName;
         _hp.MaxValue = p.MaxHp;
         _hp.Value = p.Hp;
         _hpText.Text = $"{Mathf.CeilToInt(p.Hp)} / {p.MaxHp:0}" + (p.Guarding ? "  เกราะเพชร" : "");

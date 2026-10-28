@@ -19,6 +19,9 @@ public partial class Ghost : CharacterBody3D
     public bool Weakened { get; private set; }
     public bool Gone { get; private set; }
 
+    float _chargeCd = 4f, _chargeTimer;
+    Vector3 _chargeDir;
+    bool _enraged;
     float _attackCd, _windup, _slowTimer, _slowFactor = 1f, _weakTimer, _flash, _time, _awake, _damage;
     Node3D _visual;
     Label3D _label;
@@ -37,22 +40,32 @@ public partial class Ghost : CharacterBody3D
         MaxHp = def.MaxHp * (1f + Cfg.GhostHpPerLevel * (Level - 1));
         Hp = MaxHp;
         _damage = def.Damage * (1f + Cfg.GhostDamagePerLevel * (Level - 1));
+        if (def.Boss)
+        {
+            MaxHp *= Cfg.BossHpMult;
+            Hp = MaxHp;
+            _damage *= Cfg.BossDamageMult;
+        }
         CollisionLayer = Layers.Ghost;
-        CollisionMask = Layers.World | Layers.Npc;
+        CollisionMask = def.Aquatic ? 0u : Layers.World | Layers.Npc;
+        FloorMaxAngle = Mathf.DegToRad(52f);
+        FloorSnapLength = Cfg.StepHeight + 0.1f;
+        float s = def.Scale;
         AddChild(new CollisionShape3D
         {
-            Shape = new CapsuleShape3D { Radius = 0.45f, Height = 1.8f },
-            Position = new Vector3(0f, 0.9f, 0f),
+            Shape = new CapsuleShape3D { Radius = 0.45f * Mathf.Min(s, 1.6f), Height = 1.8f * s },
+            Position = new Vector3(0f, 0.9f * s, 0f),
         });
         _visual = new Node3D();
         AddChild(_visual);
         var model = Models.Ghost(def);
         _visual.AddChild(model);
+        _visual.Scale = Vector3.One * def.Scale;
         PlayerRig.TrackMaterials(model, _mats);
 
         _label = new Label3D
         {
-            Position = new Vector3(0f, 2.95f, 0f),
+            Position = new Vector3(0f, 2.95f * Mathf.Max(1f, def.Scale * 0.85f), 0f),
             Billboard = BaseMaterial3D.BillboardModeEnum.Enabled,
             NoDepthTest = true,
             FontSize = 52,
@@ -66,7 +79,7 @@ public partial class Ghost : CharacterBody3D
         {
             Mesh = new QuadMesh { Size = new Vector2(1.3f, 0.13f) },
             MaterialOverride = HpBarMaterial(),
-            Position = new Vector3(0f, 2.78f, 0f),
+            Position = new Vector3(0f, 2.78f * Mathf.Max(1f, def.Scale * 0.85f), 0f),
             CastShadow = GeometryInstance3D.ShadowCastingSetting.Off,
         };
         AddChild(_hpBar);
@@ -159,23 +172,53 @@ void fragment() {
         float dist = to.Length();
         Vector3 dir = dist > 0.01f ? to / dist : Vector3.Forward;
 
-        // The field village circle is a sanctuary by day; town ghosts never stray far from their alley.
+        // Villages are sanctuaries: ghosts never follow anyone inside. Town ghosts never stray far
+        // from their alley; bosses stay near their lair.
         var zone = GameData.Zone(Zone);
-        bool playerSafe = !night && zone != null && !zone.AlleyOnly && player.GlobalPosition.DistanceTo(zone.Center) < Cfg.SafeZoneRadius + 4f;
-        float leash = zone?.AlleyOnly == true ? 12f : 45f;
+        bool playerSafe = Game.Main.InSanctuary(player.GlobalPosition)
+            || !night && zone != null && !zone.AlleyOnly && player.GlobalPosition.DistanceTo(zone.Center) < Cfg.SafeZoneRadius + 4f;
+        float leash = Def.Boss ? 40f : zone?.AlleyOnly == true ? 12f : 45f;
         bool tooFar = player.GlobalPosition.DistanceTo(Home) > leash;
         bool chasing = !playerSafe && !tooFar && (dist < Def.AggroRange * (night ? 1.3f : 1f) || _awake > 0f);
         bool frozen = Def.Behavior == "statue" && dist < 30f && player.LookDir.Dot(-dir) > 0.35f;
+        bool enraged = Def.Boss && Hp < MaxHp * 0.5f;
+        if (enraged && !_enraged)
+        {
+            _enraged = true;
+            Game.Toast($"{Def.Name}คลุ้มคลั่ง! โจมตีเร็วและแรงขึ้น");
+            Audio.Play("ghost", 2f, 0f);
+        }
+        float speedMult = _slowFactor * (enraged ? 1.35f : 1f);
 
         Vector3 move = Vector3.Zero;
-        if (_windup > 0f)
+        _chargeCd = Mathf.Max(0f, _chargeCd - dt);
+        if (_chargeTimer > 0f)
+        {
+            // Boss charge: a straight rush that hurts on contact.
+            _chargeTimer -= dt;
+            move = _chargeDir * Def.Speed * 3.2f;
+            if (dist < 1.8f * Def.Scale && _attackCd <= 0f)
+            {
+                player.TakeDamage(_damage * 0.8f, Def.Name);
+                _attackCd = 0.8f;
+            }
+        }
+        else if (_windup > 0f)
         {
             _windup -= dt;
             if (_windup <= 0f)
             {
-                if (dist <= Def.AttackRange + 0.5f)
+                if (Def.Boss)
+                {
+                    // Ground slam around the boss.
+                    float radius = Def.AttackRange + 1.5f;
+                    Fx.Ring(GetParent(), GlobalPosition, radius, new Color(1f, 0.25f, 0.2f), 0.4f);
+                    if (dist <= radius)
+                        player.TakeDamage(_damage * (night ? Cfg.NightDamageMult : 1f), Def.Name);
+                }
+                else if (dist <= Def.AttackRange + 0.5f)
                     player.TakeDamage(_damage * (night ? Cfg.NightDamageMult : 1f), Def.Name);
-                _attackCd = Def.AttackCooldown;
+                _attackCd = Def.AttackCooldown * (enraged ? 0.65f : 1f);
             }
         }
         else if (!chasing && GlobalPosition.DistanceTo(Home) > 2f && !frozen && Def.Behavior != "statue")
@@ -186,14 +229,25 @@ void fragment() {
         }
         else if (chasing && !frozen)
         {
-            if (dist <= Def.AttackRange)
+            if (Def.Boss && dist > 7f && _chargeCd <= 0f)
+            {
+                _chargeDir = dir;
+                _chargeTimer = 0.7f;
+                _chargeCd = enraged ? 5f : 8f;
+                Fx.Ring(GetParent(), GlobalPosition, 2.5f * Def.Scale, new Color(1f, 0.5f, 0.2f), 0.3f);
+            }
+            else if (dist <= Def.AttackRange)
             {
                 if (_attackCd <= 0f)
-                    _windup = Def.Behavior == "brute" ? 0.65f : 0.4f;
+                {
+                    _windup = Def.Boss ? 0.9f : Def.Behavior == "brute" ? 0.65f : 0.4f;
+                    if (Def.Boss)
+                        Fx.Ring(GetParent(), GlobalPosition, Def.AttackRange + 1.5f, new Color(1f, 0.6f, 0.2f), _windup);
+                }
             }
             else
             {
-                move = dir * Def.Speed * _slowFactor;
+                move = dir * Def.Speed * speedMult;
                 if (Def.Behavior == "chaser")
                     move += dir.Cross(Vector3.Up) * Mathf.Sin(_time * 2.5f) * Def.Speed * 0.5f;
             }
@@ -212,8 +266,59 @@ void fragment() {
                 move += away / l * (1.1f - l) * 4f;
         }
 
-        Velocity = new Vector3(move.X, IsOnFloor() ? 0f : Velocity.Y - 20f * dt, move.Z);
+        move = KeepToTerrain(move);
+        float vy;
+        var surface = Game.Main.WaterSurfaceAt(GlobalPosition);
+        float depth = Game.Main.WaterDepthAt(GlobalPosition);
+        if (Def.Aquatic && surface is float sa)
+            vy = (sa - 0.85f - GlobalPosition.Y) * 4f; // half out of the water
+        else if (Def.Flying)
+        {
+            // Hover a little above whatever is below: ground, a pier or the water surface.
+            float floor = surface is float sf && depth > 0.3f ? sf : GlobalPosition.Y;
+            vy = IsOnFloor() || depth > 0.3f ? (floor + (depth > 0.3f ? 0.5f : 0f) - GlobalPosition.Y) * 4f : Velocity.Y - 20f * dt;
+        }
+        else
+            vy = IsOnFloor() ? 0f : Velocity.Y - 20f * dt;
+        Velocity = new Vector3(move.X, vy, move.Z);
+        if (IsOnFloor() && !Def.Aquatic)
+            TryStepUp(new Vector3(move.X, 0f, move.Z) * dt);
         MoveAndSlide();
+    }
+
+    // Water ghosts stay in deep enough water; everything else stays out of it (flyers excepted),
+    // and nothing walks into a village.
+    Vector3 KeepToTerrain(Vector3 move)
+    {
+        var flat = new Vector3(move.X, 0f, move.Z);
+        if (flat.LengthSquared() < 0.01f)
+            return move;
+        var ahead = GlobalPosition + flat.Normalized() * (0.7f * Mathf.Max(1f, Def.Scale * 0.7f));
+        if (Game.Main.InSanctuary(ahead) && !Game.Main.InSanctuary(GlobalPosition))
+            return Vector3.Zero;
+        if (Def.Flying)
+            return move;
+        float depth = Game.Main.WaterDepthAt(ahead);
+        if (Def.Aquatic ? depth < 0.6f : depth > 0.35f)
+            return Vector3.Zero;
+        return move;
+    }
+
+    // Climbs steps, kerbs and pier edges the same way the player does.
+    void TryStepUp(Vector3 motion)
+    {
+        if (motion.LengthSquared() < 1e-6f)
+            return;
+        var probe = motion.Normalized() * Mathf.Max(motion.Length(), 0.12f);
+        var from = GlobalTransform;
+        if (!TestMove(from, probe))
+            return;
+        var lift = Vector3.Up * Cfg.StepHeight;
+        if (TestMove(from, lift))
+            return;
+        if (TestMove(from.Translated(lift), probe))
+            return;
+        GlobalPosition += lift;
     }
 
     void UpdateTint()
@@ -236,7 +341,6 @@ void fragment() {
         _label.Modulate = LevelColor();
     }
 
-// Name colour by level relative to the player: grey (easy) → white → yellow → red (dangerous).    Color LevelColor()    {        int diff = Level - (Game.Player?.Level ?? Level);        return diff <= -5 ? new Color(0.7f, 0.7f, 0.72f) : diff <= 1 ? new Color(1f, 0.92f, 0.9f) : diff <= 4 ? new Color(1f, 0.85f, 0.35f) : new Color(1f, 0.4f, 0.35f);    }
     // Name colour by level relative to the player: grey (easy) → white → yellow → red (dangerous).
     Color LevelColor()
     {

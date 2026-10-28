@@ -28,5 +28,7 @@
 
   { "result": "soi_prakham", "count": 1, "category": "เครื่องประดับ", "ingredients": { "mai_phu": 3, "sai_sin_khat": 2, "saeng_winyan": 1 } },
   { "result": "waen_phirot", "count": 1, "category": "เครื่องประดับ", "ingredients": { "sai_sin_khat": 4, "khi_phueng": 1, "saeng_winyan": 2 } },
-  { "result": "takrut", "count": 1, "category": "เครื่องประดับ", "ingredients": { "sai_sin_khat": 4, "lek_nam_phi": 1, "phlueak_winyan": 1 } }
+  { "result": "takrut", "count": 1, "category": "เครื่องประดับ", "ingredients": { "sai_sin_khat": 4, "lek_nam_phi": 1, "phlueak_winyan": 1 } },
+  { "result": "khrueang_rang_khao", "count": 1, "category": "เครื่องประดับ", "ingredients": { "khao_rueang": 2, "sai_bua": 4, "saeng_winyan": 2 } },
+  { "result": "takrut_mae_bua", "count": 1, "category": "เครื่องประดับ", "ingredients": { "phom_krasue": 1, "bai_tani": 3, "phlueak_winyan": 2, "set_tra_phanuek": 1 } }
 ]

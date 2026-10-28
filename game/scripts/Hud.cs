@@ -88,6 +88,7 @@ public partial class Hud : CanvasLayer
         BuildFrame();
         BuildClock();
         BuildTracker();
+        BuildBossBar();
         BuildToasts();
         BuildCrosshair();
         BuildZoneTitle();
@@ -240,6 +241,35 @@ public partial class Hud : CanvasLayer
         var bar = new CompassBar { MouseFilter = Control.MouseFilterEnum.Ignore, CustomMinimumSize = new Vector2(520f, 46f) };
         Place(bar, 0.5f, 0f, 0f, 6f, Control.GrowDirection.Both, Control.GrowDirection.End);
         AddGameplay(bar);
+    }
+
+    // Boss health across the top while a zone boss is nearby.
+    VBoxContainer _bossBox;
+    Label _bossName;
+    ProgressBar _bossBar;
+
+    void BuildBossBar()
+    {
+        _bossBox = new VBoxContainer { MouseFilter = Control.MouseFilterEnum.Ignore, Visible = false };
+        _bossBox.AddThemeConstantOverride("separation", 2);
+        Place(_bossBox, 0.5f, 0f, 0f, 78f, Control.GrowDirection.Both, Control.GrowDirection.End);
+        _bossName = UiTheme.Label("", 18, new Color(1f, 0.55f, 0.45f));
+        _bossName.HorizontalAlignment = HorizontalAlignment.Center;
+        _bossBox.AddChild(_bossName);
+        (_bossBar, _) = TextBar(new Color(0.75f, 0.1f, 0.08f), 14f, 520f);
+        _bossBox.AddChild(_bossBar);
+        AddGameplay(_bossBox);
+    }
+
+    void RefreshBossBar()
+    {
+        var boss = Game.Main.NearestBoss(45f);
+        _bossBox.Visible = boss != null && !Game.Main.Cutscene.Active;
+        if (boss == null)
+            return;
+        _bossName.Text = $"{boss.Def.Name}  Lv.{boss.Level}" + (boss.Weakened ? $"  · อ่อนแรง กด {Settings.BindingText("banish")} ปราบ / {Settings.BindingText("release")} ปลดปล่อย" : "");
+        _bossBar.MaxValue = boss.MaxHp;
+        _bossBar.Value = boss.Hp;
     }
 
     void RefreshTracker()
@@ -757,6 +787,8 @@ public partial class Hud : CanvasLayer
                 name.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
                 row.AddChild(name);
                 row.AddChild(UiTheme.Label($"{have}/{need}", 17, have >= need ? new Color(0.6f, 1f, 0.6f) : new Color(1f, 0.5f, 0.45f)));
+                row.MouseFilter = Control.MouseFilterEnum.Stop;
+                row.TooltipText = GameData.ItemSourceText(id, have);
                 _recipeIngredients.AddChild(row);
             }
             _craftButton.Disabled = !p.CanCraft(sel);
@@ -994,6 +1026,51 @@ public partial class Hud : CanvasLayer
         _onClassChosen?.Invoke(def);
     }
 
+    // Name entry after picking a class; the name is shown above the character and in the frame.
+    Control _nameDialog;
+    LineEdit _nameEdit;
+    System.Action<string> _onName;
+
+    public void AskName(ClassDef def, System.Action<string> onDone)
+    {
+        _onName = onDone;
+        var dim = new ColorRect { Color = new Color(0f, 0f, 0f, 0.75f), MouseFilter = Control.MouseFilterEnum.Stop };
+        dim.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
+        _root.AddChild(dim);
+        _nameDialog = dim;
+        var panel = UiTheme.Panel();
+        panel.CustomMinimumSize = new Vector2(440f, 0f);
+        dim.AddChild(panel);
+        panel.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.Center, Control.LayoutPresetMode.Minsize);
+        var col = new VBoxContainer();
+        col.AddThemeConstantOverride("separation", 12);
+        panel.AddChild(col);
+        col.AddChild(UiTheme.Heading("ตั้งชื่อตัวละคร", 24));
+        col.AddChild(UiTheme.Label($"อาชีพ: {def.Name}", 15, UiTheme.Muted));
+        _nameEdit = new LineEdit { PlaceholderText = def.Name, MaxLength = 16, CustomMinimumSize = new Vector2(400f, 42f) };
+        _nameEdit.AddThemeFontOverride("font", Game.ThaiFont);
+        _nameEdit.AddThemeFontSizeOverride("font_size", 20);
+        _nameEdit.TextSubmitted += t => ConfirmName(t);
+        col.AddChild(_nameEdit);
+        col.AddChild(UiTheme.Label("ยาวไม่เกิน 16 ตัวอักษร · เว้นว่างไว้จะใช้ชื่ออาชีพ", 13, UiTheme.Muted));
+        var start = new Button { Text = "เริ่มเล่น", CustomMinimumSize = new Vector2(400f, 46f) };
+        start.AddThemeFontSizeOverride("font_size", 20);
+        start.Pressed += () => ConfirmName(_nameEdit.Text);
+        col.AddChild(start);
+        _nameEdit.CallDeferred(Control.MethodName.GrabFocus);
+    }
+
+    public void ConfirmName(string name)
+    {
+        if (_nameDialog == null)
+            return;
+        _nameDialog.QueueFree();
+        _nameDialog = null;
+        var cb = _onName;
+        _onName = null;
+        cb?.Invoke(name?.Trim() ?? "");
+    }
+
     public void ShowDeath(System.Action onRespawn)
     {
         _onRespawn = onRespawn;
@@ -1100,6 +1177,7 @@ public partial class Hud : CanvasLayer
         _crosshair.QueueRedraw();
         RefreshTracker();
         RefreshCompass();
+        RefreshBossBar();
         if (Input.IsActionJustPressed("navigate"))
         {
             Game.Main.GuideLine = !Game.Main.GuideLine;

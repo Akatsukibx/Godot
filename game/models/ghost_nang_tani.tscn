@@ -1,0 +1,123 @@
+[gd_scene format=3]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lfpct"]
+albedo_color = Color(0.44862747, 0.6494118, 0.38274512, 1)
+roughness = 0.85
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_v18ph"]
+top_radius = 0.22
+height = 1.4
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2kghn"]
+albedo_color = Color(0.56078434, 0.8117647, 0.47843137, 1)
+roughness = 0.85
+
+[sub_resource type="BoxMesh" id="BoxMesh_qfhfb"]
+size = Vector3(0.42, 0.5, 0.26)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0rrec"]
+transparency = 1
+albedo_color = Color(0.86, 0.84, 0.76, 0.9)
+roughness = 0.85
+
+[sub_resource type="SphereMesh" id="SphereMesh_ohavj"]
+radius = 0.2
+height = 0.4
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6bcsp"]
+albedo_color = Color(0.04, 0.04, 0.05, 1)
+roughness = 0.85
+
+[sub_resource type="SphereMesh" id="SphereMesh_jisfv"]
+radius = 0.22
+height = 0.44
+
+[sub_resource type="BoxMesh" id="BoxMesh_q15qv"]
+size = Vector3(0.14, 0.6, 0.05)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kfwob"]
+albedo_color = Color(0.6, 1, 0.5, 1)
+roughness = 0.85
+emission_enabled = true
+emission = Color(0.6, 1, 0.5, 1)
+emission_energy_multiplier = 4.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_t1qjk"]
+radius = 0.03
+height = 0.06
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_m51vs"]
+radius = 0.06
+height = 0.7
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8gsbj"]
+albedo_color = Color(0.62666667, 0.84000003, 0.5566667, 1)
+roughness = 0.85
+
+[sub_resource type="BoxMesh" id="BoxMesh_a3hot"]
+size = Vector3(0.08, 1.2, 0.35)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_de5fo"]
+radius = 0.06
+height = 0.7
+
+[sub_resource type="BoxMesh" id="BoxMesh_5sv7r"]
+size = Vector3(0.08, 1.2, 0.35)
+
+[node name="Ghost_nang_tani" type="Node3D" unique_id=947146422]
+
+[node name="Skirt" type="MeshInstance3D" parent="." unique_id=586410578]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+material_override = SubResource("StandardMaterial3D_lfpct")
+mesh = SubResource("CylinderMesh_v18ph")
+
+[node name="Bodice" type="MeshInstance3D" parent="." unique_id=1961546933]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+material_override = SubResource("StandardMaterial3D_2kghn")
+mesh = SubResource("BoxMesh_qfhfb")
+
+[node name="Head" type="MeshInstance3D" parent="." unique_id=1244797175]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.05, -0.02)
+material_override = SubResource("StandardMaterial3D_0rrec")
+mesh = SubResource("SphereMesh_ohavj")
+
+[node name="Hair" type="MeshInstance3D" parent="." unique_id=1362549221]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.03, 2.1, 0.05)
+material_override = SubResource("StandardMaterial3D_6bcsp")
+mesh = SubResource("SphereMesh_jisfv")
+
+[node name="FringeLock" type="MeshInstance3D" parent="." unique_id=671491237]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.08, 1.75, -0.15)
+material_override = SubResource("StandardMaterial3D_6bcsp")
+mesh = SubResource("BoxMesh_q15qv")
+
+[node name="GlowEye" type="MeshInstance3D" parent="." unique_id=951925114]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.08, 2.06, -0.18)
+material_override = SubResource("StandardMaterial3D_kfwob")
+mesh = SubResource("SphereMesh_t1qjk")
+
+[node name="Arm" type="MeshInstance3D" parent="." unique_id=974172726]
+transform = Transform3D(0.9800666, 0.19866933, 0, -0.19470917, 0.9605305, -0.19866933, -0.039469503, 0.19470917, 0.9800666, -0.3, 1.45, -0.05)
+material_override = SubResource("StandardMaterial3D_0rrec")
+mesh = SubResource("CapsuleMesh_m51vs")
+
+[node name="LeafSash" type="MeshInstance3D" parent="." unique_id=645476423]
+transform = Transform3D(0.9689124, 0.24740396, 0, -0.24740396, 0.9689124, 0, 0, 0, 1, -0.45, 1, 0.1)
+material_override = SubResource("StandardMaterial3D_8gsbj")
+mesh = SubResource("BoxMesh_a3hot")
+
+[node name="Arm2" type="MeshInstance3D" parent="." unique_id=2069850901]
+transform = Transform3D(0.9800666, -0.19866933, 0, 0.19470917, 0.9605305, -0.19866933, 0.039469503, 0.19470917, 0.9800666, 0.3, 1.45, -0.05)
+material_override = SubResource("StandardMaterial3D_0rrec")
+mesh = SubResource("CapsuleMesh_de5fo")
+
+[node name="LeafSash2" type="MeshInstance3D" parent="." unique_id=1346494614]
+transform = Transform3D(0.9689124, -0.24740396, 0, 0.24740396, 0.9689124, 0, 0, 0, 1, 0.45, 1, 0.1)
+material_override = SubResource("StandardMaterial3D_8gsbj")
+mesh = SubResource("BoxMesh_5sv7r")
+
+[node name="GlowLight" type="OmniLight3D" parent="." unique_id=1857857238]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, -0.3)
+light_color = Color(0.6, 1, 0.5, 1)
+light_energy = 0.8
+omni_range = 4.0
