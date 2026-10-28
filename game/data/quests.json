@@ -204,7 +204,7 @@
   },
   {
     "id": "s_level", "name": "ผู้เฝ้าประตูตัวจริง", "giver": "thongdee", "requires": "s_lost_traveler",
-    "description": "ฝึกฝนต่อไปจนแข็งแกร่งพอจะไปบึงบัวสาย (จะเปิดในรอบถัดไป)",
+    "description": "ฝึกฝนต่อไปจนแข็งแกร่งพอจะไปบึงบัวสาย (เดินสะพานไม้จากหมู่บ้านกลางน้ำขึ้นเหนือ)",
     "objectives": [ { "type": "level", "target": "any", "count": 10, "text": "ถึงเลเวล" } ],
     "rewards": { "exp": 300, "items": { "takrut": 1 } },
     "dialogue": {

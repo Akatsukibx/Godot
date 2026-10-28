@@ -6,7 +6,7 @@ using System.Linq;
 public static class Settings
 {
     const string FilePath = "user://settings.cfg";
-    const int KeysVersion = 3;
+    const int KeysVersion = 4;
 
     public static float MasterVolume { get; set; } = 0.8f;
     public static float SfxVolume { get; set; } = 1f;
@@ -102,7 +102,7 @@ public static class Settings
         Bind("navigate", K(Key.N));
         Bind("emote_wai", K(Key.Z));
         Bind("emote_wave", K(Key.X));
-        Bind("emote_sit", K(Key.V));
+        Bind("emote_sit", K(Key.Ctrl));
         Bind("respawn", K(Key.R));
         Bind("pause", K(Key.Escape));
     }

@@ -83,6 +83,7 @@ public partial class MapView : Control
         var area = new Rect2(ToMap(Local(-zone.SizeX * 0.5f, -zone.SizeZ * 0.5f)), new Vector2(zone.SizeX, zone.SizeZ) * MapScale);
         DrawRect(area, Grass);
         DrawTagged("map_water", Water);
+        DrawTagged("map_land", Grass);
         DrawTagged("map_grove", new Color(0.08f, 0.12f, 0.08f));
         DrawTagged("map_park", new Color(0.2f, 0.32f, 0.18f));
         DrawTagged("map_graveyard", new Color(0.22f, 0.2f, 0.24f));
@@ -96,6 +97,7 @@ public partial class MapView : Control
         DrawTagged("map_wall", new Color(0.45f, 0.25f, 0.18f));
         DrawTagged("map_house", House, true);
         DrawTagged("map_alley_dark", new Color(0.45f, 0.3f, 0.65f, 0.8f));
+        DrawTagged("map_sign", new Color(0.95f, 0.8f, 0.45f));
 
         // Shrines (the bound one is brighter) and NPCs with quest markers.
         foreach (var shrine in GetTree().GetNodesInGroup("map_shrine").OfType<Node3D>())
@@ -119,6 +121,13 @@ public partial class MapView : Control
         {
             Text(ToMap(Local(-45f, WorldBuilder.ThungNaShoreZ - 22f)), "หมู่บ้านกลางน้ำ", 15, new Color(0.7f, 0.85f, 1f));
             Text(ToMap(Local(-70f, 100f)), "ทุ่งนาหุ่นไล่กา", 15, new Color(0.85f, 0.95f, 0.7f));
+        }
+        else if (zone.Id == "bueng_bua")
+        {
+            Text(ToMap(Local(-95f, 30f)), "หมู่บ้านชาวบึง", 15, new Color(0.85f, 0.95f, 0.7f));
+            Text(ToMap(Local(70f, -5f)), "ศาลาร้าง", 15, new Color(0.9f, 0.85f, 0.75f));
+            Text(ToMap(Local(90f, -140f)), "เกาะตะเคียน", 15, new Color(0.7f, 1f, 0.8f));
+            Text(ToMap(Local(-110f, -140f)), "ป่าไม้ตาย", 15, new Color(0.8f, 0.75f, 0.7f));
         }
         else if (zone.AlleyOnly)
             Text(ToMap(Local(-40f, 70f)), "ซอยมืด (มีผี)", 15, new Color(0.8f, 0.7f, 1f));

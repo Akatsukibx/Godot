@@ -18,6 +18,7 @@ public class AttackDef
     public float ProjectileSpeed { get; set; } = 18f;
     public int Count { get; set; } = 1;
     public float Distance { get; set; } = 3f;
+    public float StaminaCost { get; set; } = 12f;
 }
 
 public class SkillDef
@@ -34,6 +35,7 @@ public class SkillDef
     public float Amount { get; set; }
     public float Duration { get; set; }
     public float DamageReduction { get; set; }
+    public float StaminaCost { get; set; } = 25f;
 }
 
 public class ClassDef

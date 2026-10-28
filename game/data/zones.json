@@ -27,7 +27,14 @@
       { "to": "pa_phai", "side": "east", "label": "ทางเดินคันนา" }
     ]
   },
-  { "id": "bueng_bua", "name": "บึงบัวสาย", "open": false, "levelText": "15–25", "worldX": 1, "worldY": -1, "exits": [ { "to": "thung_na", "side": "south" } ] },
+  {
+    "id": "bueng_bua", "name": "บึงบัวสาย", "subtitle": "บัวสายบานกลางหมอก · อย่าก้าวพ้นสะพาน", "open": true,
+    "scene": "bueng_bua", "centerX": 0, "centerZ": -744, "sizeX": 372, "sizeZ": 372,
+    "levelMin": 15, "levelMax": 25, "levelText": "15–25",
+    "ghosts": [ "phi_tai_hong", "phi_pong" ], "alleyOnly": false, "maxGhostsDay": 8, "maxGhostsNight": 14,
+    "rainChance": 0.4, "worldX": 1, "worldY": -1,
+    "exits": [ { "to": "thung_na", "side": "south", "label": "สะพานไม้สู่ทุ่งนา" } ]
+  },
   { "id": "pa_phai", "name": "ป่าไผ่ทึบ", "open": false, "levelText": "25–35", "worldX": 2, "worldY": 0, "exits": [ { "to": "thung_na", "side": "west" }, { "to": "rong_phayaban", "side": "south" } ] },
   { "id": "rong_phayaban", "name": "โรงพยาบาลร้าง", "open": false, "levelText": "35–45", "worldX": 2, "worldY": 1, "exits": [ { "to": "wat_doi", "side": "east" } ] },
   { "id": "wat_doi", "name": "วัดร้างบนดอย", "open": false, "levelText": "45–58", "worldX": 3, "worldY": 1, "exits": [ { "to": "muang_kao", "side": "south" } ] },

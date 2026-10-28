@@ -15,7 +15,7 @@ using System.Linq;
 //   alley_spawn                      → spots where town ghosts appear
 //   water_area (+ map_size)          → wading area; its y is the water surface
 //   water_surface                    → meshes using the water shader (rain ripples)
-public static class WorldBuilder
+public static partial class WorldBuilder
 {
     public const float Half = 186f;
     public const float ThungNaShoreZ = -110f;
@@ -37,6 +37,7 @@ public static class WorldBuilder
     public static Node3D BuildZone(string scene) => scene switch
     {
         "wiang_mok" => BuildWiangMok(),
+        "bueng_bua" => BuildBuengBua(),
         _ => BuildThungNa(),
     };
 
@@ -72,8 +73,9 @@ public static class WorldBuilder
         BuildStreetLife(city);
         BuildTemple(city, new Vector3(34f, 0f, -36f));
         BuildBus(city, new Vector3(-1.9f, 0f, 22f));
-        BusStop(city, "BusStopCity", new Vector3(-7.4f, 0f, 30f), Mathf.Pi * 0.5f, "wiang_mok", "ลานศาลหลักเมือง");
-        YaiJanHouse(city, new Vector3(20f, 0f, 20f));
+        BusStop(city, "BusStopCity", new Vector3(-7.4f, 0f, 30f), -Mathf.Pi * 0.5f, "wiang_mok", "ลานศาลหลักเมือง");
+        YaiJanHouse(city, new Vector3(25f, 0f, 25f));
+        CitySigns(city);
         Smithy(city, new Vector3(-20f, 0f, -12f));
         BuildBlocks(city);
         return city;
@@ -523,8 +525,8 @@ public static class WorldBuilder
             }
             bool dark = (c.X < 0f && c.Z > 0f && c.Z < 124f && c.X > -124f);
             // Keep clear of the shophouses that front the main street and avenue.
-            float clearX = Mathf.Abs(c.X) < 62f ? 14f : 0f;
-            float clearZ = Mathf.Abs(c.Z) < 62f ? 14f : 0f;
+            float clearX = Mathf.Abs(c.X) < 62f ? 21f : 0f;
+            float clearZ = Mathf.Abs(c.Z) < 62f ? 21f : 0f;
             HouseLots(g, c, w, d, clearX, clearZ, dark, core && c.X > 0f && c.Z > 0f);
         }
     }
@@ -547,7 +549,7 @@ public static class WorldBuilder
                 continue;
             if (skipCorner && world.X < 32f && world.Z < 32f)
                 continue;
-            if (world.DistanceTo(new Vector3(-20f, 0f, -12f)) < 9f)
+            if (world.DistanceTo(new Vector3(-20f, 0f, -12f)) < 13f)
                 continue;
             float yaw = _rng.RandiRange(0, 3) * Mathf.Pi * 0.5f;
             string n = $"House_{i}_{j}";
@@ -596,11 +598,27 @@ public static class WorldBuilder
     {
         Shapes.MapTag(g, "map_park", new Vector2(w, d));
         // Lotus pond with a little sala
-        var pond = Shapes.Cylinder(g, new Vector3(0f, 0.03f, 0f), 12f, 12f, 0.05f, new Color(0.08f, 0.16f, 0.2f), 0f, "Pond");
-        pond.Scale = new Vector3(1.4f, 1f, 1f);
+        // Raised pond: a dark bed, the water shader a little above it and a stone kerb all round.
+        var bed = Shapes.Cylinder(g, new Vector3(0f, 0.02f, 0f), 12f, 12f, 0.04f, new Color(0.05f, 0.07f, 0.06f), 0f, "PondBed");
+        bed.Scale = new Vector3(1.4f, 1f, 1f);
+        var pond = Shapes.Child(g, new MeshInstance3D
+        {
+            Mesh = new CylinderMesh { TopRadius = 12f, BottomRadius = 12f, Height = 0.02f, RadialSegments = 48 },
+            MaterialOverride = WaterMaterial(),
+            CastShadow = GeometryInstance3D.ShadowCastingSetting.Off,
+            Position = new Vector3(0f, 0.36f, 0f),
+            Scale = new Vector3(1.4f, 1f, 1f),
+        }, "PondWater");
+        pond.AddToGroup("water_surface", true);
+        for (int i = 0; i < 40; i++)
+        {
+            float a = i / 40f * Mathf.Tau;
+            var kerb = Shapes.Box(g, new Vector3(Mathf.Cos(a) * 12.3f * 1.4f, 0.2f, Mathf.Sin(a) * 12.3f), new Vector3(0.6f, 0.4f, 2.2f), Stone.Lightened(_rng.RandfRange(-0.05f, 0.05f)), 0f, "Kerb");
+            kerb.Rotation = new Vector3(0f, Mathf.Atan2(-1.4f * Mathf.Sin(a), Mathf.Cos(a)), 0f);
+        }
         for (int i = 0; i < 18; i++)
         {
-            var p = new Vector3(_rng.RandfRange(-14f, 14f), 0.07f, _rng.RandfRange(-9f, 9f));
+            var p = new Vector3(_rng.RandfRange(-14f, 14f), 0.37f, _rng.RandfRange(-9f, 9f));
             if (new Vector2(p.X / 1.4f, p.Z).Length() > 11f)
                 continue;
             Shapes.Cylinder(g, p, 0.5f, 0.5f, 0.02f, new Color(0.2f, 0.42f, 0.2f), 0f, "LotusPad");
@@ -652,13 +670,16 @@ public static class WorldBuilder
         _rng = new RandomNumberGenerator { Seed = 20251028 };
         var world = new Node3D { Name = "Zone_ThungNa" };
 
+        ResetLayout();
         BuildFieldTerrain(world);
         BuildLagoon(world);
-        BuildPaddies(world);
         BuildFieldVillage(world);
+        BuildFieldRoads(world);
         BuildHamlets(world);
         BuildWaterVillage(world);
+        BuildPaddies(world);
         BuildFieldTrees(world);
+        BuildThickets(world, 26);
         BuildFireflies(world, Half);
         return world;
     }
@@ -813,24 +834,25 @@ void fragment() {
         var mangroves = Shapes.Group(world, "Mangroves");
         int k = 0;
         for (float x = -Half + 5f; x <= Half - 5f; x += _rng.RandfRange(6f, 10f))
-            Mangrove(mangroves, $"Mangrove{k++}", new Vector3(x, 0f, _rng.RandfRange(-Half + 3f, -Half + 9f)));
+            if (Mathf.Abs(x) > 7f) // the boardwalk north to the marsh
+                Mangrove(mangroves, $"Mangrove{k++}", new Vector3(x, 0f, _rng.RandfRange(-Half + 3f, -Half + 9f)));
         foreach (var side in new[] { -1f, 1f })
             for (float z = -Half + 12f; z <= ThungNaShoreZ - 6f; z += _rng.RandfRange(6f, 9f))
                 Mangrove(mangroves, $"Mangrove{k++}", new Vector3(side * _rng.RandfRange(Half - 9f, Half - 3f), 0f, z));
         for (int i = 0; i < 26; i++)
         {
             var p = new Vector3(_rng.RandfRange(-Half + 20f, Half - 20f), 0f, _rng.RandfRange(-Half + 15f, ThungNaShoreZ - 22f));
-            if (Mathf.Abs(p.X) < 40f && p.Z > ThungNaShoreZ - 50f)
-                continue; // keep the water village open
+            if (Mathf.Abs(p.X) < 40f && p.Z > ThungNaShoreZ - 50f || Mathf.Abs(p.X) < 8f)
+                continue; // keep the water village and the boardwalk open
             Mangrove(mangroves, $"Mangrove{k++}", p);
         }
     }
 
     // Mangrove: short trunk on arching prop roots that reach down into the water.
-    static void Mangrove(Node3D parent, string name, Vector3 pos)
+    static void Mangrove(Node3D parent, string name, Vector3 pos, float? bedY = null)
     {
         var m = Shapes.Group(parent, name, pos, _rng.Randf() * Mathf.Tau);
-        float bed = -LagoonDepth(pos.X, pos.Z) - 0.1f;
+        float bed = (bedY ?? -LagoonDepth(pos.X, pos.Z)) - 0.1f;
         var bark = new Color(0.32f, 0.26f, 0.2f);
         float s = _rng.RandfRange(0.9f, 1.4f);
         Shapes.Cylinder(m, new Vector3(0f, 2.2f * s, 0f), 0.12f, 0.2f, 2.4f * s, bark, 0f, "Trunk");
@@ -876,18 +898,21 @@ void fragment() {
             var center = new Vector3(gx * 13f, 0f, gz * 13f);
             if (Mathf.Abs(gx) <= 1 && Mathf.Abs(gz) <= 1)
                 continue; // village
-            if (gx == 0 || Mathf.Abs(center.Z - FieldRoadZ) < 8f)
-                continue; // roads
+            if (DistToRoads(center) < 8.6f || Blocked(center, 7.5f))
+                continue; // roads, lanes and houses
             if (center.Z < ThungNaShoreZ + 14f || Mathf.Abs(center.X) > Half - 12f || center.Z > Half - 12f)
                 continue;
-            if (NearAny(center, HamletCenters, 32f) || NearAny(center, ForestPatches, 30f))
+            if (NearAny(center, ForestPatches, 30f))
                 continue;
+            _plots.Add(center);
             var plot = Shapes.Group(root, $"Plot_{gx}_{gz}", center);
             Shapes.MapTag(plot, "map_plot", new Vector2(11f, 11f));
             float tone = _rng.RandfRange(-0.03f, 0.03f);
             Shapes.Box(plot, new Vector3(0f, 0.03f, 0f), new Vector3(11f, 0.06f, 11f), new Color(0.22f + tone, 0.28f + tone, 0.2f), 0f, "Mud");
             Shapes.Box(plot, new Vector3(0f, 0.12f, -5.7f), new Vector3(11.8f, 0.24f, 0.5f), new Color(0.32f, 0.27f, 0.18f), 0f, "DikeN");
             Shapes.Box(plot, new Vector3(-5.7f, 0.12f, 0f), new Vector3(0.5f, 0.24f, 11.8f), new Color(0.32f, 0.27f, 0.18f), 0f, "DikeW");
+            Shapes.Box(plot, new Vector3(0f, 0.12f, 5.7f), new Vector3(11.8f, 0.24f, 0.5f), new Color(0.32f, 0.27f, 0.18f), 0f, "DikeS");
+            Shapes.Box(plot, new Vector3(5.7f, 0.12f, 0f), new Vector3(0.5f, 0.24f, 11.8f), new Color(0.32f, 0.27f, 0.18f), 0f, "DikeE");
         }
     }
 
@@ -895,9 +920,11 @@ void fragment() {
     {
         var v = Shapes.Group(world, "Village");
         Shapes.MapTag(Shapes.Box(v, new Vector3(0f, 0.02f, 0f), new Vector3(22f, 0.04f, 22f), Dirt, 0f, "Plaza"), "map_road", new Vector2(22f, 22f));
-        Shapes.MapTag(Shapes.Box(v, new Vector3(0f, 0.02f, (11f + Half) * 0.5f), new Vector3(4f, 0.04f, Half - 11f), Dirt, 0f, "RoadSouth"), "map_road", new Vector2(4f, Half - 11f));
         Shapes.MapTag(Shapes.Box(v, new Vector3(0f, 0.025f, (ThungNaShoreZ + 4f - 11f) * 0.5f), new Vector3(2.8f, 0.04f, -(ThungNaShoreZ + 4f) - 11f), Dirt, 0f, "PathNorth"), "map_road", new Vector2(2.8f, -(ThungNaShoreZ + 4f) - 11f));
-        Shapes.MapTag(Shapes.Box(v, new Vector3(0f, 0.022f, FieldRoadZ), new Vector3(Half * 2f - 20f, 0.04f, 3.4f), Dirt, 0f, "RoadEastWest"), "map_road", new Vector2(Half * 2f - 20f, 3.4f));
+        AddRoad(new Vector3(0f, 0f, ThungNaShoreZ + 4f), new Vector3(0f, 0f, -11f), 1.4f);
+        Occupy(Vector3.Zero, 14f); // the village core keeps its layout
+        SignPost(v, new Vector3(13.5f, 0f, 13.5f), ("เวียงหมอก", new Vector3(0f, 0f, 1f)), ("หมู่บ้านกลางน้ำ · บึงบัวสาย", new Vector3(0f, 0f, -1f)),
+            ("หมู่บ้านตายาย", new Vector3(-1f, 0f, 0.3f)), ("หมู่บ้านตะวันออก", new Vector3(1f, 0f, 0.3f)));
 
         var shrine = Shapes.Group(v, "ShrineThungNa", new Vector3(0f, 0f, -3f));
         PhraPhumShrine(shrine, "thung_na", "ศาลพระภูมิทุ่งนา");
@@ -905,7 +932,7 @@ void fragment() {
         TwinHouse(v, "HouseTwin", new Vector3(11f, 0f, -7f), -0.3f);
         Hut(v, "HutWest", new Vector3(-8.5f, 0f, 8.5f), Mathf.Pi * 0.5f);
         Granary(v, "Granary", new Vector3(9f, 0f, 8.5f), Mathf.Pi);
-        BusStop(v, "BusStopField", new Vector3(5.2f, 0f, 26f), -Mathf.Pi * 0.5f, "thung_na", "หมู่บ้านทุ่งนา");
+        BusStop(v, "BusStopField", new Vector3(5.2f, 0f, 26f), Mathf.Pi * 0.5f, "thung_na", "หมู่บ้านทุ่งนา");
 
         var ring = Shapes.Group(v, "LanternRing");
         float r = GameData.Config.SafeZoneRadius + 5f;
@@ -964,39 +991,6 @@ void fragment() {
         Shapes.Box(sc, new Vector3(0f, 1.2f, 0f), new Vector3(0.55f, 0.7f, 0.28f), new Color(0.5f, 0.42f, 0.3f), 0f, "Shirt");
         Shapes.Sphere(sc, new Vector3(0f, 1.85f, 0f), 0.24f, new Color(0.78f, 0.7f, 0.5f), 0f, "Head");
         Shapes.Cylinder(sc, new Vector3(0f, 2.08f, 0f), 0.02f, 0.5f, 0.22f, new Color(0.6f, 0.5f, 0.25f), 0f, "Hat");
-    }
-
-    // Two farming hamlets along the east-west road; the western one has its own shrine.
-    static void BuildHamlets(Node3D world)
-    {
-        var h = Shapes.Group(world, "Hamlets");
-        int n = 0;
-        foreach (var c in HamletCenters)
-        {
-            var g = Shapes.Group(h, $"Hamlet{n}", c);
-            Shapes.MapTag(Shapes.Box(g, new Vector3(0f, 0.02f, 0f), new Vector3(18f, 0.04f, 18f), Dirt, 0f, "Yard"), "map_road", new Vector2(18f, 18f));
-            for (int i = 0; i < 6; i++)
-            {
-                float a = i / 6f * Mathf.Tau + 0.4f;
-                var p = new Vector3(Mathf.Cos(a) * 17f, 0f, Mathf.Sin(a) * 17f);
-                if (Mathf.Abs(p.Z) < 4f)
-                    continue; // the road passes through
-                float yaw = Mathf.Atan2(p.X, p.Z);
-                switch (i % 3)
-                {
-                    case 0: StiltHouse(g, $"House{i}", p, yaw, 2.2f, i % 2 == 0); break;
-                    case 1: Hut(g, $"Hut{i}", p, yaw); break;
-                    default: Granary(g, $"Granary{i}", p, yaw); break;
-                }
-            }
-            if (n == 0)
-            {
-                var shrine = Shapes.Group(g, "ShrineTaYai", new Vector3(0f, 0f, -6f));
-                PhraPhumShrine(shrine, "thung_na_west", "ศาลตายาย");
-            }
-            LanternPost(g, "HamletLantern", new Vector3(5f, 0f, 5f), 2.6f, true);
-            n++;
-        }
     }
 
     // ---------- house styles ----------
@@ -1080,6 +1074,11 @@ void fragment() {
         foreach (var x in new[] { -1.9f, 1.9f })
             Shapes.Box(h, new Vector3(x, stilt + 1.5f, -wallD * 0.5f - 0.02f), new Vector3(1f, 0.85f, 0.04f), lit ? WindowGlow : new Color(0.08f, 0.06f, 0.05f), lit ? 2f : 0f, lit ? "GlowWindow" : "Window");
         Shapes.Box(h, new Vector3(w * 0.5f + 0.01f, stilt + 1.5f, 0f), new Vector3(0.04f, 0.85f, 1f), lit ? WindowGlow : new Color(0.08f, 0.06f, 0.05f), lit ? 1.6f : 0f, lit ? "GlowWindowSide" : "WindowSide");
+        Shapes.Box(h, new Vector3(-w * 0.5f - 0.01f, stilt + 1.5f, 0f), new Vector3(0.04f, 0.85f, 1f), new Color(0.08f, 0.06f, 0.05f), 0f, "WindowSideW");
+        foreach (var x in new[] { -1.5f, 1.5f })
+            Shapes.Box(h, new Vector3(x, stilt + 1.5f, wallD * 0.5f + 0.02f), new Vector3(0.9f, 0.8f, 0.04f), new Color(0.08f, 0.06f, 0.05f), 0f, "WindowBack");
+        for (int i = -5; i <= 5; i++)
+            Shapes.Box(h, new Vector3(i * 0.55f, stilt + wallH * 0.5f, wallD * 0.5f + 0.01f), new Vector3(0.05f, wallH, 0.02f), DarkWood, 0f, "SeamBack");
 
         GableRoof(h, stilt + wallH, w, wallD + 0.6f, 0f, Thatch.Lightened(_rng.RandfRange(-0.04f, 0.04f)), wood, kalae);
 
@@ -1114,6 +1113,9 @@ void fragment() {
         Shapes.Box(h, new Vector3(0f, stilt + 1.05f, -s * 0.5f - 0.02f), new Vector3(0.9f, 2f, 0.04f), new Color(0.12f, 0.08f, 0.05f), 0f, "Door");
         bool lit = _rng.Randf() < 0.6f;
         Shapes.Box(h, new Vector3(1.2f, stilt + 1.4f, -s * 0.5f - 0.02f), new Vector3(0.7f, 0.6f, 0.04f), lit ? WindowGlow : new Color(0.08f, 0.06f, 0.05f), lit ? 1.8f : 0f, lit ? "GlowWindow" : "Window");
+        foreach (var side in new[] { -1f, 1f })
+            Shapes.Box(h, new Vector3(side * (s * 0.5f + 0.02f), stilt + 1.4f, 0f), new Vector3(0.04f, 0.6f, 0.7f), new Color(0.08f, 0.06f, 0.05f), 0f, "WindowSide");
+        Shapes.Box(h, new Vector3(0f, stilt + 1.4f, s * 0.5f + 0.02f), new Vector3(0.7f, 0.6f, 0.04f), new Color(0.08f, 0.06f, 0.05f), 0f, "WindowBack");
         PyramidRoof(h, new Vector3(0f, stilt + 2.35f + 1.1f, 0f), s * 0.5f + 0.7f, 2.2f, Thatch, "Roof");
         Stairs(h, s * 0.5f + 0.2f, stilt, 0.9f);
         Shapes.Solid(h, new Vector3(0f, (stilt + 2.4f) * 0.5f + 0.1f, 0f), new Vector3(s + 0.4f, stilt + 2.4f, s + 0.4f));
@@ -1138,7 +1140,17 @@ void fragment() {
             Shapes.Solid(hallNode, new Vector3(0f, stilt + wallH * 0.5f + 0.5f, 0f), new Vector3(hall, wallH + 1f, wallD), "WallCollider");
             Shapes.Box(hallNode, new Vector3(0f, stilt + 1.1f, -wallD * 0.5f - 0.02f), new Vector3(1f, 2.2f, 0.04f), new Color(0.14f, 0.09f, 0.06f), 0f, "Door");
             Shapes.Box(hallNode, new Vector3(1.2f, stilt + 1.5f, -wallD * 0.5f - 0.02f), new Vector3(0.8f, 0.8f, 0.04f), WindowGlow, 1.8f, "GlowWindow");
+            Shapes.Box(hallNode, new Vector3(0f, stilt + 1.5f, wallD * 0.5f + 0.02f), new Vector3(0.9f, 0.8f, 0.04f), new Color(0.08f, 0.06f, 0.05f), 0f, "WindowBack");
+            Shapes.Box(hallNode, new Vector3(x < 0f ? -hall * 0.5f - 0.02f : hall * 0.5f + 0.02f, stilt + 1.5f, 0f), new Vector3(0.04f, 0.8f, 0.9f), WindowGlow, 1.4f, "GlowWindowSide");
             GableRoof(hallNode, stilt + wallH, hall, wallD + 0.6f, 0f, Tile.Darkened(0.15f), wood, true);
+        }
+        // Deck railing along the front, broken for the stairs.
+        foreach (var s in new[] { -1f, 1f })
+        {
+            Shapes.Box(h, new Vector3(s * 2.8f, stilt + 0.9f, -3.65f), new Vector3(4.2f, 0.07f, 0.08f), DarkWood, 0f, "Rail");
+            Shapes.Solid(h, new Vector3(s * 2.8f, stilt + 0.5f, -3.65f), new Vector3(4.2f, 1f, 0.1f), "RailCollider");
+            for (int i = 0; i < 6; i++)
+                Shapes.Box(h, new Vector3(s * (0.95f + i * 0.75f), stilt + 0.45f, -3.65f), new Vector3(0.06f, 0.9f, 0.06f), DarkWood, 0f, "Baluster");
         }
         Stairs(h, 3.7f, stilt, 1.2f);
     }
@@ -1195,6 +1207,11 @@ void fragment() {
         Deck(wv, "PierMainSouth", new Vector3(0f, 0f, (ThungNaShoreZ + zCross + pierHalf) * 0.5f), new Vector2(2.6f, ThungNaShoreZ - (zCross + pierHalf)), railX: true);
         Deck(wv, "PierCrossing", new Vector3(0f, 0f, zCross), new Vector2(2.6f, 2.6f));
         Deck(wv, "PierMainNorth", new Vector3(0f, 0f, zCross - 5.7f), new Vector2(2.6f, 8.8f), railX: true);
+        // Long boardwalk north across the lagoon to the edge of บึงบัวสาย.
+        float bwStart = zCross - 10.1f, bwEnd = -Half + 1.5f;
+        Deck(wv, "BoardwalkToBueng", new Vector3(0f, 0f, (bwStart + bwEnd) * 0.5f), new Vector2(2.6f, bwStart - bwEnd), railX: true);
+        for (float z = bwStart - 12f; z > bwEnd + 4f; z -= 16f)
+            LanternPost(wv, $"BoardwalkLantern{z:0}", new Vector3(1.4f, DeckTop, z), 2.4f, ((int)z / 16) % 2 == 0);
         Deck(wv, "PierWest", new Vector3(-16.15f, 0f, zCross), new Vector2(29.7f, 2.6f), railZ: true,
             gapsNeg: north.Where(x => x < 0f).Select(x => x + 16.15f).ToArray(), gapsPos: south.Where(x => x < 0f).Select(x => x + 16.15f).ToArray());
         Deck(wv, "PierEast", new Vector3(16.15f, 0f, zCross), new Vector2(29.7f, 2.6f), railZ: true,
@@ -1313,7 +1330,7 @@ void fragment() {
         for (int i = 0; i < 50; i++)
         {
             var p = new Vector3(_rng.RandiRange(-13, 12) * 13f + 6.5f, 0f, _rng.RandiRange(-6, 12) * 13f + 6.5f);
-            if (p.Length() < 24f || Mathf.Abs(p.X) < 4f || Mathf.Abs(p.Z - FieldRoadZ) < 4f || p.Z < ThungNaShoreZ + 8f)
+            if (p.Length() < 24f || DistToRoads(p) < 3f || Blocked(p, 2f) || p.Z < ThungNaShoreZ + 8f)
                 continue;
             Palm(palms, "SugarPalm", p, _rng.RandfRange(8f, 10f));
         }
@@ -1478,7 +1495,7 @@ void fragment() {
         {
             var ff = Shapes.Child(world, new GpuParticles3D
             {
-                Amount = 200,
+                Amount = 60,
                 Lifetime = 7f,
                 Preprocess = 7f,
                 Position = new Vector3(x, 1.6f, z),
@@ -1700,6 +1717,12 @@ void fragment() {
                 var wp = new Vector3(x - half + zone.CenterX, 0f, z - half + zone.CenterZ);
                 if (waterRect.HasPoint(new Vector2(wp.X, wp.Z)))
                     continue;
+                if (zone.Scene == "bueng_bua")
+                {
+                    wp.Y = BuengHeight(wp.X - zone.CenterX, wp.Z - zone.CenterZ);
+                    if (wp.Y < 0.08f)
+                        continue;
+                }
                 float s = rng.RandfRange(0.7f, 1.4f);
                 transforms.Add(new Transform3D(new Basis(Vector3.Up, rng.Randf() * Mathf.Tau).Scaled(Vector3.One * s), wp));
                 colors.Add(new Color(1f, 1f, 1f).Lerp(new Color(0.85f, 0.8f, 0.6f), rng.Randf() * 0.5f));

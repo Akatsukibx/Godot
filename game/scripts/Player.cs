@@ -314,6 +314,22 @@ public partial class Player : CharacterBody3D
             _yaw = YawOf(d.Normalized());
     }
 
+    bool SpendStamina(float cost)
+    {
+        if (Stamina < cost)
+        {
+            if (_noStaminaToast <= 0f)
+            {
+                Game.Toast("ความอึดไม่พอ");
+                _noStaminaToast = 2f;
+            }
+            return false;
+        }
+        Stamina -= cost;
+        _staminaDelay = Cfg.StaminaRegenDelay;
+        return true;
+    }
+
     void TryRoll(Vector3 dir)
     {
         if (Stamina < Cfg.DashStaminaCost)
@@ -393,6 +409,8 @@ public partial class Player : CharacterBody3D
         var s = Def.Special;
         if (s == null)
             return;
+        if (!SpendStamina(s.StaminaCost))
+            return;
         _specialCd = s.Cooldown;
         var dir = Aim();
         if (s.Type == "fan")
@@ -443,6 +461,8 @@ public partial class Player : CharacterBody3D
     {
         var s = Def.Skills[i];
         if (_skillCd[i] > 0f)
+            return;
+        if (!SpendStamina(s.StaminaCost))
             return;
         _skillCd[i] = s.Cooldown;
         _combatTimer = Cfg.HpRegenDelay;

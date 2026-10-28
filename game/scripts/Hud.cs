@@ -185,6 +185,9 @@ public partial class Hud : CanvasLayer
 
     void BuildClock()
     {
+        var mini = new MiniMap();
+        Place(mini, 1f, 0f, -18f, 78f, Control.GrowDirection.Begin, Control.GrowDirection.End);
+        AddGameplay(mini);
         var panel = UiTheme.Panel();
         panel.AddThemeStyleboxOverride("panel", UiTheme.Glass(10, 0.72f));
         Place(panel, 1f, 0f, -18f, 18f, Control.GrowDirection.Begin, Control.GrowDirection.End);
@@ -211,7 +214,10 @@ public partial class Hud : CanvasLayer
     {
         var box = new VBoxContainer { MouseFilter = Control.MouseFilterEnum.Ignore, CustomMinimumSize = new Vector2(250f, 0f) };
         box.AddThemeConstantOverride("separation", 2);
-        Place(box, 0f, 0.3f, 18f, 0f, Control.GrowDirection.End, Control.GrowDirection.End);
+        var backing = new PanelContainer { MouseFilter = Control.MouseFilterEnum.Ignore };
+        backing.AddThemeStyleboxOverride("panel", UiTheme.Box(new Color(0.02f, 0.02f, 0.03f, 0.55f), new Color(1f, 1f, 1f, 0.08f), 1, 6, 8));
+        backing.AddChild(box);
+        Place(backing, 0f, 0.3f, 18f, 0f, Control.GrowDirection.End, Control.GrowDirection.End);
         _trackerHeader = new Button { Alignment = HorizontalAlignment.Left, Flat = true, MouseFilter = Control.MouseFilterEnum.Stop };
         _trackerHeader.AddThemeFontSizeOverride("font_size", 15);
         _trackerHeader.AddThemeColorOverride("font_color", UiTheme.Gold);
@@ -224,13 +230,16 @@ public partial class Hud : CanvasLayer
         _tracker = new VBoxContainer { MouseFilter = Control.MouseFilterEnum.Ignore };
         _tracker.AddThemeConstantOverride("separation", 1);
         box.AddChild(_tracker);
-        AddGameplay(box);
+        AddGameplay(backing);
 
         // Compass to the tracked quest's target, top centre.
         _compass = UiTheme.Label("", 15, UiTheme.Gold);
         _compass.HorizontalAlignment = HorizontalAlignment.Center;
-        Place(_compass, 0.5f, 0f, 0f, 14f, Control.GrowDirection.Both, Control.GrowDirection.End);
+        Place(_compass, 0.5f, 0f, 0f, 48f, Control.GrowDirection.Both, Control.GrowDirection.End);
         AddGameplay(_compass);
+        var bar = new CompassBar { MouseFilter = Control.MouseFilterEnum.Ignore, CustomMinimumSize = new Vector2(520f, 46f) };
+        Place(bar, 0.5f, 0f, 0f, 6f, Control.GrowDirection.Both, Control.GrowDirection.End);
+        AddGameplay(bar);
     }
 
     void RefreshTracker()
@@ -595,7 +604,7 @@ public partial class Hud : CanvasLayer
     {
         var log = _player.Quests;
         var visible = GameData.Quests.Where(q => log.StateOf(q, _player) != QuestLog.State.Locked)
-            .OrderBy(q => q.Main ? 0 : 1).ThenBy(q => log.StateOf(q, _player) switch
+            .OrderBy(q => log.StateOf(q, _player) == QuestLog.State.Done ? 1 : 0).ThenBy(q => q.Main ? 0 : 1).ThenBy(q => log.StateOf(q, _player) switch
             {
                 QuestLog.State.Ready => 0, QuestLog.State.Active => 1, QuestLog.State.Available => 2, _ => 3,
             }).ToList();
@@ -606,8 +615,15 @@ public partial class Hud : CanvasLayer
             _questVersion = version;
             foreach (var c in _questList.GetChildren())
                 c.QueueFree();
+            bool? doneSection = null;
             foreach (var q in visible)
             {
+                bool isDone = log.StateOf(q, _player) == QuestLog.State.Done;
+                if (doneSection != isDone)
+                {
+                    doneSection = isDone;
+                    _questList.AddChild(UiTheme.Label(isDone ? "เสร็จแล้ว" : "ยังไม่เสร็จ", 15, isDone ? UiTheme.Muted : UiTheme.Gold));
+                }
                 var state = log.StateOf(q, _player);
                 string id = q.Id;
                 var b = UiTheme.ListButton($"{q.Name}\n{StateText(state)}", () =>

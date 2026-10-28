@@ -110,6 +110,7 @@ public partial class Main : Node3D
         WorldBuilder.ApplyDistanceCulling(this);
         AddChild(WorldBuilder.BuildRice(GetTree().GetNodesInGroup("map_plot").OfType<Node3D>()));
         AddChild(WorldBuilder.BuildForest(WorldBuilder.WorldBounds()));
+        AddChild(WorldBuilder.BuildLilies(GetTree().GetNodesInGroup("lily_field").OfType<Node3D>()));
         foreach (var shrine in GetTree().GetNodesInGroup("shrine").OfType<Node3D>())
             _shrines[(string)shrine.GetMeta("shrine_id")] = shrine;
         foreach (var stop in GetTree().GetNodesInGroup("bus_stop").OfType<Node3D>())
@@ -173,7 +174,7 @@ public partial class Main : Node3D
         if (_grass.Count > 0 || _water.Count > 0)
             RebuildGrass();
         foreach (var ff in GetTree().GetNodesInGroup("fireflies").OfType<GpuParticles3D>())
-            ff.Amount = q == 0 ? 120 : 360;
+            ff.Amount = q == 0 ? 30 : 70;
     }
 
     public void OpenClassSelect() => Hud.ShowClassSelect(GameData.Classes, def => StartGame(def, null));
