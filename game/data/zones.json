@@ -1,0 +1,37 @@
+[
+  // พื้นที่ทั้งหมดอยู่ในโลกเดียวกัน เดินต่อกันได้ไม่ต้องโหลดฉาก
+  // centerX/centerZ/sizeX/sizeZ = ขอบเขตในโลก (เมตร) · scene = ไฟล์ฉากใน models/ (วางที่ center)
+  // levelMin/levelMax = เลเวลแนะนำและเลเวลผีที่เกิด · ghosts = ผีที่เกิดในพื้นที่นี้
+  // alleyOnly = ผีเกิดเฉพาะจุดในซอย (กลุ่ม alley_spawn ในฉาก) · maxGhosts = จำนวนผีสูงสุดกลางวัน/กลางคืน
+  // rainChance = โอกาสฝนตก (0–1) ทุกการสุ่มรอบใหม่ · worldX/worldY = ตำแหน่งบนแผนที่โลก
+  {
+    "id": "wiang_mok", "name": "เวียงหมอก", "subtitle": "เมืองศูนย์กลาง · พื้นที่ปลอดภัย", "open": true,
+    "scene": "wiang_mok", "centerX": 0, "centerZ": 0, "sizeX": 372, "sizeZ": 372,
+    "levelMin": 1, "levelMax": 3, "levelText": "ทุกระดับ",
+    "ghosts": [ "winyan_long_soi" ], "alleyOnly": true, "maxGhostsDay": 2, "maxGhostsNight": 6,
+    "rainChance": 0.2, "worldX": 1, "worldY": 1,
+    "exits": [
+      { "to": "thung_na", "side": "north", "label": "ประตูเมืองทิศเหนือ" },
+      { "to": "talat_phi", "side": "south", "label": "ประตูเมืองทิศใต้" }
+    ]
+  },
+  {
+    "id": "thung_na", "name": "ทุ่งนาหุ่นไล่กา", "subtitle": "หุ่นไล่กาขยับเมื่อคุณละสายตา", "open": true,
+    "scene": "thung_na", "centerX": 0, "centerZ": -372, "sizeX": 372, "sizeZ": 372,
+    "levelMin": 1, "levelMax": 15, "levelText": "1–15",
+    "ghosts": [ "hun_lai_ka", "phi_pong", "phi_tai_hong" ], "alleyOnly": false, "maxGhostsDay": 10, "maxGhostsNight": 16,
+    "rainChance": 0.3, "worldX": 1, "worldY": 0,
+    "exits": [
+      { "to": "wiang_mok", "side": "south", "label": "ทางลงเวียงหมอก" },
+      { "to": "bueng_bua", "side": "north", "label": "ท่าน้ำ" },
+      { "to": "pa_phai", "side": "east", "label": "ทางเดินคันนา" }
+    ]
+  },
+  { "id": "bueng_bua", "name": "บึงบัวสาย", "open": false, "levelText": "15–25", "worldX": 1, "worldY": -1, "exits": [ { "to": "thung_na", "side": "south" } ] },
+  { "id": "pa_phai", "name": "ป่าไผ่ทึบ", "open": false, "levelText": "25–35", "worldX": 2, "worldY": 0, "exits": [ { "to": "thung_na", "side": "west" }, { "to": "rong_phayaban", "side": "south" } ] },
+  { "id": "rong_phayaban", "name": "โรงพยาบาลร้าง", "open": false, "levelText": "35–45", "worldX": 2, "worldY": 1, "exits": [ { "to": "wat_doi", "side": "east" } ] },
+  { "id": "wat_doi", "name": "วัดร้างบนดอย", "open": false, "levelText": "45–58", "worldX": 3, "worldY": 1, "exits": [ { "to": "muang_kao", "side": "south" } ] },
+  { "id": "muang_kao", "name": "ย่านเมืองเก่าและต้นตะเคียน", "open": false, "levelText": "58–70", "worldX": 3, "worldY": 2, "exits": [] },
+  { "id": "talat_phi", "name": "ตลาดผีริมน้ำ", "open": false, "levelText": "-", "worldX": 1, "worldY": 2, "exits": [ { "to": "wiang_mok", "side": "north" } ] },
+  { "id": "yommalok", "name": "ยมโลก", "open": false, "levelText": "raid", "worldX": 0, "worldY": 2, "exits": [] }
+]

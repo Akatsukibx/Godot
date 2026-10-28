@@ -1,0 +1,76 @@
+{
+  // เวลาในเกม: 1 วินาทีจริง = 1 นาทีในเกม (1 นาทีจริง = 1 ชั่วโมงในเกม, 1 วันในเกม = 24 นาทีจริง)
+  "minutesPerSecond": 1,
+  "dayStartHour": 6,
+  "nightStartHour": 18,
+  "startHour": 19.5,
+
+  // เส้น EXP: ต้องใช้ expBase * expGrowth^(level-1)
+  "expBase": 60,
+  "expGrowth": 1.4,
+  "statPointsPerLevel": 3,
+
+  // การเคลื่อนที่ (วิ่งไม่เสียความอึด กลิ้ง dash* เสีย)
+  "sprintMultiplier": 1.6,
+  "dashDistance": 5.5,
+  "dashDuration": 0.42,
+  "dashCooldown": 0.5,
+  "maxStamina": 100,
+  "dashStaminaCost": 30,
+  "staminaRegen": 22,
+  "staminaRegenDelay": 0.8,
+  "jumpVelocity": 6.5,
+  "stepHeight": 0.42,
+  "backpedalMultiplier": 0.6,
+  "strafeMultiplier": 0.85,
+  "comboWindowSec": 1.2,
+  "comboFinisherMult": 1.8,
+
+  // ลุยน้ำ: ช้าลงตามความลึก (ลึกสุดที่เดินได้ = maxWadeDepth เมตร)
+  "maxWadeDepth": 1.05,
+  "wadeSlowAtMaxDepth": 0.45,
+
+  // เลเวลผี: ค่าใน ghosts.json คือเลเวล 1 แต่ละเลเวลเพิ่มตามนี้
+  "ghostHpPerLevel": 0.18,
+  "ghostDamagePerLevel": 0.12,
+  "ghostExpPerLevel": 0.25,
+
+  // ฝน: สุ่มใหม่ทุก rainRollHours ชั่วโมงในเกม ตามโอกาส rainChance ของแต่ละพื้นที่ (zones.json)
+  "rainRollHours": 3,
+
+  // การเกิดของผี (จำนวนสูงสุดอยู่ใน zones.json)
+  "spawnIntervalDay": 7,
+  "spawnIntervalNight": 2.5,
+
+  // กลางคืนผีแรงขึ้น ดรอปดีขึ้น
+  "nightDamageMult": 1.4,
+  "nightDropMult": 1.4,
+  "nightExpMult": 1.5,
+
+  // วงโคมรอบศาลทุ่งนา: ปลอดภัยเฉพาะกลางวัน
+  "safeZoneRadius": 10,
+  "worldHalfSize": 60,
+  "weakenedAutoBanish": true,
+  "weakenedDurationSec": 10,
+  "releaseExpRatio": 0.5,
+  "releaseHeal": 15,
+  "deathExpLossRatio": 0.2,
+
+  // ฟื้นเลือดเองเมื่อไม่ได้สู้ครบ hpRegenDelay วินาที (สัดส่วนของชีวิตสูงสุดต่อวินาที)
+  "hpRegenDelay": 10,
+  "hpRegenPercent": 0.03,
+
+  // คราฟต์: โอกาสสำเร็จตาม rarity ของของที่ได้ (ปกติ ดี หายาก ล้ำค่า ตำนาน)
+  "craftSuccess": [1.0, 0.95, 0.8, 0.6, 0.4],
+
+  // ตีบวก: โอกาสสำเร็จของการตีจาก +0 ไป +1, +1 ไป +2, … · ตีพลาดตั้งแต่ enhanceDropFrom ขึ้นไปจะลดขั้น (ยกเว้นใช้ยันต์กันแตก)
+  "enhanceSuccess": [1.0, 1.0, 1.0, 0.85, 0.7, 0.55, 0.4, 0.3, 0.2, 0.1],
+  "enhanceDropFrom": 6,
+  "enhanceStatPerLevel": 0.1,
+
+  // ของดรอปบนพื้น
+  "lootLifetimeSec": 90,
+  "lootMagnetRange": 3.5,
+
+  "startingItems": { "ya_hom": 2 }
+}

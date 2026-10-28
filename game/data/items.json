@@ -1,0 +1,56 @@
+[
+  // rarity: 0 ปกติ · 1 ดี · 2 หายาก · 3 ล้ำค่า · 4 ตำนาน (ยิ่งสูง คราฟต์ยิ่งยากและมีโอกาสล้มเหลว)
+  // use: heal = ฟื้นชีวิต · equip = ช่องสวมใส่: weapon / offhand / helmet / armor / pants / boots / necklace / ring / charm
+  // class = ใช้ได้เฉพาะอาชีพนั้น · offhandType = shield / dagger (ต้องตรงกับ offhand ของอาชีพ) · set = ชุดเซ็ต (sets.json)
+  // ค่าพลัง: attack / defense / hp / stamina / skill (สัดส่วน เช่น 0.1 = +10%) · color = สีบนตัวละคร
+
+  // ---------- ของใช้ ----------
+  { "id": "ya_hom", "name": "ยาหอม", "icon": "ya_hom", "rarity": 0, "description": "ยาหอมตำรับยายจันทร์ ฟื้นชีวิต 40 หน่วย", "use": "heal", "amount": 40 },
+  { "id": "ya_hom_yai", "name": "ยาหอมตำรับใหญ่", "icon": "ya_hom_yai", "rarity": 2, "description": "ยาหอมผสมแสงวิญญาณ ฟื้นชีวิต 100 หน่วย", "use": "heal", "amount": 100 },
+  { "id": "yan_kan_taek", "name": "ยันต์กันแตก", "icon": "talisman_gold", "rarity": 2, "description": "ใช้ตอนตีบวก ถ้าตีพลาดของจะไม่ลดขั้น (ใช้แล้วหมดไป)" },
+
+  // ---------- วัตถุดิบ ----------
+  { "id": "fang_sap", "name": "ฟางสาป", "icon": "straw", "rarity": 0, "description": "ฟางจากหุ่นไล่กาสาป" },
+  { "id": "sai_sin_khat", "name": "ด้ายสายสิญจน์ขาด", "icon": "thread", "rarity": 0, "description": "เศษสายสิญจน์จากผีตายโหงและวิญญาณในซอย" },
+  { "id": "takiang_pong", "name": "ตะเกียงผีโพง", "icon": "lantern", "rarity": 0, "description": "แสงเขียวที่ยังไม่ดับ" },
+  { "id": "mai_phu", "name": "ไม้ผุจากซอย", "icon": "wood", "rarity": 0, "description": "เศษไม้จากบ้านร้างในซอยมืด" },
+  { "id": "lek_sanim", "name": "เหล็กสนิม", "icon": "iron", "rarity": 0, "description": "เหล็กเก่าขึ้นสนิม ใช้ตีอาวุธและตีบวกขั้นต้น" },
+  { "id": "saeng_winyan", "name": "แสงวิญญาณ", "icon": "spirit", "rarity": 1, "description": "ได้จากการปลดปล่อยวิญญาณ ใช้ปลุกเสกของ" },
+  { "id": "pha_yan_kao", "name": "ผ้ายันต์เก่า", "icon": "cloth", "rarity": 1, "description": "ผ้าลงอักขระที่ซีดจาง ใช้ตัดชุดผ้ายันต์" },
+  { "id": "khao_san_sek", "name": "ข้าวสารเสก", "icon": "rice", "rarity": 1, "description": "ข้าวสารที่ผ่านพิธี ได้จากหุ่นไล่กาเลเวลสูง" },
+  { "id": "lek_nam_phi", "name": "เหล็กน้ำพี้", "icon": "iron_blue", "rarity": 2, "description": "เหล็กศักดิ์สิทธิ์ ได้จากผีตายโหงเลเวล 5 ขึ้นไป" },
+  { "id": "khi_phueng", "name": "ขี้ผึ้งปลุกเสก", "icon": "wax", "rarity": 2, "description": "ขี้ผึ้งที่ผ่านการปลุกเสก ได้จากผีโพงเลเวล 5 ขึ้นไป" },
+  { "id": "namkhang_ratri", "name": "น้ำค้างราตรี", "icon": "dew", "rarity": 3, "description": "หยดน้ำค้างที่เกิดเฉพาะคืนม่านบาง ได้จากผีเลเวล 10 ขึ้นไปตอนกลางคืน" },
+  { "id": "phlueak_winyan", "name": "ผลึกวิญญาณ", "icon": "crystal", "rarity": 3, "description": "แสงวิญญาณที่ตกผลึก ได้จากการปลดปล่อยผีเลเวล 8 ขึ้นไป" },
+  { "id": "set_tra_phanuek", "name": "เศษตราผนึก", "icon": "seal", "rarity": 4, "description": "เศษของตราศักดิ์สิทธิ์ที่แตก หายากมาก" },
+
+  // ---------- อาวุธ ----------
+  { "id": "dab_nam_phi", "name": "ดาบเหล็กน้ำพี้", "icon": "sword_iron", "rarity": 1, "description": "ดาบเหล็กลงยันต์", "equip": "weapon", "class": "nak_dab", "attack": 8 },
+  { "id": "dab_saksit", "name": "ดาบศักดิ์สิทธิ์", "icon": "sword_holy", "rarity": 3, "description": "ดาบที่ปลุกเสกด้วยแสงวิญญาณ", "equip": "weapon", "class": "nak_dab", "attack": 20, "skill": 0.1 },
+  { "id": "yan_takiang", "name": "ยันต์ตะเกียงผี", "icon": "talisman_green", "rarity": 1, "description": "ยันต์หมึกผสมไฟผีโพง", "equip": "weapon", "class": "mor_yan", "attack": 6 },
+  { "id": "yan_maha_ut", "name": "ยันต์มหาอุด", "icon": "talisman_gold", "rarity": 3, "description": "ยันต์ชั้นครู", "equip": "weapon", "class": "mor_yan", "attack": 14, "skill": 0.15 },
+  { "id": "mit_ngao", "name": "มีดเงาเหล็ก", "icon": "dagger", "rarity": 1, "description": "มีดสั้นมือขวาของนักฆ่า", "equip": "weapon", "class": "nak_kha", "attack": 7 },
+  { "id": "mit_ngao_chan", "name": "มีดเงาจันทร์", "icon": "dagger_moon", "rarity": 3, "description": "มีดที่ชุบน้ำค้างราตรี คมจนตัดเงาได้", "equip": "weapon", "class": "nak_kha", "attack": 17, "stamina": 15 },
+
+  // ---------- มือรอง ----------
+  { "id": "lo_mai_yan", "name": "โล่ไม้ลงยันต์", "icon": "shield_wood", "rarity": 1, "description": "โล่ไม้เขียนยันต์กันผี", "equip": "offhand", "offhandType": "shield", "defense": 8 },
+  { "id": "lo_sai_sin", "name": "โล่ถักสายสิญจน์", "icon": "shield", "rarity": 2, "description": "โล่หุ้มสายสิญจน์หลายชั้น", "equip": "offhand", "offhandType": "shield", "defense": 16, "hp": 20 },
+  { "id": "mit_san_sai", "name": "มีดสั้นมือซ้าย", "icon": "dagger", "rarity": 1, "description": "มีดคู่มือซ้ายของนักฆ่า", "equip": "offhand", "offhandType": "dagger", "attack": 4 },
+
+  // ---------- ชุดเกราะ: เซ็ตผ้ายันต์ (สายพลังจิต) ----------
+  { "id": "pha_yan_hua", "name": "ผ้าโพกยันต์", "icon": "helmet_cloth", "rarity": 1, "description": "ผ้าโพกหัวลงอักขระ", "equip": "helmet", "set": "pha_yan", "defense": 2, "skill": 0.03, "color": "#e8dcb8" },
+  { "id": "pha_yan_suea", "name": "เสื้อยันต์", "icon": "armor_cloth", "rarity": 1, "description": "เสื้อสักยันต์ทั้งตัว", "equip": "armor", "set": "pha_yan", "defense": 4, "skill": 0.05, "color": "#e8dcb8" },
+  { "id": "pha_yan_kang", "name": "กางเกงผ้ายันต์", "icon": "pants_cloth", "rarity": 1, "description": "กางเกงผ้าลงอักขระ", "equip": "pants", "set": "pha_yan", "defense": 3, "skill": 0.03, "color": "#c8b890" },
+  { "id": "pha_yan_thao", "name": "รองเท้าผ้ายันต์", "icon": "boots_cloth", "rarity": 1, "description": "รองเท้าผ้าเบาๆ", "equip": "boots", "set": "pha_yan", "defense": 1, "stamina": 10, "color": "#8a7a5a" },
+
+  // ---------- ชุดเกราะ: เซ็ตเกราะสายสิญจน์ (สายป้องกัน) ----------
+  { "id": "sai_sin_hua", "name": "หมวกถักสายสิญจน์", "icon": "helmet_thread", "rarity": 2, "description": "หมวกถักแน่น", "equip": "helmet", "set": "sai_sin", "defense": 6, "hp": 10, "color": "#d8d8d8" },
+  { "id": "sai_sin_suea", "name": "เกราะถักสายสิญจน์", "icon": "armor_thread", "rarity": 2, "description": "เกราะถักสายสิญจน์หลายพันเส้น", "equip": "armor", "set": "sai_sin", "defense": 12, "hp": 25, "color": "#cfd2d8" },
+  { "id": "sai_sin_kang", "name": "สนับขาสายสิญจน์", "icon": "pants_thread", "rarity": 2, "description": "สนับขาถัก", "equip": "pants", "set": "sai_sin", "defense": 8, "hp": 15, "color": "#a8acb4" },
+  { "id": "sai_sin_thao", "name": "รองเท้าสายสิญจน์", "icon": "boots_thread", "rarity": 2, "description": "รองเท้าหุ้มสายสิญจน์", "equip": "boots", "set": "sai_sin", "defense": 4, "stamina": 5, "color": "#6a6e78" },
+
+  // ---------- เครื่องประดับ ----------
+  { "id": "soi_prakham", "name": "สร้อยประคำ", "icon": "necklace", "rarity": 1, "description": "ประคำไม้ร้อยด้ายแดง", "equip": "necklace", "hp": 15, "skill": 0.05 },
+  { "id": "waen_phirot", "name": "แหวนพิรอด", "icon": "ring", "rarity": 2, "description": "แหวนถักลงคาถา", "equip": "ring", "attack": 4, "stamina": 10 },
+  { "id": "takrut", "name": "ตะกรุดสายสิญจน์", "icon": "takrut", "rarity": 2, "description": "ตะกรุดถักสายสิญจน์", "equip": "charm", "hp": 30, "stamina": 20 }
+]

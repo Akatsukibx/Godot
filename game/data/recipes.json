@@ -1,0 +1,32 @@
+[
+  // สูตรคราฟต์ · โอกาสสำเร็จขึ้นกับ rarity ของของที่ได้ (craftSuccess ใน game.json) · คราฟต์พลาด = เสียวัตถุดิบ
+  { "result": "ya_hom", "count": 1, "category": "ยา", "ingredients": { "fang_sap": 2 } },
+  { "result": "ya_hom", "count": 1, "category": "ยา", "ingredients": { "sai_sin_khat": 2, "mai_phu": 1 } },
+  { "result": "ya_hom_yai", "count": 1, "category": "ยา", "ingredients": { "ya_hom": 2, "saeng_winyan": 1, "khao_san_sek": 1 } },
+  { "result": "yan_kan_taek", "count": 1, "category": "ยา", "ingredients": { "pha_yan_kao": 2, "khi_phueng": 1, "saeng_winyan": 2 } },
+
+  { "result": "dab_nam_phi", "count": 1, "category": "อาวุธ", "ingredients": { "lek_sanim": 4, "sai_sin_khat": 2, "mai_phu": 2 } },
+  { "result": "dab_saksit", "count": 1, "category": "อาวุธ", "ingredients": { "dab_nam_phi": 1, "lek_nam_phi": 3, "saeng_winyan": 4, "namkhang_ratri": 1 } },
+  { "result": "yan_takiang", "count": 1, "category": "อาวุธ", "ingredients": { "takiang_pong": 3, "fang_sap": 2, "pha_yan_kao": 1 } },
+  { "result": "yan_maha_ut", "count": 1, "category": "อาวุธ", "ingredients": { "yan_takiang": 1, "khi_phueng": 3, "saeng_winyan": 4, "namkhang_ratri": 1 } },
+  { "result": "mit_ngao", "count": 1, "category": "อาวุธ", "ingredients": { "lek_sanim": 3, "mai_phu": 2 } },
+  { "result": "mit_ngao_chan", "count": 1, "category": "อาวุธ", "ingredients": { "mit_ngao": 1, "lek_nam_phi": 3, "namkhang_ratri": 2 } },
+
+  { "result": "lo_mai_yan", "count": 1, "category": "มือรอง", "ingredients": { "mai_phu": 4, "pha_yan_kao": 1 } },
+  { "result": "lo_sai_sin", "count": 1, "category": "มือรอง", "ingredients": { "lo_mai_yan": 1, "sai_sin_khat": 6, "lek_nam_phi": 1 } },
+  { "result": "mit_san_sai", "count": 1, "category": "มือรอง", "ingredients": { "lek_sanim": 3, "sai_sin_khat": 1 } },
+
+  { "result": "pha_yan_hua", "count": 1, "category": "ชุดผ้ายันต์", "ingredients": { "pha_yan_kao": 2, "sai_sin_khat": 1 } },
+  { "result": "pha_yan_suea", "count": 1, "category": "ชุดผ้ายันต์", "ingredients": { "pha_yan_kao": 4, "sai_sin_khat": 2 } },
+  { "result": "pha_yan_kang", "count": 1, "category": "ชุดผ้ายันต์", "ingredients": { "pha_yan_kao": 3, "sai_sin_khat": 1 } },
+  { "result": "pha_yan_thao", "count": 1, "category": "ชุดผ้ายันต์", "ingredients": { "pha_yan_kao": 1, "mai_phu": 2 } },
+
+  { "result": "sai_sin_hua", "count": 1, "category": "ชุดเกราะสายสิญจน์", "ingredients": { "sai_sin_khat": 5, "lek_sanim": 2, "saeng_winyan": 1 } },
+  { "result": "sai_sin_suea", "count": 1, "category": "ชุดเกราะสายสิญจน์", "ingredients": { "sai_sin_khat": 8, "lek_nam_phi": 1, "saeng_winyan": 2 } },
+  { "result": "sai_sin_kang", "count": 1, "category": "ชุดเกราะสายสิญจน์", "ingredients": { "sai_sin_khat": 6, "lek_sanim": 3, "saeng_winyan": 1 } },
+  { "result": "sai_sin_thao", "count": 1, "category": "ชุดเกราะสายสิญจน์", "ingredients": { "sai_sin_khat": 4, "lek_sanim": 2 } },
+
+  { "result": "soi_prakham", "count": 1, "category": "เครื่องประดับ", "ingredients": { "mai_phu": 3, "sai_sin_khat": 2, "saeng_winyan": 1 } },
+  { "result": "waen_phirot", "count": 1, "category": "เครื่องประดับ", "ingredients": { "sai_sin_khat": 4, "khi_phueng": 1, "saeng_winyan": 2 } },
+  { "result": "takrut", "count": 1, "category": "เครื่องประดับ", "ingredients": { "sai_sin_khat": 4, "lek_nam_phi": 1, "phlueak_winyan": 1 } }
+]

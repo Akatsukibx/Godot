@@ -1,0 +1,113 @@
+[
+  // drops: minLevel = ดรอปเฉพาะผีเลเวลนี้ขึ้นไป · nightOnly = ดรอปเฉพาะกลางคืน
+  // ค่าในไฟล์นี้คือค่าที่เลเวล 1 · เลเวลสูงขึ้นจะแรงขึ้นตาม ghostHpPerLevel / ghostDamagePerLevel / ghostExpPerLevel ใน game.json
+  {
+    "id": "winyan_long_soi",
+    "name": "วิญญาณหลงซอย",
+    "behavior": "chaser",
+    "color": "#a8c4ff",
+    "maxHp": 28,
+    "speed": 3.6,
+    "damage": 5,
+    "attackRange": 1.6,
+    "attackCooldown": 1.2,
+    "aggroRange": 10,
+    "exp": 12,
+    "activeAtDay": true,
+    "despawnAtDawn": false,
+    "spawnWeightDay": 1,
+    "spawnWeightNight": 1,
+    "weakness": { "fire": 1.2, "rice": 1.5, "blessed": 1.2 },
+    "drops": [
+      { "item": "sai_sin_khat", "chance": 0.2 },
+      { "item": "mai_phu", "chance": 0.3 },
+      { "item": "lek_sanim", "chance": 0.15 },
+      { "item": "pha_yan_kao", "chance": 0.12, "minLevel": 2 },
+      { "item": "ya_hom", "chance": 0.04 }
+    ],
+    "story": "คนเมืองที่ตายในคืนม่านขาด ยังเดินวนหาบ้านตัวเองในซอยมืด ไม่รู้ว่าตัวเองตายแล้ว",
+    "releaseText": "อ้อ... บ้านฉันไม่อยู่แล้วนี่เอง"
+  },
+  {
+    "id": "hun_lai_ka",
+    "name": "หุ่นไล่กาสาป",
+    "behavior": "statue",
+    "color": "#8a5a3a",
+    "maxHp": 60,
+    "speed": 5.0,
+    "damage": 11,
+    "attackRange": 1.7,
+    "attackCooldown": 1.1,
+    "aggroRange": 18,
+    "exp": 18,
+    "activeAtDay": false,
+    "despawnAtDawn": false,
+    "spawnWeightDay": 3,
+    "spawnWeightNight": 3,
+    "weakness": { "fire": 2.0, "rice": 0.8, "blessed": 1.0 },
+    "drops": [
+      { "item": "fang_sap", "chance": 0.35 },
+      { "item": "pha_yan_kao", "chance": 0.08 },
+      { "item": "khao_san_sek", "chance": 0.1, "minLevel": 6 },
+      { "item": "namkhang_ratri", "chance": 0.03, "minLevel": 10, "nightOnly": true },
+      { "item": "set_tra_phanuek", "chance": 0.01, "minLevel": 13 },
+      { "item": "ya_hom", "chance": 0.05 }
+    ],
+    "story": "ชาวนาที่ล้มตายกลางทุ่งก่อนได้เกี่ยวข้าว วิญญาณติดอยู่ในหุ่นที่ตัวเองสร้าง ขยับได้เฉพาะตอนไม่มีใครมอง",
+    "releaseText": "ข้าวรวงสุดท้าย... ฝากเกี่ยวให้ทีนะ"
+  },
+  {
+    "id": "phi_pong",
+    "name": "ผีโพง",
+    "behavior": "chaser",
+    "color": "#7dff9a",
+    "maxHp": 40,
+    "speed": 6.4,
+    "damage": 8,
+    "attackRange": 1.6,
+    "attackCooldown": 0.9,
+    "aggroRange": 20,
+    "exp": 15,
+    "activeAtDay": false,
+    "despawnAtDawn": true,
+    "spawnWeightDay": 0,
+    "spawnWeightNight": 4,
+    "weakness": { "rice": 2.0, "fire": 0.5, "blessed": 1.0 },
+    "drops": [
+      { "item": "takiang_pong", "chance": 0.3 },
+      { "item": "khi_phueng", "chance": 0.12, "minLevel": 5 },
+      { "item": "namkhang_ratri", "chance": 0.04, "minLevel": 10, "nightOnly": true },
+      { "item": "ya_hom", "chance": 0.06 }
+    ],
+    "story": "ผู้ที่เผลอเลี้ยงของจนของกลับมากินตัว ตอนกลางคืนจมูกจะเรืองแสงสีเขียวออกหากินตามทุ่ง ผีทั้งหลายกลัวข้าวสารเสก",
+    "releaseText": "แสงนี้... ไม่ต้องส่องหาอะไรอีกแล้วสินะ"
+  },
+  {
+    "id": "phi_tai_hong",
+    "name": "ผีตายโหง",
+    "behavior": "brute",
+    "color": "#9fb0c8",
+    "maxHp": 130,
+    "speed": 3.0,
+    "damage": 19,
+    "attackRange": 2.0,
+    "attackCooldown": 1.6,
+    "aggroRange": 14,
+    "exp": 38,
+    "activeAtDay": true,
+    "despawnAtDawn": false,
+    "spawnWeightDay": 1,
+    "spawnWeightNight": 2,
+    "weakness": { "blessed": 1.8, "fire": 1.0, "rice": 1.0 },
+    "drops": [
+      { "item": "sai_sin_khat", "chance": 0.3 },
+      { "item": "lek_sanim", "chance": 0.25 },
+      { "item": "lek_nam_phi", "chance": 0.15, "minLevel": 5 },
+      { "item": "namkhang_ratri", "chance": 0.03, "minLevel": 10, "nightOnly": true },
+      { "item": "set_tra_phanuek", "chance": 0.015, "minLevel": 13 },
+      { "item": "ya_hom", "chance": 0.08 }
+    ],
+    "story": "คนเดินทางที่ตกคันนาตายกลางพายุ ไม่มีใครทำบุญไปให้ จึงเดินวนหาทางกลับบ้านทั้งวันทั้งคืน แพ้ของที่ผ่านการปลุกเสก",
+    "releaseText": "บ้านอยู่ทางนั้น... ขอบใจที่ชี้ทางให้"
+  }
+]

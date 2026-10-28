@@ -1,0 +1,8 @@
+# Godot engine binaries (Godot.exe is 173 MB, over GitHub's 100 MB limit)
+engine/
+
+# Godot cache and build output
+game/.godot/
+.mono/
+bin/
+obj/
