@@ -35,7 +35,22 @@ public partial class Loot : Node3D
             Shaded = false,
         };
         AddChild(_sprite);
-        AddChild(new OmniLight3D { LightColor = new Color(1f, 0.92f, 0.7f), LightEnergy = 0.7f, OmniRange = 2.2f });
+        // Name above it, coloured by rarity; rare things glow in their colour.
+        int rarity = def?.Rarity ?? 0;
+        var color = GameData.RarityColor(rarity);
+        _sprite.AddChild(new Label3D
+        {
+            Text = count > 1 ? $"{GameData.ItemName(item)} x{count}" : GameData.ItemName(item),
+            Font = Game.ThaiFont,
+            FontSize = 30,
+            OutlineSize = 8,
+            PixelSize = 0.004f,
+            Modulate = rarity == 0 ? new Color(0.95f, 0.92f, 0.85f) : color,
+            Billboard = BaseMaterial3D.BillboardModeEnum.Enabled,
+            NoDepthTest = true,
+            Position = new Vector3(0f, 0.45f, 0f),
+        });
+        AddChild(new OmniLight3D { LightColor = rarity >= 2 ? color : new Color(1f, 0.92f, 0.7f), LightEnergy = rarity >= 2 ? 1.6f : 0.7f, OmniRange = rarity >= 2 ? 3.5f : 2.2f });
     }
 
     public override void _Process(double delta)

@@ -262,8 +262,9 @@ void fragment() {
             Vector3 away = GlobalPosition - other.GlobalPosition;
             away.Y = 0f;
             float l = away.Length();
-            if (l < 1.1f && l > 0.001f)
-                move += away / l * (1.1f - l) * 4f;
+            float keep = 1.6f * Mathf.Max(1f, Mathf.Max(Def.Scale, other.Def.Scale) * 0.8f);
+            if (l < keep && l > 0.001f)
+                move += away / l * (keep - l) * 6f;
         }
 
         move = KeepToTerrain(move);
@@ -274,9 +275,11 @@ void fragment() {
             vy = (sa - 0.85f - GlobalPosition.Y) * 4f; // half out of the water
         else if (Def.Flying)
         {
-            // Hover a little above whatever is below: ground, a pier or the water surface.
-            float floor = surface is float sf && depth > 0.3f ? sf : GlobalPosition.Y;
-            vy = IsOnFloor() || depth > 0.3f ? (floor + (depth > 0.3f ? 0.5f : 0f) - GlobalPosition.Y) * 4f : Velocity.Y - 20f * dt;
+            // Hover about a metre above whatever is below: ground, a pier or the water surface.
+            float below = Game.Main.GroundAt(GlobalPosition + Vector3.Up * 1.5f);
+            if (surface is float sf && sf > below)
+                below = sf;
+            vy = Mathf.Clamp((below + 1f + Mathf.Sin(_time * 2.2f) * 0.15f - GlobalPosition.Y) * 4f, -6f, 6f);
         }
         else
             vy = IsOnFloor() ? 0f : Velocity.Y - 20f * dt;
@@ -298,8 +301,10 @@ void fragment() {
             return Vector3.Zero;
         if (Def.Flying)
             return move;
-        float depth = Game.Main.WaterDepthAt(ahead);
-        if (Def.Aquatic ? depth < 0.6f : depth > 0.35f)
+        // Only refuse steps that go the wrong way: a land ghost already in the water may always wade
+        // out, a water ghost stranded in the shallows may always head for deeper water.
+        float depth = Game.Main.WaterDepthAt(ahead), here = Game.Main.WaterDepthAt(GlobalPosition);
+        if (Def.Aquatic ? depth < 0.6f && depth < here : depth > 0.35f && depth > here + 0.02f)
             return Vector3.Zero;
         return move;
     }

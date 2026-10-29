@@ -88,74 +88,74 @@ emission = Color(0.49019608, 1, 0.6039216, 0.3)
 radius = 0.07
 height = 0.14
 
-[node name="Ghost_phi_pong" type="Node3D" unique_id=369118370]
+[node name="Ghost_phi_pong" type="Node3D" unique_id=1804385164]
 
-[node name="Head" type="MeshInstance3D" parent="." unique_id=320690800]
+[node name="Head" type="MeshInstance3D" parent="." unique_id=2117290885]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.45, 0)
 material_override = SubResource("StandardMaterial3D_gof2l")
 mesh = SubResource("SphereMesh_gtcud")
 
-[node name="Hair" type="MeshInstance3D" parent="." unique_id=1969301081]
+[node name="Hair" type="MeshInstance3D" parent="." unique_id=1226151611]
 transform = Transform3D(1, 0, 0, 0, 1.1, 0, 0, 0, 0.95, 0, 1.5, 0.06)
 material_override = SubResource("StandardMaterial3D_7pmku")
 mesh = SubResource("SphereMesh_brul7")
 
-[node name="Strand0" type="MeshInstance3D" parent="." unique_id=183064005]
+[node name="Strand0" type="MeshInstance3D" parent="." unique_id=835466641]
 transform = Transform3D(0.99280864, 0.11971221, 0, -0.11836797, 0.9816605, -0.14943814, -0.01788957, 0.14836349, 0.9887711, -0.2, 1.05, 0.12)
 material_override = SubResource("StandardMaterial3D_7pmku")
 mesh = SubResource("BoxMesh_k8kqo")
 
-[node name="Strand1" type="MeshInstance3D" parent="." unique_id=197458494]
+[node name="Strand1" type="MeshInstance3D" parent="." unique_id=1631121321]
 transform = Transform3D(0.99820054, 0.05996401, 0, -0.059290677, 0.9869918, -0.14943814, -0.00896091, 0.14916924, 0.9887711, -0.1, 1.05, 0.12)
 material_override = SubResource("StandardMaterial3D_7pmku")
 mesh = SubResource("BoxMesh_ityn4")
 
-[node name="Strand2" type="MeshInstance3D" parent="." unique_id=621074370]
+[node name="Strand2" type="MeshInstance3D" parent="." unique_id=1319537022]
 transform = Transform3D(1, 0, 0, 0, 0.9887711, -0.14943814, 0, 0.14943814, 0.9887711, 0, 1.05, 0.12)
 material_override = SubResource("StandardMaterial3D_7pmku")
 mesh = SubResource("BoxMesh_r0g3r")
 
-[node name="Strand3" type="MeshInstance3D" parent="." unique_id=1883640841]
+[node name="Strand3" type="MeshInstance3D" parent="." unique_id=70867934]
 transform = Transform3D(0.99820054, -0.059964012, 0, 0.05929068, 0.9869918, -0.14943814, 0.008960911, 0.14916924, 0.9887711, 0.10000001, 1.05, 0.12)
 material_override = SubResource("StandardMaterial3D_7pmku")
 mesh = SubResource("BoxMesh_527yc")
 
-[node name="Strand4" type="MeshInstance3D" parent="." unique_id=408700736]
+[node name="Strand4" type="MeshInstance3D" parent="." unique_id=2078045591]
 transform = Transform3D(0.99280864, -0.11971221, 0, 0.11836797, 0.9816605, -0.14943814, 0.01788957, 0.14836349, 0.9887711, 0.2, 1.05, 0.12)
 material_override = SubResource("StandardMaterial3D_7pmku")
 mesh = SubResource("BoxMesh_aw7aw")
 
-[node name="Shroud" type="MeshInstance3D" parent="." unique_id=610859228]
+[node name="Shroud" type="MeshInstance3D" parent="." unique_id=473191973]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0.05)
 material_override = SubResource("StandardMaterial3D_wf2nt")
 mesh = SubResource("BoxMesh_ovimu")
 
-[node name="GlowNose" type="MeshInstance3D" parent="." unique_id=463797307]
+[node name="GlowNose" type="MeshInstance3D" parent="." unique_id=234106873]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.43, -0.24)
 material_override = SubResource("StandardMaterial3D_26prl")
 mesh = SubResource("SphereMesh_gu5nb")
 
-[node name="GlowEyeL" type="MeshInstance3D" parent="." unique_id=274018207]
+[node name="GlowEyeL" type="MeshInstance3D" parent="." unique_id=494447351]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.08, 1.52, -0.21)
 material_override = SubResource("StandardMaterial3D_1rps6")
 mesh = SubResource("SphereMesh_166v7")
 
-[node name="GlowEyeR" type="MeshInstance3D" parent="." unique_id=608676501]
+[node name="GlowEyeR" type="MeshInstance3D" parent="." unique_id=1734656080]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.08, 1.52, -0.21)
 material_override = SubResource("StandardMaterial3D_1rps6")
 mesh = SubResource("SphereMesh_ublfe")
 
-[node name="GlowTrail1" type="MeshInstance3D" parent="." unique_id=402042521]
+[node name="GlowTrail1" type="MeshInstance3D" parent="." unique_id=2089806684]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0.3)
 material_override = SubResource("StandardMaterial3D_guc4x")
 mesh = SubResource("SphereMesh_nymjn")
 
-[node name="GlowTrail2" type="MeshInstance3D" parent="." unique_id=727910758]
+[node name="GlowTrail2" type="MeshInstance3D" parent="." unique_id=161937678]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0.5)
 material_override = SubResource("StandardMaterial3D_4yxr5")
 mesh = SubResource("SphereMesh_0ukuo")
 
-[node name="GlowLight" type="OmniLight3D" parent="." unique_id=1085008927]
+[node name="GlowLight" type="OmniLight3D" parent="." unique_id=1674572741]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -0.3)
 light_color = Color(0.49019608, 1, 0.6039216, 1)
 light_energy = 1.8

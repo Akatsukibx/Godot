@@ -16,7 +16,7 @@ public static partial class WorldBuilder
         (new(-110f, -110f), 40f, 0.34f), (new(90f, -120f), 30f, 0.36f), (new(18f, 158f), 12f, 0.32f),
         (new(-150f, 10f), 10f, 0.3f), (new(140f, 90f), 12f, 0.3f), (new(-40f, -150f), 9f, 0.3f), (new(150f, -40f), 11f, 0.3f),
         (new(-20f, 62f), 8f, 0.3f), (new(40f, -92f), 9f, 0.3f), (new(120f, 150f), 12f, 0.3f), (new(-150f, 150f), 14f, 0.3f),
-        (new(58f, -150f), 12f, 0.32f), (new(-60f, -20f), 16f, 0.32f), (new(40f, 62f), 14f, 0.32f), (new(120f, -80f), 15f, 0.32f),
+        (new(-60f, -20f), 16f, 0.32f), (new(40f, 62f), 14f, 0.32f), (new(120f, -80f), 15f, 0.32f),
         (new(-150f, -110f), 14f, 0.3f), (new(0f, -92f), 13f, 0.32f), (new(-82f, 140f), 12f, 0.3f), (new(100f, 112f), 15f, 0.32f),
         (new(-30f, 30f), 10f, 0.3f), (new(135f, -150f), 12f, 0.3f), (new(-125f, 105f), 11f, 0.3f), (new(-160f, 60f), 10f, 0.3f),
         (new(75f, 160f), 11f, 0.3f), (new(-40f, -110f), 10f, 0.3f), (new(155f, 40f), 10f, 0.3f), (new(30f, -40f), 9f, 0.3f),
@@ -58,7 +58,7 @@ public static partial class WorldBuilder
         for (int x = 0; x < n; x++)
         {
             float h = BuengHeight(-Half + (x + 0.5f) * 2f, -Half + (y + 0.5f) * 2f);
-            img.SetPixel(x, y, h > 0.02f ? new Color(0.16f, 0.2f, 0.13f) : h > -0.8f ? new Color(0.11f, 0.22f, 0.3f) : new Color(0.08f, 0.17f, 0.25f));
+            img.SetPixel(x, y, h > 0.02f ? new Color(0.14f, 0.18f, 0.12f) : h > -0.8f ? new Color(0.13f, 0.26f, 0.36f) : new Color(0.1f, 0.22f, 0.32f));
         }
         _buengMap = ImageTexture.CreateFromImage(img);
         return _buengMap;
@@ -163,14 +163,14 @@ public static partial class WorldBuilder
     // Winding boardwalks linking the islands (decks at DeckTop over the water).
     static readonly Vector3[][] BuengWalks =
     {
-        new Vector3[] { new(0f, 0f, Half), new(-6f, 0f, 160f), new(-30f, 0f, 140f) },
+        new Vector3[] { new(0f, 0f, Half), new(0f, 0f, 174f) }, // straight on from the lagoon boardwalk
+        new Vector3[] { new(0f, 0f, 174f), new(-6f, 0f, 160f), new(-30f, 0f, 140f) },
         new Vector3[] { new(-30f, 0f, 140f), new(-62f, 0f, 102f), new(-95f, 0f, 60f) },
         new Vector3[] { new(-30f, 0f, 140f), new(8f, 0f, 92f), new(30f, 0f, 42f), new(70f, 0f, 20f) },
         new Vector3[] { new(-95f, 0f, 60f), new(-116f, 0f, 2f), new(-110f, 0f, -100f) },
-        new Vector3[] { new(70f, 0f, 20f), new(98f, 0f, -48f), new(90f, 0f, -110f) },
+        new Vector3[] { new(70f, 0f, 20f), new(98f, 0f, -48f), new(94f, 0f, -86f) },
         new Vector3[] { new(30f, 0f, 42f), new(8f, 0f, -18f), new(-44f, 0f, -62f), new(-100f, 0f, -104f) },
         new Vector3[] { new(-6f, 0f, 160f), new(14f, 0f, 158f) },
-        new Vector3[] { new(90f, 0f, -110f), new(72f, 0f, -138f), new(58f, 0f, -150f) },
         new Vector3[] { new(30f, 0f, 42f), new(40f, 0f, 62f), new(70f, 0f, 92f), new(100f, 0f, 112f) },
         new Vector3[] { new(8f, 0f, -18f), new(0f, 0f, -92f), new(-40f, 0f, -110f) },
         new Vector3[] { new(-44f, 0f, -62f), new(-60f, 0f, -20f), new(-30f, 0f, 30f) },
@@ -186,7 +186,7 @@ public static partial class WorldBuilder
         {
             var pts = route.Length == 2 ? route.ToList() : Meander(route, 7f, 6f);
             var walk = Shapes.Group(root, $"Walk{k++}");
-            DeckRibbon(walk, pts, 2.2f, Wood.Darkened(_rng.RandfRange(0f, 0.1f)));
+            DeckRibbon(walk, pts, 2.6f, Wood.Darkened(_rng.RandfRange(0f, 0.1f)));
             for (int i = 0; i < pts.Count - 1; i++)
             {
                 var a = pts[i];
@@ -209,7 +209,7 @@ public static partial class WorldBuilder
                 if (i % 5 == 2)
                 {
                     float side = lamp++ % 2 == 0 ? 1.25f : -1.25f;
-                    LanternPost(walk, $"WalkLantern{lamp}", new Vector3(mid.X, DeckTop, mid.Z) + right * side, 2.4f, lamp % 3 == 0);
+                    LanternPost(walk, $"WalkLantern{lamp}", new Vector3(mid.X, DeckTop, mid.Z) + right * side, 2.4f, lamp % 3 == 0, new Vector3(mid.X, DeckTop, mid.Z));
                 }
             }
         }
@@ -299,7 +299,6 @@ public static partial class WorldBuilder
         BuengShrine("bueng_bua", "ศาลริมบึง", 22f, 156f);
         BuengShrine("bueng_village", "ศาลชาวบึง", -106f, 50f);
         BuengShrine("bueng_sala", "ศาลข้างศาลาร้าง", 62f, 30f);
-        BuengShrine("bueng_takian", "ศาลเกาะไผ่", 58f, -150f);
         SignPost(s, OnGround(9f, 152f), ("ทุ่งนาหุ่นไล่กา", new Vector3(0.2f, 0f, 1f)), ("หมู่บ้านชาวบึง", new Vector3(-1f, 0f, -0.7f)),
             ("ศาลาร้างกลางบึง", new Vector3(1f, 0f, -1.2f)));
 
@@ -349,14 +348,22 @@ public static partial class WorldBuilder
     {
         var root = Shapes.Group(world, "MarshTrees");
         int k = 0;
-        // Mangroves standing in the shallows near the island shores.
-        for (int i = 0; i < 260 && k < 70; i++)
+        // Mangrove thickets (ป่าโกงกาง) all over the marsh: clumps in the shallows and along island shores,
+        // leaving the boardwalks and the deep channels open.
+        for (int c = 0; c < 400 && k < 190; c++)
         {
-            float x = _rng.RandfRange(-Half + 8f, Half - 8f), z = _rng.RandfRange(-Half + 8f, 150f);
-            float h = BuengHeight(x, z);
-            if (h > -0.1f || h < -1f || DistToRoads(new Vector3(x, 0f, z)) < 3f)
+            float cx = _rng.RandfRange(-Half + 10f, Half - 10f), cz = _rng.RandfRange(-Half + 10f, 165f);
+            float ch = BuengHeight(cx, cz);
+            if (ch > 0.05f || ch < -1.1f || DistToRoads(new Vector3(cx, 0f, cz)) < 6f || NearLandmark(new Vector3(cx, 0f, cz)))
                 continue;
-            Mangrove(root, $"Mangrove{k++}", new Vector3(x, 0f, z), h);
+            for (int i = _rng.RandiRange(5, 11); i > 0; i--)
+            {
+                float x = cx + _rng.RandfRange(-7f, 7f), z = cz + _rng.RandfRange(-7f, 7f);
+                float h = BuengHeight(x, z);
+                if (h > 0.05f || h < -1.2f || DistToRoads(new Vector3(x, 0f, z)) < 3f)
+                    continue;
+                Mangrove(root, $"Mangrove{k++}", new Vector3(x, 0f, z), h);
+            }
         }
         // Dead trees, banyans and stumps on the islands, thickest on the north-western dead wood.
         k = 0;

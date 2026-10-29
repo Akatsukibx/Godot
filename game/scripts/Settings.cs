@@ -6,7 +6,7 @@ using System.Linq;
 public static class Settings
 {
     const string FilePath = "user://settings.cfg";
-    const int KeysVersion = 5;
+    const int KeysVersion = 6;
 
     public static float MasterVolume { get; set; } = 0.8f;
     public static float SfxVolume { get; set; } = 1f;
@@ -55,6 +55,7 @@ public static class Settings
         ("emote_wai", "ท่าไหว้"),
         ("emote_wave", "ท่าโบกมือ"),
         ("emote_sit", "ย่อตัว (เดินย่อง)"),
+        ("immortal", "โหมดอมตะ (แอดมิน)"),
         ("fly", "โหมดบิน (แอดมิน)"),
         ("respawn", "ฟื้นคืนสติ"),
     };
@@ -84,7 +85,7 @@ public static class Settings
         Bind("move_left", K(Key.A), K(Key.Left));
         Bind("move_right", K(Key.D), K(Key.Right));
         Bind("sprint", K(Key.Shift));
-        Bind("dash", K(Key.Q));
+        Bind("dash", K(Key.Ctrl));
         Bind("jump", K(Key.Space));
         Bind("interact", K(Key.E));
         Bind("attack", M(MouseButton.Left));
@@ -98,13 +99,14 @@ public static class Settings
         Bind("stats", K(Key.I));
         Bind("quests", K(Key.J));
         Bind("map", K(Key.M));
-        Bind("craft", K(Key.C));
+        Bind("craft"); // crafting now opens from the bag (Tab)
         Bind("free_cursor", K(Key.Alt));
         Bind("navigate", K(Key.N));
         Bind("emote_wai", K(Key.Z));
         Bind("emote_wave", K(Key.X));
-        Bind("emote_sit", K(Key.Ctrl));
+        Bind("emote_sit", K(Key.C));
         Bind("fly", K(Key.V));
+        Bind("immortal", K(Key.F9));
         Bind("respawn", K(Key.R));
         Bind("pause", K(Key.Escape));
     }

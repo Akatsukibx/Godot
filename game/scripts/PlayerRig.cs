@@ -302,6 +302,15 @@ public partial class PlayerRig : Node3D
                 p.ElbowL = 1f;
                 p.HeadY = Mathf.Sin(_time * 0.9f) * 0.2f;
                 break;
+            case "sitchair": // sitting on a bench or stool, feet on the ground
+                p.HipsY = 0.6f;
+                p.LegL = p.LegR = 1.45f;
+                p.KneeL = p.KneeR = -1.45f;
+                p.TorsoX = 0.05f;
+                p.ArmLx = p.ArmRx = 0.35f;
+                p.ElbowL = p.ElbowR = 0.7f;
+                p.HeadY = Mathf.Sin(_time * 0.5f) * 0.25f;
+                break;
             case "sit":
                 p.HipsY = 0.3f;
                 p.LegL = p.LegR = 1.5f;
@@ -446,6 +455,7 @@ public partial class PlayerRig : Node3D
         bool hasPants = equipped.ContainsKey("pants"), hasBoots = equipped.ContainsKey("boots");
         Show(_head, !hasHelmet, "Hood", "HoodTip", "Headband", "HeadbandTail", "Hair", "Bun", "Cap", "Visor", "Ngob");
         Show(_torso, !hasArmor, "Chest", "PauldronL", "PauldronR");
+        Show(_torso, !hasPants, "Robe"); // the long skirt would hide the trousers
         foreach (var leg in new[] { _legL, _legR })
             Show(leg, !hasPants, "Thigh");
         foreach (var knee in new[] { _kneeL, _kneeR })

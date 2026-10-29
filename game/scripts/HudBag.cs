@@ -119,6 +119,9 @@ public partial class Hud
 
     void BuildBag(VBoxContainer body)
     {
+        var tools = new HBoxContainer { Alignment = BoxContainer.AlignmentMode.End };
+        tools.AddChild(UiTheme.Button("⚒  คราฟต์", () => OpenWindow("craft"), 160f));
+        body.AddChild(tools);
         var h = new HBoxContainer();
         h.AddThemeConstantOverride("separation", 16);
         body.AddChild(h);
@@ -202,7 +205,54 @@ public partial class Hud
         var border = stack != null ? GameData.RarityColor(stack.Def.Rarity) : new Color(1f, 1f, 1f, 0.08f);
         s.AddThemeStyleboxOverride("normal", UiTheme.Box(new Color(0f, 0f, 0f, 0.4f), new Color(border, stack != null && stack.Def.Rarity > 0 ? 0.8f : 0.25f), 1, 0, 4));
         s.AddThemeStyleboxOverride("pressed", UiTheme.Box(new Color(0.3f, 0.31f, 0.33f), Colors.White, 2, 0, 4));
+        s.TooltipText = stack != null ? ItemTooltip(stack) : "";
         s.AddThemeStyleboxOverride("hover_pressed", UiTheme.Box(new Color(0.34f, 0.35f, 0.37f), Colors.White, 2, 0, 4));
+    }
+
+    // Hover text for any item: name and grade, what it is, its stats (with the change against what is
+    // worn in that slot), who can use it and where it comes from.
+    public static string ItemTooltip(ItemStack s)
+    {
+        var d = s.Def;
+        var p = Game.Player;
+        var sb = new System.Text.StringBuilder();
+        sb.AppendLine($"{d.Name}{(s.Plus > 0 ? $" +{s.Plus}" : "")}{(s.Count > 1 ? $"  x{s.Count}" : "")}");
+        string kind = d.Equip switch
+        {
+            null => d.Use != null ? "ของใช้" : "วัตถุดิบ", "weapon" => "อาวุธ", "offhand" => "มือรอง", "helmet" => "หมวก", "armor" => "ชุดเกราะ",
+            "pants" => "กางเกง", "boots" => "รองเท้า", "necklace" => "สร้อย", "ring" => "แหวน", _ => "เครื่องราง",
+        };
+        sb.AppendLine($"[{GameData.RarityNames[d.Rarity]}] {kind}");
+        if (!string.IsNullOrEmpty(d.Description))
+            sb.AppendLine(d.Description);
+        if (d.Equip != null)
+        {
+            var worn = p != null && p.Equipped.TryGetValue(d.Equip, out var w) && w != s ? w : null;
+            void Line(string label, float mine, float theirs, bool pct = false)
+            {
+                if (mine == 0f && theirs == 0f)
+                    return;
+                string v = pct ? $"+{mine * 100f:0}%" : $"+{mine:0}";
+                float diff = mine - theirs;
+                string cmp = worn == null || Mathf.Abs(diff) < 0.001f ? "" : diff > 0f ? $"  (▲ {(pct ? diff * 100f : diff):0})" : $"  (▼ {(pct ? -diff * 100f : -diff):0})";
+                sb.AppendLine($"• {label} {v}{cmp}");
+            }
+            sb.AppendLine();
+            Line("พลังโจมตี", d.Attack * s.Scale, (worn?.Def.Attack ?? 0f) * (worn?.Scale ?? 1f));
+            Line("ป้องกัน", d.Defense * s.Scale, (worn?.Def.Defense ?? 0f) * (worn?.Scale ?? 1f));
+            Line("ชีวิต", d.Hp * s.Scale, (worn?.Def.Hp ?? 0f) * (worn?.Scale ?? 1f));
+            Line("ความอึด", d.Stamina * s.Scale, (worn?.Def.Stamina ?? 0f) * (worn?.Scale ?? 1f));
+            Line("พลังจิต", d.Skill * s.Scale, (worn?.Def.Skill ?? 0f) * (worn?.Scale ?? 1f), true);
+            if (d.Set != null && GameData.Sets.TryGetValue(d.Set, out var set))
+                sb.AppendLine($"• เซ็ต {set.Name}");
+            if (d.Class != null)
+                sb.AppendLine($"ใช้ได้เฉพาะ{GameData.Classes.FirstOrDefault(c => c.Id == d.Class)?.Name}");
+            if (worn != null)
+                sb.AppendLine($"(เทียบกับ {worn.Def.Name}{(worn.Plus > 0 ? $" +{worn.Plus}" : "")} ที่ใส่อยู่)");
+        }
+        else if (d.Use != null && d.Amount > 0f)
+            sb.AppendLine($"• ฟื้นฟู {d.Amount:0}");
+        return sb.ToString().TrimEnd();
     }
 
     public static string StackStats(ItemStack s)

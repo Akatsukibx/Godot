@@ -8,8 +8,8 @@ public partial class MapView : Control
     public bool WorldMode { get; set; }
     public string CurrentZone { get; set; } = "wiang_mok";
 
-    static readonly Color Grass = new(0.16f, 0.2f, 0.13f);
-    static readonly Color Water = new(0.08f, 0.17f, 0.25f);
+    static readonly Color Grass = new(0.14f, 0.18f, 0.12f);
+    static readonly Color Water = new(0.1f, 0.22f, 0.32f);
     static readonly Color Plot = new(0.26f, 0.36f, 0.18f);
     static readonly Color Road = new(0.45f, 0.38f, 0.27f);
     static readonly Color Deck = new(0.5f, 0.36f, 0.22f);

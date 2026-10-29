@@ -61,7 +61,7 @@ public partial class Npc : Node3D
         var p = Game.Player;
         // Turn toward the player when they come close, back to the usual pose otherwise.
         float target = _baseYaw;
-        if (p != null && p.GlobalPosition.DistanceTo(GlobalPosition) < 5f)
+        if (p != null && p.GlobalPosition.DistanceTo(GlobalPosition) < 5f && Def.Activity is not ("sit" or "fish"))
         {
             var d = p.GlobalPosition - GlobalPosition;
             target = Mathf.Atan2(-d.X, -d.Z);
@@ -92,7 +92,7 @@ public partial class Npc : Node3D
                 vel = new Vector2(0f, 1.3f);
             }
         }
-        _rig.Emote = near && Def.Activity is "sweep" or "farm" or "chat" ? null : Def.Activity is "idle" or "wander" ? null : Def.Activity;
+        _rig.Emote = near && Def.Activity is "sweep" or "farm" or "chat" ? null : Def.Activity is "idle" or "wander" ? null : Def.Activity == "sit" ? "sitchair" : Def.Activity;
         _rig.Yaw = Mathf.LerpAngle(_rig.Yaw, target, 1f - Mathf.Exp(-5f * dt));
         _rig.Animate(dt, vel, false, false);
 
@@ -143,6 +143,17 @@ public partial class Npc : Node3D
                 break;
             case "farm":
                 Shapes.Box(hand, new Vector3(0f, -0.08f, -0.05f), new Vector3(0.06f, 0.18f, 0.06f), new Color(0.3f, 0.55f, 0.25f), 0f, "Seedlings");
+                break;
+            case "sit":
+                // A wooden bench to sit on, set just behind where the villager stands.
+                var bench = Shapes.Group(this, "Bench", new Vector3(0f, 0f, 0.05f));
+                bench.Rotation = new Vector3(0f, _baseYaw, 0f);
+                var bwood = new Color(0.42f, 0.29f, 0.18f);
+                Shapes.Box(bench, new Vector3(0f, 0.5f, 0.12f), new Vector3(1.5f, 0.07f, 0.45f), bwood, 0f, "Bench");
+                foreach (var x in new[] { -0.62f, 0.62f })
+                foreach (var z in new[] { -0.05f, 0.29f })
+                    Shapes.Box(bench, new Vector3(x, 0.24f, z), new Vector3(0.07f, 0.48f, 0.07f), bwood.Darkened(0.2f), 0f, "BenchLeg");
+                Textures.Apply(bench);
                 break;
             case "sell":
                 Shapes.Box(hand, new Vector3(0f, -0.05f, -0.1f), new Vector3(0.3f, 0.06f, 0.2f), new Color(0.6f, 0.45f, 0.25f), 0f, "Tray");

@@ -87,69 +87,69 @@ height = 0.09
 radius = 0.045
 height = 0.09
 
-[node name="Ghost_boss_hun_yak" type="Node3D" unique_id=1576847705]
+[node name="Ghost_boss_hun_yak" type="Node3D" unique_id=1129663050]
 
-[node name="Pole" type="MeshInstance3D" parent="." unique_id=2134244260]
+[node name="Pole" type="MeshInstance3D" parent="." unique_id=1563894141]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 material_override = SubResource("StandardMaterial3D_e7ukp")
 mesh = SubResource("CylinderMesh_rywtu")
 
-[node name="Crossbar" type="MeshInstance3D" parent="." unique_id=2117125282]
+[node name="Crossbar" type="MeshInstance3D" parent="." unique_id=843606667]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.42, 0)
 material_override = SubResource("StandardMaterial3D_e7ukp")
 mesh = SubResource("BoxMesh_a0ul8")
 
-[node name="Shirt" type="MeshInstance3D" parent="." unique_id=1539553227]
+[node name="Shirt" type="MeshInstance3D" parent="." unique_id=1289293838]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.22, 0)
 material_override = SubResource("StandardMaterial3D_5grdt")
 mesh = SubResource("BoxMesh_6ebif")
 
-[node name="SleeveL" type="MeshInstance3D" parent="." unique_id=1967477321]
+[node name="SleeveL" type="MeshInstance3D" parent="." unique_id=1943369258]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.62, 1.36, 0)
 material_override = SubResource("StandardMaterial3D_mgb2n")
 mesh = SubResource("BoxMesh_bueos")
 
-[node name="SleeveR" type="MeshInstance3D" parent="." unique_id=1971306864]
+[node name="SleeveR" type="MeshInstance3D" parent="." unique_id=1888182976]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.62, 1.36, 0)
 material_override = SubResource("StandardMaterial3D_mgb2n")
 mesh = SubResource("BoxMesh_d0u40")
 
-[node name="TuftL" type="MeshInstance3D" parent="." unique_id=1808747514]
+[node name="TuftL" type="MeshInstance3D" parent="." unique_id=243737323]
 transform = Transform3D(0.0007962743, -0.9999997, 0, 0.9999997, 0.0007962743, 0, 0, 0, 1, -0.92, 1.36, 0)
 material_override = SubResource("StandardMaterial3D_tbeyg")
 mesh = SubResource("CylinderMesh_hkqkc")
 
-[node name="TuftR" type="MeshInstance3D" parent="." unique_id=240232851]
+[node name="TuftR" type="MeshInstance3D" parent="." unique_id=1332482292]
 transform = Transform3D(0.0007962743, 0.9999997, 0, -0.9999997, 0.0007962743, 0, 0, 0, 1, 0.92, 1.36, 0)
 material_override = SubResource("StandardMaterial3D_tbeyg")
 mesh = SubResource("CylinderMesh_a4j8x")
 
-[node name="TuftHem" type="MeshInstance3D" parent="." unique_id=2006482721]
+[node name="TuftHem" type="MeshInstance3D" parent="." unique_id=982601014]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.78, 0)
 material_override = SubResource("StandardMaterial3D_tbeyg")
 mesh = SubResource("CylinderMesh_iko6i")
 
-[node name="SackHead" type="MeshInstance3D" parent="." unique_id=1128663659]
+[node name="SackHead" type="MeshInstance3D" parent="." unique_id=690262249]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9, 0)
 material_override = SubResource("StandardMaterial3D_3hy14")
 mesh = SubResource("SphereMesh_jyvfx")
 
-[node name="StrawHat" type="MeshInstance3D" parent="." unique_id=993612354]
+[node name="StrawHat" type="MeshInstance3D" parent="." unique_id=1694250529]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.16, 0)
 material_override = SubResource("StandardMaterial3D_yqww8")
 mesh = SubResource("CylinderMesh_65t7y")
 
-[node name="Mouth" type="MeshInstance3D" parent="." unique_id=640429248]
+[node name="Mouth" type="MeshInstance3D" parent="." unique_id=1599818113]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, -0.25)
 material_override = SubResource("StandardMaterial3D_qkdmc")
 mesh = SubResource("BoxMesh_hibtp")
 
-[node name="GlowEyeL" type="MeshInstance3D" parent="." unique_id=1846303279]
+[node name="GlowEyeL" type="MeshInstance3D" parent="." unique_id=1541743009]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.09, 1.94, -0.24)
 material_override = SubResource("StandardMaterial3D_s3i8f")
 mesh = SubResource("SphereMesh_etp44")
 
-[node name="GlowEyeR" type="MeshInstance3D" parent="." unique_id=1763127502]
+[node name="GlowEyeR" type="MeshInstance3D" parent="." unique_id=1759043801]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09, 1.94, -0.24)
 material_override = SubResource("StandardMaterial3D_s3i8f")
 mesh = SubResource("SphereMesh_8lrwd")

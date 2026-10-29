@@ -131,7 +131,7 @@ public partial class Menus : CanvasLayer
             Game.Main.SaveNow();
             GetTree().Quit();
         }));
-        outer.AddChild(UiTheme.KeyChip("Esc", "เล่นต่อ"));
+        outer.AddChild(CloseX(() => ClosePause()));
     }
 
     void ClosePause()
@@ -216,9 +216,20 @@ public partial class Menus : CanvasLayer
         rv.AddChild(_descTitle);
         rv.AddChild(_descBody);
         rv.AddChild(UiTheme.Dashed());
-        rv.AddChild(UiTheme.KeyChip("Esc", "บันทึกและกลับ"));
+        rv.AddChild(CloseX(() => CloseSettings()));
 
         SelectCategory(category);
+    }
+
+    static Control CloseX(System.Action close)
+    {
+        var row = new HBoxContainer { Alignment = BoxContainer.AlignmentMode.End };
+        var b = new Button { Text = "✕", Flat = true, CustomMinimumSize = new Vector2(40f, 40f), FocusMode = Control.FocusModeEnum.None, TooltipText = "ปิด (Esc)" };
+        b.AddThemeFontSizeOverride("font_size", 24);
+        b.AddThemeColorOverride("font_hover_color", new Color(1f, 0.45f, 0.4f));
+        b.Pressed += close;
+        row.AddChild(b);
+        return row;
     }
 
     static Button MenuButtonSmall(string text, System.Action action)
@@ -421,6 +432,8 @@ public partial class Menus : CanvasLayer
             Settings.AdminMode = on;
             SelectCategory(4);
         });
+        if (Settings.AdminMode && Game.Player != null)
+            ToggleRow("โหมดอมตะ", $"ไม่เสียเลือด ไม่ตาย ความอึดไม่ลด · เปิด/ปิดด้วยปุ่ม {Settings.BindingText("immortal")}", Game.Player.Immortal, on => Game.Player.SetImmortal(on));
         if (Settings.AdminMode && Game.Player != null)
             ToggleRow("โหมดบิน", $"บินทะลุสิ่งกีดขวาง · Space ขึ้น · Ctrl ลง · Shift บินเร็ว · เปิด/ปิดด้วยปุ่ม {Settings.BindingText("fly")}", Game.Player.Flying, on => Game.Player.SetFlying(on));
         if (Settings.AdminMode && Game.Player != null)

@@ -37,6 +37,7 @@ public partial class Player : CharacterBody3D
     public bool Swimming { get; private set; }
     public bool Crouching { get; private set; }
     public bool Flying { get; private set; }
+    public bool Immortal { get; private set; }
     public string SpawnShrine { get; set; } = "lak_mueang";
     public Vector3 Facing { get; private set; } = Vector3.Forward;
     public HashSet<string> Codex { get; } = new();
@@ -187,7 +188,7 @@ public partial class Player : CharacterBody3D
             v.Y = Mathf.Clamp((target - GlobalPosition.Y) * 5f, -4f, 3f);
             if (moving)
             {
-                Stamina = Mathf.Max(0f, Stamina - Cfg.SwimStaminaDrain * dt);
+                Stamina = Immortal ? Stamina : Mathf.Max(0f, Stamina - Cfg.SwimStaminaDrain * dt);
                 _staminaDelay = 0.6f;
             }
         }
@@ -252,6 +253,8 @@ public partial class Player : CharacterBody3D
                 Crouching = !Crouching;
             if (Input.IsActionJustPressed("fly") && Settings.AdminMode)
                 SetFlying(!Flying);
+            if (Input.IsActionJustPressed("immortal") && Settings.AdminMode)
+                SetImmortal(!Immortal);
         }
     }
 
@@ -306,6 +309,17 @@ public partial class Player : CharacterBody3D
     {
         CharacterName = string.IsNullOrWhiteSpace(name) ? Def.Name : name.Trim();
         _nameplate.Text = CharacterName;
+    }
+
+    public void SetImmortal(bool on)
+    {
+        Immortal = on;
+        if (on)
+        {
+            Hp = MaxHp;
+            Stamina = MaxStamina;
+        }
+        Game.Toast(on ? "โหมดอมตะ: ไม่เสียเลือด ไม่ตาย ความอึดไม่ลด" : "ปิดโหมดอมตะ");
     }
 
     public void SetFlying(bool on)
@@ -378,6 +392,8 @@ public partial class Player : CharacterBody3D
 
     bool SpendStamina(float cost)
     {
+        if (Immortal)
+            return true;
         if (Stamina < cost)
         {
             if (_noStaminaToast <= 0f)
@@ -394,17 +410,8 @@ public partial class Player : CharacterBody3D
 
     void TryRoll(Vector3 dir)
     {
-        if (Stamina < Cfg.DashStaminaCost)
-        {
-            if (_noStaminaToast <= 0f)
-            {
-                Game.Toast("ความอึดไม่พอ");
-                _noStaminaToast = 2f;
-            }
+        if (!SpendStamina(Cfg.DashStaminaCost))
             return;
-        }
-        Stamina -= Cfg.DashStaminaCost;
-        _staminaDelay = Cfg.StaminaRegenDelay;
         StartDash(dir, Cfg.DashDistance, Cfg.DashDuration, true);
         _rig.PlayRoll(dir, Cfg.DashDuration);
         Audio.Play("dash", -2f);
@@ -594,7 +601,7 @@ public partial class Player : CharacterBody3D
 
     public void TakeDamage(float amount, string source)
     {
-        if (Dead || _invuln > 0f)
+        if (Dead || _invuln > 0f || Immortal)
             return;
         if (Guarding)
             amount *= 1f - _guardReduction;

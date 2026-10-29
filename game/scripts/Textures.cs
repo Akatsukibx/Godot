@@ -226,6 +226,8 @@ public static class Textures
             if (gi.MaterialOverride is not StandardMaterial3D mat || mat.AlbedoTexture != null
                 || mat.ShadingMode == BaseMaterial3D.ShadingModeEnum.Unshaded || mat.Transparency != BaseMaterial3D.TransparencyEnum.Disabled)
                 continue;
+            if (gi.GetPath().ToString().Contains("RedBus"))
+                continue; // painted metal, keep it smooth
             string name = BaseName(gi.Name.ToString());
             Kind? kind = gi is MultiMeshInstance3D
                 ? name switch { "Trunks" or "DeadTrees" or "Stems" => Kind.Bark, "Crowns" or "Fronds" => Kind.Leaves, _ => null }

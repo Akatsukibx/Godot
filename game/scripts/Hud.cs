@@ -236,6 +236,7 @@ public partial class Hud : CanvasLayer
         // Compass to the tracked quest's target, top centre.
         _compass = UiTheme.Label("", 15, UiTheme.Gold);
         _compass.HorizontalAlignment = HorizontalAlignment.Center;
+        _compass.Visible = false; // the gold marker on the compass bar shows the way instead
         Place(_compass, 0.5f, 0f, 0f, 48f, Control.GrowDirection.Both, Control.GrowDirection.End);
         AddGameplay(_compass);
         var bar = new CompassBar { MouseFilter = Control.MouseFilterEnum.Ignore, CustomMinimumSize = new Vector2(520f, 46f) };
@@ -259,10 +260,18 @@ public partial class Hud : CanvasLayer
         (_bossBar, _) = TextBar(new Color(0.75f, 0.1f, 0.08f), 14f, 520f);
         _bossBox.AddChild(_bossBar);
         AddGameplay(_bossBox);
+        _immortalLabel = UiTheme.Label("อมตะ", 15, new Color(1f, 0.85f, 0.3f));
+        _immortalLabel.AddThemeConstantOverride("outline_size", 5);
+        _immortalLabel.AddThemeColorOverride("font_outline_color", Colors.Black);
+        Place(_immortalLabel, 0f, 0f, 150f, 128f, Control.GrowDirection.End, Control.GrowDirection.End);
+        AddGameplay(_immortalLabel);
     }
+
+    Label _immortalLabel;
 
     void RefreshBossBar()
     {
+        _immortalLabel.Visible = _player.Immortal && !Game.Main.Cutscene.Active;
         var boss = Game.Main.NearestBoss(45f);
         _bossBox.Visible = boss != null && !Game.Main.Cutscene.Active;
         if (boss == null)
@@ -281,7 +290,7 @@ public partial class Hud : CanvasLayer
         _trackerVersion = version;
         foreach (var c in _tracker.GetChildren())
             c.QueueFree();
-        var shown = log.PinnedActive.ToList();
+        var shown = log.PinnedActive.OrderBy(q => q.Main ? 0 : q.Repeatable ? 2 : 1).ToList();
         if (shown.Count == 0)
             shown = log.Active.OrderBy(q => q.Main ? 0 : 1).Take(2).ToList();
         _trackerHeader.Text = $"{(_trackerCollapsed ? "▸" : "▾")}  เควส ({log.Active.Count()})";
@@ -318,7 +327,7 @@ public partial class Hud : CanvasLayer
         float angle = Mathf.Wrap(Mathf.Atan2(to.X, to.Z) - Mathf.Atan2(fwd.X, fwd.Z), -Mathf.Pi, Mathf.Pi);
         string[] arrows = { "↑", "↗", "→", "↘", "↓", "↙", "←", "↖" };
         int idx = (int)Mathf.PosMod(Mathf.Round(-angle / (Mathf.Pi / 4f)), 8f);
-        _compass.Text = $"{arrows[idx]}  {t.Label} · {dist:0} ม.";
+        _compass.Text = "";
     }
 
     void BuildToasts()
@@ -493,8 +502,7 @@ public partial class Hud : CanvasLayer
         header.AddThemeConstantOverride("separation", 14);
         header.AddChild(UiTheme.Heading(title, 30));
         header.AddChild(new Control { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill });
-        header.AddChild(UiTheme.KeyChip(Settings.BindingText(action), "ปิด"));
-        header.AddChild(UiTheme.KeyChip("Esc", ""));
+        header.AddChild(CloseButton());
         v.AddChild(header);
         v.AddChild(UiTheme.Dashed());
         var body = new VBoxContainer();
@@ -503,6 +511,17 @@ public partial class Hud : CanvasLayer
         _root.AddChild(panel);
         _windows[id] = new Window { Root = panel, Body = body, Refresh = refresh };
         return body;
+    }
+
+    // The ✕ in the corner of every window and dialogue.
+    Button CloseButton()
+    {
+        var b = new Button { Text = "✕", Flat = true, CustomMinimumSize = new Vector2(40f, 40f), FocusMode = Control.FocusModeEnum.None, TooltipText = "ปิด (Esc)" };
+        b.AddThemeFontSizeOverride("font_size", 24);
+        b.AddThemeColorOverride("font_color", UiTheme.Cream);
+        b.AddThemeColorOverride("font_hover_color", new Color(1f, 0.45f, 0.4f));
+        b.Pressed += () => CloseWindows();
+        return b;
     }
 
     static VBoxContainer Column(float width, int separation = 8)
@@ -633,8 +652,9 @@ public partial class Hud : CanvasLayer
     void RefreshQuests()
     {
         var log = _player.Quests;
-        var visible = GameData.Quests.Where(q => log.StateOf(q, _player) != QuestLog.State.Locked)
-            .OrderBy(q => log.StateOf(q, _player) == QuestLog.State.Done ? 1 : 0).ThenBy(q => q.Main ? 0 : 1).ThenBy(q => log.StateOf(q, _player) switch
+        // Only quests the player has taken (in progress, ready or finished); offers stay with the NPCs.
+        var visible = GameData.Quests.Where(q => log.StateOf(q, _player) is QuestLog.State.Active or QuestLog.State.Ready or QuestLog.State.Done || log.IsDone(q.Id))
+            .OrderBy(q => log.StateOf(q, _player) == QuestLog.State.Done ? 1 : 0).ThenBy(q => q.Main ? 0 : q.Repeatable ? 2 : 1).ThenBy(q => log.StateOf(q, _player) switch
             {
                 QuestLog.State.Ready => 0, QuestLog.State.Active => 1, QuestLog.State.Available => 2, _ => 3,
             }).ToList();
@@ -891,7 +911,7 @@ public partial class Hud : CanvasLayer
         _dlgName = UiTheme.Label("", 23, UiTheme.Gold);
         header.AddChild(_dlgName);
         header.AddChild(new Control { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill, MouseFilter = Control.MouseFilterEnum.Pass });
-        header.AddChild(UiTheme.KeyChip("Esc", ""));
+        header.AddChild(CloseButton());
         v.AddChild(header);
         v.AddChild(UiTheme.Dashed(8f));
         _dlgText = UiTheme.Label("", 21, Colors.White);

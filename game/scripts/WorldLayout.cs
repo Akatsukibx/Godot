@@ -99,27 +99,70 @@ public static partial class WorldBuilder
         return pts;
     }
 
-    // Lays a dirt road along the points: rotated strips plus round patches at every bend.
+    // Lays a dirt road along the points as one continuous ribbon (no overlapping strips at the bends),
+    // a little above the paved streets so crossings never flicker. Each segment is still tagged for
+    // the map and the grass.
     static void DrawRoad(Node3D parent, string name, List<Vector3> pts, float width, Color color, float baseY = 0f)
     {
         var g = Shapes.Group(parent, name);
-        float y = baseY + 0.02f + (_roadCount++ % 12) * 0.0015f;
-        for (int i = 0; i < pts.Count - 1; i++)
+        float y = baseY + 0.05f + (_roadCount++ % 10) * 0.002f;
+        var clean = new List<Vector3>();
+        foreach (var p in pts)
+            if (clean.Count == 0 || new Vector2(p.X - clean[^1].X, p.Z - clean[^1].Z).Length() > 0.05f)
+                clean.Add(new Vector3(p.X, y, p.Z));
+        if (clean.Count < 2)
+            return;
+        var st = new SurfaceTool();
+        st.Begin(Mesh.PrimitiveType.Triangles);
+        var left = new List<Vector3>();
+        var right = new List<Vector3>();
+        for (int i = 0; i < clean.Count; i++)
         {
-            var a = pts[i];
-            var b = pts[i + 1];
+            var dIn = (i > 0 ? clean[i] - clean[i - 1] : clean[1] - clean[0]).Normalized();
+            var dOut = (i < clean.Count - 1 ? clean[i + 1] - clean[i] : dIn).Normalized();
+            var nIn = new Vector3(dIn.Z, 0f, -dIn.X);
+            var miter = (nIn + new Vector3(dOut.Z, 0f, -dOut.X)).Normalized();
+            float scale = 1f / Mathf.Max(0.5f, miter.Dot(nIn));
+            right.Add(clean[i] + miter * width * 0.5f * scale);
+            left.Add(clean[i] - miter * width * 0.5f * scale);
+        }
+        for (int i = 0; i < clean.Count - 1; i++)
+            foreach (var v in new[] { left[i], right[i], right[i + 1], left[i], right[i + 1], left[i + 1] })
+                st.AddVertex(v);
+        st.GenerateNormals();
+        Shapes.Child(g, new MeshInstance3D { Mesh = st.Commit(), MaterialOverride = Shapes.Material(color), CastShadow = GeometryInstance3D.ShadowCastingSetting.Off }, "Strip");
+        for (int i = 0; i < clean.Count - 1; i++)
+        {
+            var a = clean[i];
+            var b = clean[i + 1];
             var d = b - a;
-            float len = new Vector2(d.X, d.Z).Length();
-            if (len < 0.05f)
-                continue;
             var mid = (a + b) * 0.5f;
-            var strip = Shapes.Box(g, new Vector3(mid.X, y, mid.Z), new Vector3(width, 0.04f, len + 0.1f), color, 0f, "Strip");
-            strip.Rotation = new Vector3(0f, Mathf.Atan2(d.X, d.Z), 0f);
-            Shapes.MapTag(strip, "map_road", new Vector2(width, len));
-            if (i > 0)
-                Shapes.Cylinder(g, new Vector3(a.X, y + 0.0005f, a.Z), width * 0.5f, width * 0.5f, 0.04f, color, 0f, "Bend");
+            Shapes.MapTag(Shapes.Group(g, "Segment", new Vector3(mid.X, 0f, mid.Z), Mathf.Atan2(d.X, d.Z)), "map_road", new Vector2(width, new Vector2(d.X, d.Z).Length()));
             AddRoad(a, b, width * 0.5f);
         }
+    }
+
+    // A spot beside the nearest road: from the road towards `near`, just past its edge.
+    static Vector3 RoadsideSpot(Vector3 near, float clearance)
+    {
+        var q = Flat(near);
+        Vector2 best = q, bestRoad = q;
+        float bestD = float.MaxValue, half = 1f;
+        foreach (var (a, b, h) in _roads)
+        {
+            var c = ClosestOnSegment(q, a, b);
+            float d = c.DistanceTo(q) - h;
+            if (d < bestD)
+            {
+                bestD = d;
+                bestRoad = c;
+                half = h;
+                var dir = b - a;
+                best = q.DistanceTo(c) > 0.1f ? (q - c).Normalized() : new Vector2(-dir.Y, dir.X).Normalized();
+            }
+        }
+        var spot = bestRoad + best * (half + clearance);
+        return new Vector3(spot.X, near.Y, spot.Y);
     }
 
     // ---------- houses ----------
@@ -252,7 +295,7 @@ public static partial class WorldBuilder
 
     static void CitySigns(Node3D city)
     {
-        SignPost(city, new Vector3(-6.5f, 0f, -7.5f),
+        SignPost(city, new Vector3(-10.5f, 0f, -10.5f),
             ("ทุ่งนาหุ่นไล่กา (ประตูเหนือ)", new Vector3(0f, 0f, -1f)), ("ประตูทิศใต้ (ปิดอยู่)", new Vector3(0f, 0f, 1f)),
             ("โรงตีเหล็กลุงมั่น", new Vector3(-1f, 0f, 0f)), ("วัดกลางเวียง", new Vector3(1f, 0f, -0.4f)));
         SignPost(city, new Vector3(6f, 0f, -168f), ("ทุ่งนาหุ่นไล่กา", new Vector3(0f, 0f, -1f)), ("ลานศาลหลักเมือง", new Vector3(0f, 0f, 1f)));
@@ -307,6 +350,22 @@ public static partial class WorldBuilder
             Occupy(new Vector3(n.X, 0f, n.Z), 2.5f);
     }
 
+    // A ring of lamps round the village plaza, nudged off the roads and leaning out over them.
+    static void VillageLanterns(Node3D world)
+    {
+        var ring = Shapes.Group(world, "LanternRing");
+        float r = GameData.Config.SafeZoneRadius + 5f;
+        for (int i = 0; i < 10; i++)
+        {
+            float a = i / 10f * Mathf.Tau + 0.31f;
+            var p = new Vector3(Mathf.Cos(a) * r, 0f, Mathf.Sin(a) * r);
+            if (DistToRoads(p) < 1.5f)
+                p = RoadsideSpot(p, 1.2f);
+            LanternPost(ring, $"Lantern{i}", p, 2.6f, i % 2 == 0, NearestRoadPoint(p));
+            Occupy(p, 1f);
+        }
+    }
+
     static bool InFieldBounds(Vector3 p, float r) =>
         Mathf.Abs(p.X) < Half - 8f - r && p.Z > ThungNaShoreZ + 8f + r && p.Z < Half - 8f - r;
 
@@ -328,7 +387,7 @@ public static partial class WorldBuilder
                 SignPost(g, shrinePos + new Vector3(3.2f, 0f, 2.5f), ("หมู่บ้านทุ่งนา", new Vector3(1f, 0f, -0.3f)), ("ป่าตะเคียนเก่า", new Vector3(0f, 0f, 1f)));
             }
             else
-                SignPost(g, NearestRoadPoint(c) + new Vector3(0f, 0f, -3.5f), ("หมู่บ้านทุ่งนา", new Vector3(-1f, 0f, -0.3f)), ("ทุ่งตะวันออก", new Vector3(0.3f, 0f, 1f)));
+                SignPost(g, RoadsideSpot(c + new Vector3(0f, 0f, -4f), 1.4f), ("หมู่บ้านทุ่งนา", new Vector3(-1f, 0f, -0.3f)), ("ทุ่งตะวันออก", new Vector3(0.3f, 0f, 1f)));
             int built = 0;
             for (int attempt = 0; attempt < 80 && built < 7; attempt++)
             {
@@ -340,8 +399,9 @@ public static partial class WorldBuilder
             }
             for (int i = 0; i < 3; i++)
             {
-                var lp = NearestRoadPoint(c + new Vector3(_rng.RandfRange(-25f, 25f), 0f, _rng.RandfRange(-12f, 12f)));
-                LanternPost(g, $"HamletLantern{i}", lp + new Vector3(2.2f, 0f, 1.6f), 2.6f, i == 0);
+                var lp = RoadsideSpot(c + new Vector3(_rng.RandfRange(-25f, 25f), 0f, _rng.RandfRange(-12f, 12f)), 1.2f);
+                if (!Blocked(lp, 1f))
+                    LanternPost(g, $"HamletLantern{i}", lp, 2.6f, i == 0, NearestRoadPoint(lp));
             }
         }
 

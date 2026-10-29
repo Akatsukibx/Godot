@@ -23,7 +23,7 @@ public partial class ModelPreview : SubViewportContainer
     public static ModelPreview CreateEmpty(Vector2 size, bool showcase = false)
     {
         var preview = new ModelPreview { Stretch = true, CustomMinimumSize = size, MouseFilter = MouseFilterEnum.Pass };
-        var vp = new SubViewport { OwnWorld3D = true, TransparentBg = !showcase, Msaa3D = Viewport.Msaa.Msaa4X, Size = showcase ? new Vector2I(1600, 900) : (Vector2I)size };
+        var vp = new SubViewport { OwnWorld3D = true, TransparentBg = !showcase, Msaa3D = Viewport.Msaa.Msaa2X, Size = showcase ? new Vector2I(1280, 720) : (Vector2I)size };
         preview._vp = vp;
         preview.AddChild(vp);
         vp.AddChild(new WorldEnvironment
@@ -37,10 +37,10 @@ public partial class ModelPreview : SubViewportContainer
                 AmbientLightEnergy = 0.8f,
                 TonemapMode = Godot.Environment.ToneMapper.Filmic,
                 GlowEnabled = true,
-                GlowIntensity = showcase ? 1.2f : 0.8f,
+                GlowIntensity = showcase ? 0.6f : 0.8f,
             },
         });
-        var key = new DirectionalLight3D { LightColor = showcase ? new Color(1f, 0.85f, 0.6f) : new Color(0.75f, 0.82f, 1f), LightEnergy = showcase ? 1.4f : 0.9f };
+        var key = new DirectionalLight3D { LightColor = showcase ? new Color(1f, 0.85f, 0.6f) : new Color(0.75f, 0.82f, 1f), LightEnergy = showcase ? 0.9f : 0.9f };
         vp.AddChild(key);
         key.RotationDegrees = new Vector3(-30f, 30f, 0f);
         vp.AddChild(new OmniLight3D { Position = new Vector3(-1.2f, 1.2f, 1.5f), LightColor = new Color(1f, 0.65f, 0.35f), LightEnergy = 1.4f, OmniRange = 5f });
@@ -50,7 +50,7 @@ public partial class ModelPreview : SubViewportContainer
         Shapes.Cylinder(preview._stage, new Vector3(0f, -0.05f, 0f), 0.75f, 0.8f, 0.1f, new Color(0.22f, 0.16f, 0.11f));
         if (showcase)
         {
-            vp.AddChild(new SpotLight3D { Position = new Vector3(0f, 4.5f, 1.2f), RotationDegrees = new Vector3(-75f, 0f, 0f), LightColor = new Color(1f, 0.85f, 0.55f), LightEnergy = 6f, SpotRange = 8f, SpotAngle = 28f });
+            vp.AddChild(new SpotLight3D { Position = new Vector3(0f, 4.5f, 1.2f), RotationDegrees = new Vector3(-75f, 0f, 0f), LightColor = new Color(1f, 0.85f, 0.55f), LightEnergy = 2.2f, SpotRange = 8f, SpotAngle = 28f });
             vp.AddChild(new GpuParticles3D
             {
                 Amount = 40,

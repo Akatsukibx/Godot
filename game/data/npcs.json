@@ -12,7 +12,7 @@
     ]
   },
   {
-    "id": "thongdee", "name": "พระอาจารย์ทองดี", "title": "เจ้าอาวาสวัดกลางเวียง", "zone": "wiang_mok", "x": 30, "z": -21, "yaw": 180,
+    "id": "thongdee", "name": "พระอาจารย์ทองดี", "title": "เจ้าอาวาสวัดกลางเวียง", "zone": "wiang_mok", "x": 30, "z": -10.5, "yaw": 180,
     "look": { "cloth": "#d9822b", "pants": "#c06a1a", "skin": "#c9a487", "hair": "#2a2020", "hat": "bald", "robe": true },
     "lines": [
       "เจริญพร ผู้เฝ้าประตูรุ่นใหม่",
@@ -31,7 +31,7 @@
     ]
   },
   {
-    "id": "khon_khap", "name": "พี่ต้อม", "title": "คนขับรถเมล์แดง", "zone": "wiang_mok", "x": -4.4, "z": 19.5, "yaw": 270,
+    "id": "khon_khap", "name": "พี่ต้อม", "title": "คนขับรถเมล์แดง", "zone": "wiang_mok", "x": 14.6, "z": -4.7, "yaw": 180,
     "look": { "cloth": "#8a2a24", "pants": "#2a2a30", "skin": "#b88a64", "hair": "#14100c", "hat": "cap" },
     "lines": [
       "รถเมล์สายสุดท้ายออกตีหนึ่ง... แต่ผู้โดยสารคืนนี้แปลกๆ นะ",
@@ -52,7 +52,7 @@
 
   // ---------- ชาวบ้านเวียงหมอก (activity = ท่าทางประจำ: sell / sweep / sit / wander / fish / farm / chat) ----------
   {
-    "id": "mae_ploy", "name": "แม่พลอย", "title": "แม่ค้าข้าวเหนียวหมูปิ้ง", "zone": "wiang_mok", "x": -3.2, "z": 46, "yaw": 270, "activity": "sell",
+    "id": "mae_ploy", "name": "แม่พลอย", "title": "แม่ค้าข้าวเหนียวหมูปิ้ง", "zone": "wiang_mok", "x": -4.9, "z": 46, "yaw": 270, "activity": "sell",
     "look": { "cloth": "#c46a4a", "pants": "#3a2a2a", "skin": "#c9a487", "hair": "#1a1410", "hat": "bun", "apron": true },
     "lines": [
       "ข้าวเหนียวหมูปิ้งจ้า ร้อนๆ ตั้งแต่ตีห้า",
@@ -61,7 +61,7 @@
     ]
   },
   {
-    "id": "ta_chuen", "name": "ตาชื่น", "title": "คนกวาดลานวัด", "zone": "wiang_mok", "x": 40, "z": -28, "yaw": 200, "activity": "sweep",
+    "id": "ta_chuen", "name": "ตาชื่น", "title": "คนกวาดลานวัด", "zone": "wiang_mok", "x": 40, "z": -17.5, "yaw": 200, "activity": "sweep",
     "look": { "cloth": "#d8d0c0", "pants": "#4a4038", "skin": "#a8764e", "hair": "#cfcfcf", "hat": "bald" },
     "lines": [
       "กวาดใบโพธิ์ทุกเช้า กวาดเท่าไหร่ก็ไม่หมด เหมือนกรรมนั่นแหละ",

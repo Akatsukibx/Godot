@@ -110,142 +110,142 @@ size = Vector3(0.13, 0.26, 0.13)
 radius = 0.075
 height = 0.15
 
-[node name="Npc_mae_khai_rua" type="Node3D" unique_id=1758697985]
+[node name="Npc_mae_khai_rua" type="Node3D" unique_id=649884180]
 
-[node name="Hips" type="Node3D" parent="." unique_id=1339633958]
+[node name="Hips" type="Node3D" parent="." unique_id=1018250594]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
 
-[node name="LegL" type="Node3D" parent="Hips" unique_id=40391130]
+[node name="LegL" type="Node3D" parent="Hips" unique_id=1466296632]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.13, 0, 0)
 
-[node name="Thigh" type="MeshInstance3D" parent="Hips/LegL" unique_id=2123792871]
+[node name="Thigh" type="MeshInstance3D" parent="Hips/LegL" unique_id=220439407]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.23, 0)
 material_override = SubResource("StandardMaterial3D_su203")
 mesh = SubResource("BoxMesh_ipnrp")
 
-[node name="Knee" type="Node3D" parent="Hips/LegL" unique_id=1181385721]
+[node name="Knee" type="Node3D" parent="Hips/LegL" unique_id=1245113067]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.46, 0)
 
-[node name="Shin" type="MeshInstance3D" parent="Hips/LegL/Knee" unique_id=1436957304]
+[node name="Shin" type="MeshInstance3D" parent="Hips/LegL/Knee" unique_id=1771122913]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.21, 0)
 material_override = SubResource("StandardMaterial3D_b6ixf")
 mesh = SubResource("BoxMesh_qvjbc")
 
-[node name="Foot" type="MeshInstance3D" parent="Hips/LegL/Knee" unique_id=354709749]
+[node name="Foot" type="MeshInstance3D" parent="Hips/LegL/Knee" unique_id=1645067797]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.44, -0.05)
 material_override = SubResource("StandardMaterial3D_rn5hb")
 mesh = SubResource("BoxMesh_uvxu0")
 
-[node name="LegR" type="Node3D" parent="Hips" unique_id=478871281]
+[node name="LegR" type="Node3D" parent="Hips" unique_id=1232876408]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.13, 0, 0)
 
-[node name="Thigh" type="MeshInstance3D" parent="Hips/LegR" unique_id=1131286269]
+[node name="Thigh" type="MeshInstance3D" parent="Hips/LegR" unique_id=400009881]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.23, 0)
 material_override = SubResource("StandardMaterial3D_su203")
 mesh = SubResource("BoxMesh_o0oi5")
 
-[node name="Knee" type="Node3D" parent="Hips/LegR" unique_id=92994948]
+[node name="Knee" type="Node3D" parent="Hips/LegR" unique_id=1886283822]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.46, 0)
 
-[node name="Shin" type="MeshInstance3D" parent="Hips/LegR/Knee" unique_id=1745968315]
+[node name="Shin" type="MeshInstance3D" parent="Hips/LegR/Knee" unique_id=690861703]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.21, 0)
 material_override = SubResource("StandardMaterial3D_b6ixf")
 mesh = SubResource("BoxMesh_0i02i")
 
-[node name="Foot" type="MeshInstance3D" parent="Hips/LegR/Knee" unique_id=1457693337]
+[node name="Foot" type="MeshInstance3D" parent="Hips/LegR/Knee" unique_id=1297920818]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.44, -0.05)
 material_override = SubResource("StandardMaterial3D_rn5hb")
 mesh = SubResource("BoxMesh_umubd")
 
-[node name="Torso" type="Node3D" parent="Hips" unique_id=874798887]
+[node name="Torso" type="Node3D" parent="Hips" unique_id=221691838]
 
-[node name="Chest" type="MeshInstance3D" parent="Hips/Torso" unique_id=1994757439]
+[node name="Chest" type="MeshInstance3D" parent="Hips/Torso" unique_id=1135779690]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.34, 0)
 material_override = SubResource("StandardMaterial3D_ex5ig")
 mesh = SubResource("BoxMesh_p2udw")
 
-[node name="Sash" type="MeshInstance3D" parent="Hips/Torso" unique_id=2146924808]
+[node name="Sash" type="MeshInstance3D" parent="Hips/Torso" unique_id=1669761090]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.04, 0)
 material_override = SubResource("StandardMaterial3D_ud0du")
 mesh = SubResource("BoxMesh_uehk6")
 
-[node name="Apron" type="MeshInstance3D" parent="Hips/Torso" unique_id=1852778043]
+[node name="Apron" type="MeshInstance3D" parent="Hips/Torso" unique_id=607630053]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, -0.17)
 material_override = SubResource("StandardMaterial3D_4qge6")
 mesh = SubResource("BoxMesh_8hyhb")
 
-[node name="Head" type="Node3D" parent="Hips/Torso" unique_id=1308694531]
+[node name="Head" type="Node3D" parent="Hips/Torso" unique_id=558865730]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
 
-[node name="Face" type="MeshInstance3D" parent="Hips/Torso/Head" unique_id=599384060]
+[node name="Face" type="MeshInstance3D" parent="Hips/Torso/Head" unique_id=1056479808]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.18, 0)
 material_override = SubResource("StandardMaterial3D_fh7ae")
 mesh = SubResource("SphereMesh_q6ibl")
 
-[node name="EyeL" type="MeshInstance3D" parent="Hips/Torso/Head" unique_id=113502289]
+[node name="EyeL" type="MeshInstance3D" parent="Hips/Torso/Head" unique_id=1792817521]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.07, 0.2, -0.175)
 material_override = SubResource("StandardMaterial3D_p1pjs")
 mesh = SubResource("BoxMesh_xd51c")
 
-[node name="EyeR" type="MeshInstance3D" parent="Hips/Torso/Head" unique_id=1621192396]
+[node name="EyeR" type="MeshInstance3D" parent="Hips/Torso/Head" unique_id=1956872589]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.07, 0.2, -0.175)
 material_override = SubResource("StandardMaterial3D_p1pjs")
 mesh = SubResource("BoxMesh_fufuv")
 
-[node name="Hair" type="MeshInstance3D" parent="Hips/Torso/Head" unique_id=362105023]
+[node name="Hair" type="MeshInstance3D" parent="Hips/Torso/Head" unique_id=1091169242]
 transform = Transform3D(1.05, 0, 0, 0, 0.7, 0, 0, 0, 1.05, 0, 0.26, 0.03)
 material_override = SubResource("StandardMaterial3D_0w2t3")
 mesh = SubResource("SphereMesh_ofi5w")
 
-[node name="Ngob" type="MeshInstance3D" parent="Hips/Torso/Head" unique_id=1704571149]
+[node name="Ngob" type="MeshInstance3D" parent="Hips/Torso/Head" unique_id=721665222]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.38, 0)
 material_override = SubResource("StandardMaterial3D_142bi")
 mesh = SubResource("CylinderMesh_t4l6h")
 
-[node name="ArmL" type="Node3D" parent="Hips/Torso" unique_id=324018227]
+[node name="ArmL" type="Node3D" parent="Hips/Torso" unique_id=1526449826]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.35, 0.6, 0)
 
-[node name="Upper" type="MeshInstance3D" parent="Hips/Torso/ArmL" unique_id=1126975269]
+[node name="Upper" type="MeshInstance3D" parent="Hips/Torso/ArmL" unique_id=724338313]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.14, 0)
 material_override = SubResource("StandardMaterial3D_ex5ig")
 mesh = SubResource("BoxMesh_46hn2")
 
-[node name="Elbow" type="Node3D" parent="Hips/Torso/ArmL" unique_id=12996356]
+[node name="Elbow" type="Node3D" parent="Hips/Torso/ArmL" unique_id=1911836253]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.29, 0)
 
-[node name="Forearm" type="MeshInstance3D" parent="Hips/Torso/ArmL/Elbow" unique_id=265379020]
+[node name="Forearm" type="MeshInstance3D" parent="Hips/Torso/ArmL/Elbow" unique_id=1215831118]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.13, 0)
 material_override = SubResource("StandardMaterial3D_fyun5")
 mesh = SubResource("BoxMesh_3l7x1")
 
-[node name="Hand" type="MeshInstance3D" parent="Hips/Torso/ArmL/Elbow" unique_id=569886673]
+[node name="Hand" type="MeshInstance3D" parent="Hips/Torso/ArmL/Elbow" unique_id=49785890]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.29, 0)
 material_override = SubResource("StandardMaterial3D_fh7ae")
 mesh = SubResource("SphereMesh_xi2ur")
 
-[node name="Offhand" type="Node3D" parent="Hips/Torso/ArmL/Elbow" unique_id=924108943]
+[node name="Offhand" type="Node3D" parent="Hips/Torso/ArmL/Elbow" unique_id=35983483]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.31, 0)
 
-[node name="ArmR" type="Node3D" parent="Hips/Torso" unique_id=430279723]
+[node name="ArmR" type="Node3D" parent="Hips/Torso" unique_id=1695344836]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.35, 0.6, 0)
 
-[node name="Upper" type="MeshInstance3D" parent="Hips/Torso/ArmR" unique_id=2112874169]
+[node name="Upper" type="MeshInstance3D" parent="Hips/Torso/ArmR" unique_id=500593688]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.14, 0)
 material_override = SubResource("StandardMaterial3D_ex5ig")
 mesh = SubResource("BoxMesh_irnp7")
 
-[node name="Elbow" type="Node3D" parent="Hips/Torso/ArmR" unique_id=1534550045]
+[node name="Elbow" type="Node3D" parent="Hips/Torso/ArmR" unique_id=568989101]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.29, 0)
 
-[node name="Forearm" type="MeshInstance3D" parent="Hips/Torso/ArmR/Elbow" unique_id=640310311]
+[node name="Forearm" type="MeshInstance3D" parent="Hips/Torso/ArmR/Elbow" unique_id=1182221995]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.13, 0)
 material_override = SubResource("StandardMaterial3D_fyun5")
 mesh = SubResource("BoxMesh_nv2jn")
 
-[node name="Hand" type="MeshInstance3D" parent="Hips/Torso/ArmR/Elbow" unique_id=168438551]
+[node name="Hand" type="MeshInstance3D" parent="Hips/Torso/ArmR/Elbow" unique_id=514757044]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.29, 0)
 material_override = SubResource("StandardMaterial3D_fh7ae")
 mesh = SubResource("SphereMesh_yh7lg")
 
-[node name="Weapon" type="Node3D" parent="Hips/Torso/ArmR/Elbow" unique_id=308853543]
+[node name="Weapon" type="Node3D" parent="Hips/Torso/ArmR/Elbow" unique_id=250181311]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.31, 0)
