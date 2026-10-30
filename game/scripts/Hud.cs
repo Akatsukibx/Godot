@@ -6,234 +6,234 @@ using System.Linq;
 // menu icons, prompts, and the windows: status (I), bag (Tab), quests (J), map (M), crafting (K).
 public partial class Hud : CanvasLayer
 {
-    const int MaxToasts = 5;
-    const int BagSlots = 30;
+	const int MaxToasts = 5;
+	const int BagSlots = 30;
 
-    class Slot
-    {
-        public PanelContainer Root;
-        public TextureRect Icon;
-        public ColorRect Shade;
-        public Label Cd, Count;
-        public HBoxContainer Key;
-        public Label KeyText;
-    }
+	class Slot
+	{
+		public PanelContainer Root;
+		public TextureRect Icon;
+		public ColorRect Shade;
+		public Label Cd, Count;
+		public HBoxContainer Key;
+		public Label KeyText;
+	}
 
-    class Window
-    {
-        public Control Root;
-        public VBoxContainer Body;
-        public System.Action Refresh;
-    }
+	class Window
+	{
+		public Control Root;
+		public VBoxContainer Body;
+		public System.Action Refresh;
+	}
 
-    Control _root;
-    Player _player;
-    Label _clockLabel, _bannerLabel, _zoneTitle, _zoneSub;
-    PlayerFrame _frame;
-    TextureRect _rainIcon;
-    Tween _zoneTween;
-    TextureRect _phaseIcon;
-    VBoxContainer _toasts, _tracker;
-    Control _crosshair;
-    Slot _attackSlot, _specialSlot, _dashSlot, _potionSlot;
-    readonly List<Slot> _skillSlots = new();
-    HBoxContainer _skillBar;
-    readonly List<(string action, Label key)> _menuKeys = new();
-    Control _classSelect, _deathScreen;
-    readonly Dictionary<string, Window> _windows = new();
-    readonly List<Control> _gameplay = new();
-    int _trackerVersion = -1;
+	Control _root;
+	Player _player;
+	Label _clockLabel, _bannerLabel, _zoneTitle, _zoneSub;
+	PlayerFrame _frame;
+	TextureRect _rainIcon;
+	Tween _zoneTween;
+	TextureRect _phaseIcon;
+	VBoxContainer _toasts, _tracker;
+	Control _crosshair;
+	Slot _attackSlot, _specialSlot, _dashSlot, _potionSlot;
+	readonly List<Slot> _skillSlots = new();
+	HBoxContainer _skillBar;
+	readonly List<(string action, Label key)> _menuKeys = new();
+	Control _classSelect, _deathScreen;
+	readonly Dictionary<string, Window> _windows = new();
+	readonly List<Control> _gameplay = new();
+	int _trackerVersion = -1;
 
 
-    // status
-    Label _statPoints, _statDerived, _codexLabel;
-    readonly List<(Label value, Button plus)> _statRows = new();
+	// status
+	Label _statPoints, _statDerived, _codexLabel;
+	readonly List<(Label value, Button plus)> _statRows = new();
 
-    // quests
-    VBoxContainer _questList;
-    Label _questTitle, _questGiver, _questDesc, _questObjectives, _questRewards;
-    Label _questWhere;
-    Button _questPin;
-    string _questSelected;
-    int _questVersion = -1;
+	// quests
+	VBoxContainer _questList;
+	Label _questTitle, _questGiver, _questDesc, _questObjectives, _questRewards;
+	Label _questWhere;
+	Button _questPin;
+	string _questSelected;
+	int _questVersion = -1;
 
-    // crafting
-    VBoxContainer _recipeList, _recipeIngredients;
-    TextureRect _recipeIcon;
-    Label _recipeName, _recipeDesc;
-    Button _craftButton;
-    int _recipeSelected;
-    int _craftVersion = -1;
+	// crafting
+	VBoxContainer _recipeList, _recipeIngredients;
+	TextureRect _recipeIcon;
+	Label _recipeName, _recipeDesc;
+	Button _craftButton;
+	int _recipeSelected;
+	int _craftVersion = -1;
 
-    // map
-    MapView _map;
-    Button _mapZoneTab, _mapWorldTab;
+	// map
+	MapView _map;
+	Button _mapZoneTab, _mapWorldTab;
 
-    System.Action<ClassDef> _onClassChosen;
-    System.Action _onRespawn;
-    Tween _bannerTween;
+	System.Action<ClassDef> _onClassChosen;
+	System.Action _onRespawn;
+	Tween _bannerTween;
 
-    public bool WindowOpen => _windows.Values.Any(w => w.Root.Visible);
-    public bool Playing => _player != null && _classSelect == null;
+	public bool WindowOpen => _windows.Values.Any(w => w.Root.Visible);
+	public bool Playing => _player != null && _classSelect == null;
 
-    static void Place(Control c, float ax, float ay, float ox, float oy, Control.GrowDirection gh, Control.GrowDirection gv) =>
-        UiTheme.Place(c, ax, ay, ox, oy, gh, gv);
+	static void Place(Control c, float ax, float ay, float ox, float oy, Control.GrowDirection gh, Control.GrowDirection gv) =>
+		UiTheme.Place(c, ax, ay, ox, oy, gh, gv);
 
-    public override void _Ready()
-    {
-        _root = new Control { MouseFilter = Control.MouseFilterEnum.Ignore, Theme = UiTheme.Get() };
-        _root.SetAnchorsPreset(Control.LayoutPreset.FullRect);
-        AddChild(_root);
+	public override void _Ready()
+	{
+		_root = new Control { MouseFilter = Control.MouseFilterEnum.Ignore, Theme = UiTheme.Get() };
+		_root.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+		AddChild(_root);
 
-        BuildFrame();
-        BuildClock();
-        BuildTracker();
-        BuildBossBar();
-        BuildToasts();
-        BuildCrosshair();
-        BuildZoneTitle();
-        BuildMenuIcons();
-        BuildBanner();
-        BuildBag(AddWindow("bag", "กระเป๋า", "inventory", RefreshBag));
-        BuildStats(AddWindow("stats", "สถานะตัวละคร", "stats", RefreshStats));
-        BuildQuests(AddWindow("quests", "เควส", "quests", RefreshQuests));
-        BuildMap(AddWindow("map", "แผนที่", "map", null));
-        BuildCraft(AddWindow("craft", "คราฟต์", "craft", RefreshCraft));
-        BuildEnhance(AddWindow("enhance", "ตีบวกอุปกรณ์ · ลุงมั่น", "interact", RefreshEnhance));
-        BuildDialogue();
-        SetGameplayVisible(false);
-    }
+		BuildFrame();
+		BuildClock();
+		BuildTracker();
+		BuildBossBar();
+		BuildToasts();
+		BuildCrosshair();
+		BuildZoneTitle();
+		BuildMenuIcons();
+		BuildBanner();
+		BuildBag(AddWindow("bag", "กระเป๋า", "inventory", RefreshBag));
+		BuildStats(AddWindow("stats", "สถานะตัวละคร", "stats", RefreshStats));
+		BuildQuests(AddWindow("quests", "เควส", "quests", RefreshQuests));
+		BuildMap(AddWindow("map", "แผนที่", "map", null));
+		BuildCraft(AddWindow("craft", "คราฟต์", "craft", RefreshCraft));
+		BuildEnhance(AddWindow("enhance", "ตีบวกอุปกรณ์ · ลุงมั่น", "interact", RefreshEnhance));
+		BuildDialogue();
+		SetGameplayVisible(false);
+	}
 
-    // ---------- HUD pieces ----------
+	// ---------- HUD pieces ----------
 
-    void AddGameplay(Control c)
-    {
-        _root.AddChild(c);
-        _gameplay.Add(c);
-    }
+	void AddGameplay(Control c)
+	{
+		_root.AddChild(c);
+		_gameplay.Add(c);
+	}
 
-    void SetGameplayVisible(bool visible)
-    {
-        foreach (var c in _gameplay)
-            c.Visible = visible;
-    }
+	void SetGameplayVisible(bool visible)
+	{
+		foreach (var c in _gameplay)
+			c.Visible = visible;
+	}
 
-    static (ProgressBar bar, Label text) TextBar(Color fill, float height, float width = 270f)
-    {
-        var bar = new ProgressBar { ShowPercentage = false, CustomMinimumSize = new Vector2(width, height), MouseFilter = Control.MouseFilterEnum.Ignore };
-        var f = new StyleBoxFlat { BgColor = fill, BorderColor = fill.Lightened(0.35f), BorderWidthTop = height > 8f ? 2 : 0 };
-        
-        var bg = new StyleBoxFlat { BgColor = new Color(0f, 0f, 0f, 0.6f), BorderColor = new Color(1f, 1f, 1f, 0.12f) };
-        bg.SetBorderWidthAll(1);
-        
-        bar.AddThemeStyleboxOverride("fill", f);
-        bar.AddThemeStyleboxOverride("background", bg);
-        var text = UiTheme.Label("", 13);
-        text.SetAnchorsPreset(Control.LayoutPreset.FullRect);
-        text.HorizontalAlignment = HorizontalAlignment.Center;
-        text.VerticalAlignment = VerticalAlignment.Center;
-        bar.AddChild(text);
-        return (bar, text);
-    }
+	static (ProgressBar bar, Label text) TextBar(Color fill, float height, float width = 270f)
+	{
+		var bar = new ProgressBar { ShowPercentage = false, CustomMinimumSize = new Vector2(width, height), MouseFilter = Control.MouseFilterEnum.Ignore };
+		var f = new StyleBoxFlat { BgColor = fill, BorderColor = fill.Lightened(0.35f), BorderWidthTop = height > 8f ? 2 : 0 };
+		
+		var bg = new StyleBoxFlat { BgColor = new Color(0f, 0f, 0f, 0.6f), BorderColor = new Color(1f, 1f, 1f, 0.12f) };
+		bg.SetBorderWidthAll(1);
+		
+		bar.AddThemeStyleboxOverride("fill", f);
+		bar.AddThemeStyleboxOverride("background", bg);
+		var text = UiTheme.Label("", 13);
+		text.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+		text.HorizontalAlignment = HorizontalAlignment.Center;
+		text.VerticalAlignment = VerticalAlignment.Center;
+		bar.AddChild(text);
+		return (bar, text);
+	}
 
-    void BuildFrame()
-    {
-        _frame = new PlayerFrame();
-        Place(_frame, 0f, 0f, 18f, 16f, Control.GrowDirection.End, Control.GrowDirection.End);
-        AddGameplay(_frame);
-    }
+	void BuildFrame()
+	{
+		_frame = new PlayerFrame();
+		Place(_frame, 0f, 0f, 18f, 16f, Control.GrowDirection.End, Control.GrowDirection.End);
+		AddGameplay(_frame);
+	}
 
-    // Big zone name in the middle of the screen when entering an area; fades out by itself.
-    void BuildZoneTitle()
-    {
-        var box = new VBoxContainer { MouseFilter = Control.MouseFilterEnum.Ignore, Modulate = new Color(1f, 1f, 1f, 0f) };
-        box.AddThemeConstantOverride("separation", 2);
-        Place(box, 0.5f, 0.32f, 0f, 0f, Control.GrowDirection.Both, Control.GrowDirection.Both);
-        _zoneTitle = UiTheme.Label("", 72, new Color(1f, 0.93f, 0.78f));
-        _zoneTitle.AddThemeConstantOverride("outline_size", 14);
-        _zoneTitle.HorizontalAlignment = HorizontalAlignment.Center;
-        _zoneSub = UiTheme.Label("", 20, new Color(0.85f, 0.85f, 0.9f));
-        _zoneSub.AddThemeConstantOverride("outline_size", 8);
-        _zoneSub.HorizontalAlignment = HorizontalAlignment.Center;
-        box.AddChild(_zoneTitle);
-        var line = UiTheme.Dashed(10f);
-        line.CustomMinimumSize = new Vector2(420f, 10f);
-        box.AddChild(line);
-        box.AddChild(_zoneSub);
-        _root.AddChild(box);
-    }
+	// Big zone name in the middle of the screen when entering an area; fades out by itself.
+	void BuildZoneTitle()
+	{
+		var box = new VBoxContainer { MouseFilter = Control.MouseFilterEnum.Ignore, Modulate = new Color(1f, 1f, 1f, 0f) };
+		box.AddThemeConstantOverride("separation", 2);
+		Place(box, 0.5f, 0.32f, 0f, 0f, Control.GrowDirection.Both, Control.GrowDirection.Both);
+		_zoneTitle = UiTheme.Label("", 72, new Color(1f, 0.93f, 0.78f));
+		_zoneTitle.AddThemeConstantOverride("outline_size", 14);
+		_zoneTitle.HorizontalAlignment = HorizontalAlignment.Center;
+		_zoneSub = UiTheme.Label("", 20, new Color(0.85f, 0.85f, 0.9f));
+		_zoneSub.AddThemeConstantOverride("outline_size", 8);
+		_zoneSub.HorizontalAlignment = HorizontalAlignment.Center;
+		box.AddChild(_zoneTitle);
+		var line = UiTheme.Dashed(10f);
+		line.CustomMinimumSize = new Vector2(420f, 10f);
+		box.AddChild(line);
+		box.AddChild(_zoneSub);
+		_root.AddChild(box);
+	}
 
-    public void ZoneTitle(ZoneDef zone)
-    {
-        if (zone == null)
-            return;
-        _zoneTitle.Text = zone.Name;
-        _zoneSub.Text = $"{zone.Subtitle} · เลเวลแนะนำ {zone.LevelText}";
-        var box = (Control)_zoneTitle.GetParent();
-        _zoneTween?.Kill();
-        _zoneTween = box.CreateTween();
-        _zoneTween.TweenProperty(box, "modulate:a", 1f, 0.8);
-        _zoneTween.TweenInterval(2.6);
-        _zoneTween.TweenProperty(box, "modulate:a", 0f, 1.8);
-    }
+	public void ZoneTitle(ZoneDef zone)
+	{
+		if (zone == null)
+			return;
+		_zoneTitle.Text = zone.Name;
+		_zoneSub.Text = $"{zone.Subtitle} · เลเวลแนะนำ {zone.LevelText}";
+		var box = (Control)_zoneTitle.GetParent();
+		_zoneTween?.Kill();
+		_zoneTween = box.CreateTween();
+		_zoneTween.TweenProperty(box, "modulate:a", 1f, 0.8);
+		_zoneTween.TweenInterval(2.6);
+		_zoneTween.TweenProperty(box, "modulate:a", 0f, 1.8);
+	}
 
-    // Hides the HUD during cutscenes.
-    public void SetCinematic(bool on)
-    {
-        CloseWindows();
-        SetGameplayVisible(!on && _player != null);
-    }
+	// Hides the HUD during cutscenes.
+	public void SetCinematic(bool on)
+	{
+		CloseWindows();
+		SetGameplayVisible(!on && _player != null);
+	}
 
-    void BuildClock()
-    {
-        var mini = new MiniMap();
-        Place(mini, 1f, 0f, -18f, 18f, Control.GrowDirection.Begin, Control.GrowDirection.End);
-        AddGameplay(mini);
-        // Clock under the minimap: no frame, centred on its width.
-        var h = new HBoxContainer { Alignment = BoxContainer.AlignmentMode.Center, CustomMinimumSize = new Vector2(176f, 0f), MouseFilter = Control.MouseFilterEnum.Ignore };
-        h.AddThemeConstantOverride("separation", 6);
-        Place(h, 1f, 0f, -18f, 200f, Control.GrowDirection.Begin, Control.GrowDirection.End);
-        _phaseIcon = UiTheme.IconRect("sun", 22f);
-        h.AddChild(_phaseIcon);
-        _clockLabel = UiTheme.Label("", 19);
-        _clockLabel.VerticalAlignment = VerticalAlignment.Center;
-        _clockLabel.AddThemeConstantOverride("outline_size", 5);
-        _clockLabel.AddThemeColorOverride("font_outline_color", new Color(0f, 0f, 0f, 0.85f));
-        h.AddChild(_clockLabel);
-        _rainIcon = UiTheme.IconRect("rain", 20f);
-        _rainIcon.TooltipText = "ฝนตก";
-        h.AddChild(_rainIcon);
-        AddGameplay(h);
-    }
+	void BuildClock()
+	{
+		var mini = new MiniMap();
+		Place(mini, 1f, 0f, -18f, 18f, Control.GrowDirection.Begin, Control.GrowDirection.End);
+		AddGameplay(mini);
+		// Clock under the minimap: no frame, centred on its width.
+		var h = new HBoxContainer { Alignment = BoxContainer.AlignmentMode.Center, CustomMinimumSize = new Vector2(176f, 0f), MouseFilter = Control.MouseFilterEnum.Ignore };
+		h.AddThemeConstantOverride("separation", 6);
+		Place(h, 1f, 0f, -18f, 200f, Control.GrowDirection.Begin, Control.GrowDirection.End);
+		_phaseIcon = UiTheme.IconRect("sun", 22f);
+		h.AddChild(_phaseIcon);
+		_clockLabel = UiTheme.Label("", 19);
+		_clockLabel.VerticalAlignment = VerticalAlignment.Center;
+		_clockLabel.AddThemeConstantOverride("outline_size", 5);
+		_clockLabel.AddThemeColorOverride("font_outline_color", new Color(0f, 0f, 0f, 0.85f));
+		h.AddChild(_clockLabel);
+		_rainIcon = UiTheme.IconRect("rain", 20f);
+		_rainIcon.TooltipText = "ฝนตก";
+		h.AddChild(_rainIcon);
+		AddGameplay(h);
+	}
 
-    // Quest tracker on the left, middle of the screen: pinned quests (or the active ones), collapsible.
-    Button _trackerHeader;
-    bool _trackerCollapsed;
-    Label _compass;
+	// Quest tracker on the left, middle of the screen: pinned quests (or the active ones), collapsible.
+	Button _trackerHeader;
+	bool _trackerCollapsed;
+	Label _compass;
 
-    void BuildTracker()
-    {
-        var box = new VBoxContainer { MouseFilter = Control.MouseFilterEnum.Ignore, CustomMinimumSize = new Vector2(250f, 0f) };
-        box.AddThemeConstantOverride("separation", 2);
-        var backing = new PanelContainer { MouseFilter = Control.MouseFilterEnum.Ignore };
-        backing.AddThemeStyleboxOverride("panel", UiTheme.Box(new Color(0.02f, 0.02f, 0.03f, 0.55f), new Color(1f, 1f, 1f, 0.08f), 1, 6, 8));
-        backing.AddChild(box);
-        Place(backing, 0f, 0.3f, 18f, 0f, Control.GrowDirection.End, Control.GrowDirection.End);
-        _trackerHeader = new Button { Alignment = HorizontalAlignment.Left, Flat = true, MouseFilter = Control.MouseFilterEnum.Stop };
-        _trackerHeader.AddThemeFontSizeOverride("font_size", 15);
-        _trackerHeader.AddThemeColorOverride("font_color", UiTheme.Gold);
-        _trackerHeader.Pressed += () =>
-        {
-            _trackerCollapsed = !_trackerCollapsed;
-            _trackerVersion = -1;
-        };
-        box.AddChild(_trackerHeader);
-        _tracker = new VBoxContainer { MouseFilter = Control.MouseFilterEnum.Ignore };
-        _tracker.AddThemeConstantOverride("separation", 1);
-        box.AddChild(_tracker);
-        AddGameplay(backing);
+	void BuildTracker()
+	{
+		var box = new VBoxContainer { MouseFilter = Control.MouseFilterEnum.Ignore, CustomMinimumSize = new Vector2(250f, 0f) };
+		box.AddThemeConstantOverride("separation", 2);
+		var backing = new PanelContainer { MouseFilter = Control.MouseFilterEnum.Ignore };
+		backing.AddThemeStyleboxOverride("panel", UiTheme.Box(new Color(0.02f, 0.02f, 0.03f, 0.55f), new Color(1f, 1f, 1f, 0.08f), 1, 6, 8));
+		backing.AddChild(box);
+		Place(backing, 0f, 0.3f, 18f, 0f, Control.GrowDirection.End, Control.GrowDirection.End);
+		_trackerHeader = new Button { Alignment = HorizontalAlignment.Left, Flat = true, MouseFilter = Control.MouseFilterEnum.Stop };
+		_trackerHeader.AddThemeFontSizeOverride("font_size", 15);
+		_trackerHeader.AddThemeColorOverride("font_color", UiTheme.Gold);
+		_trackerHeader.Pressed += () =>
+		{
+			_trackerCollapsed = !_trackerCollapsed;
+			_trackerVersion = -1;
+		};
+		box.AddChild(_trackerHeader);
+		_tracker = new VBoxContainer { MouseFilter = Control.MouseFilterEnum.Ignore };
+		_tracker.AddThemeConstantOverride("separation", 1);
+		box.AddChild(_tracker);
+		AddGameplay(backing);
 
-        // Compass to the tracked quest's target, top centre.
+		// Compass to the tracked quest's target, top centre.
         _compass = UiTheme.Label("", 15, UiTheme.Gold);
         _compass.HorizontalAlignment = HorizontalAlignment.Center;
         _compass.Visible = false; // the gold marker on the compass bar shows the way instead

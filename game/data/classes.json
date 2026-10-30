@@ -3,83 +3,83 @@
   // offhand = ของมือซ้ายที่ใช้ได้ (shield / dagger / ไม่ใส่ = ไม่มี) · locked = แสดงในหน้าเลือกแต่ยังเล่นไม่ได้
   // special.distance = ระยะพุ่งของท่า lunge · skill type: aoe / heal / guard / frenzy (เร่งการโจมตี)
   {
-    "id": "mor_yan",
-    "starterWeapon": "yan_kradat",
-    "name": "หมอยันต์",
-    "role": "ซัพพอร์ต · ระยะไกล",
-    "range": "ไกล", "difficulty": 2, "emblem": "fire_talisman",
-    "ratings": { "attack": 3, "defense": 2, "support": 5, "control": 4 },
-    "description": "หมอผีสายตำรา ซัดยันต์ไฟจากระยะไกล โปรยข้าวสารเสกให้ผีอ่อนกำลัง และใช้น้ำมนต์ฟื้นตัวเอง",
-    "color": "#e9e2c8",
-    "maxHp": 90,
-    "moveSpeed": 6.2,
-    "hpPerLevel": 9,
-    "damagePerLevel": 0.08,
-    "attack": { "type": "projectile", "name": "ยันต์ไฟ", "icon": "fire_talisman", "damage": 14, "range": 15, "cooldown": 0.45, "element": "fire", "projectileSpeed": 20 },
-    "special": { "type": "fan", "name": "ยันต์สามทิศ", "icon": "triple_talisman", "damage": 17, "range": 14, "count": 3, "arc": 36, "cooldown": 2.5, "element": "fire", "projectileSpeed": 22 },
-    "skills": [
-      { "name": "โปรยข้าวสารเสก", "icon": "rice", "type": "aoe", "damage": 22, "radius": 5.5, "cooldown": 5, "element": "rice", "slow": 0.5, "slowDuration": 3 },
-      { "name": "น้ำมนต์ฟื้นใจ", "icon": "holy_water", "type": "heal", "amount": 35, "cooldown": 10 }
-    ]
+	"id": "mor_yan",
+	"starterWeapon": "yan_kradat",
+	"name": "หมอยันต์",
+	"role": "ซัพพอร์ต · ระยะไกล",
+	"range": "ไกล", "difficulty": 2, "emblem": "fire_talisman",
+	"ratings": { "attack": 3, "defense": 2, "support": 5, "control": 4 },
+	"description": "หมอผีสายตำรา ซัดยันต์ไฟจากระยะไกล โปรยข้าวสารเสกให้ผีอ่อนกำลัง และใช้น้ำมนต์ฟื้นตัวเอง",
+	"color": "#e9e2c8",
+	"maxHp": 90,
+	"moveSpeed": 6.2,
+	"hpPerLevel": 9,
+	"damagePerLevel": 0.08,
+	"attack": { "type": "projectile", "name": "ยันต์ไฟ", "icon": "fire_talisman", "damage": 14, "range": 15, "cooldown": 0.45, "element": "fire", "projectileSpeed": 20 },
+	"special": { "type": "fan", "name": "ยันต์สามทิศ", "icon": "triple_talisman", "damage": 17, "range": 14, "count": 3, "arc": 36, "cooldown": 2.5, "element": "fire", "projectileSpeed": 22 },
+	"skills": [
+	  { "name": "โปรยข้าวสารเสก", "icon": "rice", "type": "aoe", "damage": 22, "radius": 5.5, "cooldown": 5, "element": "rice", "slow": 0.5, "slowDuration": 3 },
+	  { "name": "น้ำมนต์ฟื้นใจ", "icon": "holy_water", "type": "heal", "amount": 35, "cooldown": 10 }
+	]
   },
   {
-    "id": "nak_dab",
-    "starterWeapon": "dab_mai",
-    "name": "นักดาบปลุกเสก",
-    "role": "แทงก์ · ระยะประชิด",
-    "range": "ใกล้", "difficulty": 1, "emblem": "sword", "offhand": "shield",
-    "ratings": { "attack": 4, "defense": 5, "support": 2, "control": 3 },
-    "description": "นักรบที่ดาบผ่านการปลุกเสก ฟันผีระยะใกล้เป็นวงกว้าง ถือโล่ได้ ทนทาน และตั้งเกราะเพชรรับการโจมตีได้",
-    "color": "#7a2e2e",
-    "maxHp": 140,
-    "moveSpeed": 5.8,
-    "hpPerLevel": 15,
-    "damagePerLevel": 0.08,
-    "attack": { "type": "melee", "name": "ฟันดาบปลุกเสก", "icon": "sword", "damage": 24, "range": 2.8, "arc": 110, "cooldown": 0.6, "element": "blessed" },
-    "special": { "type": "lunge", "name": "แทงทะลวง", "icon": "thrust", "damage": 46, "range": 4.5, "arc": 40, "cooldown": 3, "element": "blessed", "distance": 3 },
-    "skills": [
-      { "name": "ฟันวงจักร", "icon": "spin", "type": "aoe", "damage": 34, "radius": 3.8, "cooldown": 4, "element": "blessed" },
-      { "name": "ยันต์เกราะเพชร", "icon": "shield", "type": "guard", "duration": 5, "damageReduction": 0.6, "cooldown": 14 }
-    ]
+	"id": "nak_dab",
+	"starterWeapon": "dab_mai",
+	"name": "นักดาบปลุกเสก",
+	"role": "แทงก์ · ระยะประชิด",
+	"range": "ใกล้", "difficulty": 1, "emblem": "sword", "offhand": "shield",
+	"ratings": { "attack": 4, "defense": 5, "support": 2, "control": 3 },
+	"description": "นักรบที่ดาบผ่านการปลุกเสก ฟันผีระยะใกล้เป็นวงกว้าง ถือโล่ได้ ทนทาน และตั้งเกราะเพชรรับการโจมตีได้",
+	"color": "#7a2e2e",
+	"maxHp": 140,
+	"moveSpeed": 5.8,
+	"hpPerLevel": 15,
+	"damagePerLevel": 0.08,
+	"attack": { "type": "melee", "name": "ฟันดาบปลุกเสก", "icon": "sword", "damage": 24, "range": 2.8, "arc": 110, "cooldown": 0.6, "element": "blessed" },
+	"special": { "type": "lunge", "name": "แทงทะลวง", "icon": "thrust", "damage": 46, "range": 4.5, "arc": 40, "cooldown": 3, "element": "blessed", "distance": 3 },
+	"skills": [
+	  { "name": "ฟันวงจักร", "icon": "spin", "type": "aoe", "damage": 34, "radius": 3.8, "cooldown": 4, "element": "blessed" },
+	  { "name": "ยันต์เกราะเพชร", "icon": "shield", "type": "guard", "duration": 5, "damageReduction": 0.6, "cooldown": 14 }
+	]
   },
   {
-    "id": "nak_kha",
-    "starterWeapon": "mit_lek",
-    "name": "นักฆ่าเงาจันทร์",
-    "role": "ดาเมจ · ระยะประชิด",
-    "range": "ใกล้", "difficulty": 3, "emblem": "dagger_moon", "offhand": "dagger",
-    "ratings": { "attack": 5, "defense": 1, "support": 1, "control": 3 },
-    "description": "นักฆ่าที่เดินในเงาจันทร์ แทงมีดคู่รวดเร็ว ก้าวเงาทะลุศัตรู และเร่งความเร็วการโจมตีได้ชั่วครู่ เปราะแต่ดาเมจสูง",
-    "color": "#2e3348",
-    "maxHp": 105,
-    "moveSpeed": 6.6,
-    "hpPerLevel": 11,
-    "damagePerLevel": 0.09,
-    "attack": { "type": "melee", "name": "แทงมีดคู่", "icon": "dagger", "damage": 13, "range": 2.3, "arc": 80, "cooldown": 0.32, "element": "blessed" },
-    "special": { "type": "lunge", "name": "ก้าวเงา", "icon": "dash", "damage": 38, "range": 6.5, "arc": 30, "cooldown": 4, "element": "blessed", "distance": 6 },
-    "skills": [
-      { "name": "พิษหมอกควัน", "icon": "smoke", "type": "aoe", "damage": 18, "radius": 4, "cooldown": 6, "element": "rice", "slow": 0.4, "slowDuration": 3 },
-      { "name": "ม่านเงาจันทร์", "icon": "moon", "type": "frenzy", "duration": 5, "cooldown": 15 }
-    ]
+	"id": "nak_kha",
+	"starterWeapon": "mit_lek",
+	"name": "นักฆ่าเงาจันทร์",
+	"role": "ดาเมจ · ระยะประชิด",
+	"range": "ใกล้", "difficulty": 3, "emblem": "dagger_moon", "offhand": "dagger",
+	"ratings": { "attack": 5, "defense": 1, "support": 1, "control": 3 },
+	"description": "นักฆ่าที่เดินในเงาจันทร์ แทงมีดคู่รวดเร็ว ก้าวเงาทะลุศัตรู และเร่งความเร็วการโจมตีได้ชั่วครู่ เปราะแต่ดาเมจสูง",
+	"color": "#2e3348",
+	"maxHp": 105,
+	"moveSpeed": 6.6,
+	"hpPerLevel": 11,
+	"damagePerLevel": 0.09,
+	"attack": { "type": "melee", "name": "แทงมีดคู่", "icon": "dagger", "damage": 13, "range": 2.3, "arc": 80, "cooldown": 0.32, "element": "blessed" },
+	"special": { "type": "lunge", "name": "ก้าวเงา", "icon": "dash", "damage": 38, "range": 6.5, "arc": 30, "cooldown": 4, "element": "blessed", "distance": 6 },
+	"skills": [
+	  { "name": "พิษหมอกควัน", "icon": "smoke", "type": "aoe", "damage": 18, "radius": 4, "cooldown": 6, "element": "rice", "slow": 0.4, "slowDuration": 3 },
+	  { "name": "ม่านเงาจันทร์", "icon": "moon", "type": "frenzy", "duration": 5, "cooldown": 15 }
+	]
   },
   {
-    "id": "rang_song", "name": "ร่างทรง", "role": "ดาเมจเวท · ยืดหยุ่น", "locked": true,
-    "range": "ไกล", "difficulty": 3, "emblem": "spirit",
-    "ratings": { "attack": 4, "defense": 2, "support": 3, "control": 4 },
-    "description": "ยืมพลังผีที่ปลดปล่อยมา เปลี่ยนสกิลตามวิญญาณที่สถิต (เร็วๆ นี้)",
-    "color": "#5a3a6a", "maxHp": 95, "moveSpeed": 6, "hpPerLevel": 10, "damagePerLevel": 0.08,
-    "attack": { "type": "projectile", "name": "ลูกไฟวิญญาณ", "icon": "spirit", "damage": 12, "range": 14, "cooldown": 0.5, "element": "fire" },
-    "special": { "type": "fan", "name": "-", "icon": "spirit", "damage": 10, "range": 10, "count": 1, "cooldown": 3 },
-    "skills": []
+	"id": "rang_song", "name": "ร่างทรง", "role": "ดาเมจเวท · ยืดหยุ่น", "locked": true,
+	"range": "ไกล", "difficulty": 3, "emblem": "spirit",
+	"ratings": { "attack": 4, "defense": 2, "support": 3, "control": 4 },
+	"description": "ยืมพลังผีที่ปลดปล่อยมา เปลี่ยนสกิลตามวิญญาณที่สถิต (เร็วๆ นี้)",
+	"color": "#5a3a6a", "maxHp": 95, "moveSpeed": 6, "hpPerLevel": 10, "damagePerLevel": 0.08,
+	"attack": { "type": "projectile", "name": "ลูกไฟวิญญาณ", "icon": "spirit", "damage": 12, "range": 14, "cooldown": 0.5, "element": "fire" },
+	"special": { "type": "fan", "name": "-", "icon": "spirit", "damage": 10, "range": 10, "count": 1, "cooldown": 3 },
+	"skills": []
   },
   {
-    "id": "nak_lao_tech", "name": "นักล่าสายเทคโนโลยี", "role": "ดาเมจระยะไกล · สำรวจ", "locked": true,
-    "range": "ไกล", "difficulty": 2, "emblem": "lantern",
-    "ratings": { "attack": 4, "defense": 2, "support": 2, "control": 5 },
-    "description": "ใช้กล้องอินฟราเรด เครื่องดักวิญญาณ และกับดัก (เร็วๆ นี้)",
-    "color": "#3a5a4a", "maxHp": 100, "moveSpeed": 6, "hpPerLevel": 10, "damagePerLevel": 0.08,
-    "attack": { "type": "projectile", "name": "ปืนเกลือ", "icon": "lantern", "damage": 12, "range": 16, "cooldown": 0.5, "element": "rice" },
-    "special": { "type": "fan", "name": "-", "icon": "lantern", "damage": 10, "range": 10, "count": 1, "cooldown": 3 },
-    "skills": []
+	"id": "nak_lao_tech", "name": "นักล่าสายเทคโนโลยี", "role": "ดาเมจระยะไกล · สำรวจ", "locked": true,
+	"range": "ไกล", "difficulty": 2, "emblem": "lantern",
+	"ratings": { "attack": 4, "defense": 2, "support": 2, "control": 5 },
+	"description": "ใช้กล้องอินฟราเรด เครื่องดักวิญญาณ และกับดัก (เร็วๆ นี้)",
+	"color": "#3a5a4a", "maxHp": 100, "moveSpeed": 6, "hpPerLevel": 10, "damagePerLevel": 0.08,
+	"attack": { "type": "projectile", "name": "ปืนเกลือ", "icon": "lantern", "damage": 12, "range": 16, "cooldown": 0.5, "element": "rice" },
+	"special": { "type": "fan", "name": "-", "icon": "lantern", "damage": 10, "range": 10, "count": 1, "cooldown": 3 },
+	"skills": []
   }
 ]

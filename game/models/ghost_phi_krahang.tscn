@@ -78,64 +78,64 @@ height = 0.6
 radius = 0.07
 height = 0.6
 
-[node name="Ghost_phi_krahang" type="Node3D" unique_id=660901507]
+[node name="Ghost_phi_krahang" type="Node3D" unique_id=597474731]
 
-[node name="Torso" type="MeshInstance3D" parent="." unique_id=2146833205]
+[node name="Torso" type="MeshInstance3D" parent="." unique_id=1166196070]
 transform = Transform3D(1, 0, 0, 0, 0.87758255, 0.47942555, 0, -0.47942555, 0.87758255, 0, 1.25, 0)
 material_override = SubResource("StandardMaterial3D_cp3p0")
 mesh = SubResource("BoxMesh_agegx")
 
-[node name="Loincloth" type="MeshInstance3D" parent="." unique_id=598440369]
+[node name="Loincloth" type="MeshInstance3D" parent="." unique_id=1584613939]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0.1)
 material_override = SubResource("StandardMaterial3D_da0bj")
 mesh = SubResource("BoxMesh_3htv5")
 
-[node name="Head" type="MeshInstance3D" parent="." unique_id=2037306183]
+[node name="Head" type="MeshInstance3D" parent="." unique_id=1670033164]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.62, -0.32)
 material_override = SubResource("StandardMaterial3D_cp3p0")
 mesh = SubResource("SphereMesh_8vcyd")
 
-[node name="GlowEyeL" type="MeshInstance3D" parent="." unique_id=221639922]
+[node name="GlowEyeL" type="MeshInstance3D" parent="." unique_id=1368575351]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.07, 1.66, -0.5)
 material_override = SubResource("StandardMaterial3D_ky5bp")
 mesh = SubResource("SphereMesh_o6ebx")
 
-[node name="GlowEyeR" type="MeshInstance3D" parent="." unique_id=1243422451]
+[node name="GlowEyeR" type="MeshInstance3D" parent="." unique_id=515595226]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.07, 1.66, -0.5)
 material_override = SubResource("StandardMaterial3D_ky5bp")
 mesh = SubResource("SphereMesh_67ghw")
 
-[node name="WingL" type="MeshInstance3D" parent="." unique_id=333028013]
+[node name="WingL" type="MeshInstance3D" parent="." unique_id=1705180527]
 transform = Transform3D(0.3623577, 0.9320391, 0, -0.89041096, 0.34617355, -0.29552022, -0.2754364, 0.10708403, 0.9553365, -0.75, 1.4, 0.15)
 material_override = SubResource("StandardMaterial3D_wqou4")
 mesh = SubResource("CylinderMesh_lqjil")
 
-[node name="WingWeave" type="MeshInstance3D" parent="." unique_id=1433267438]
+[node name="WingWeave" type="MeshInstance3D" parent="." unique_id=942745255]
 transform = Transform3D(0.3623577, 0.9320391, 0, -0.89041096, 0.34617355, -0.29552022, -0.2754364, 0.10708403, 0.9553365, -0.75, 1.4, 0.15)
 material_override = SubResource("StandardMaterial3D_ggsv2")
 mesh = SubResource("CylinderMesh_3o2vr")
 
-[node name="WingR" type="MeshInstance3D" parent="." unique_id=820132548]
+[node name="WingR" type="MeshInstance3D" parent="." unique_id=1013120904]
 transform = Transform3D(0.3623577, -0.9320391, 0, 0.89041096, 0.34617355, -0.29552022, 0.2754364, 0.10708403, 0.9553365, 0.75, 1.4, 0.15)
 material_override = SubResource("StandardMaterial3D_wqou4")
 mesh = SubResource("CylinderMesh_frtg8")
 
-[node name="WingWeave2" type="MeshInstance3D" parent="." unique_id=1130829283]
+[node name="WingWeave2" type="MeshInstance3D" parent="." unique_id=887406310]
 transform = Transform3D(0.3623577, -0.9320391, 0, 0.89041096, 0.34617355, -0.29552022, 0.2754364, 0.10708403, 0.9553365, 0.75, 1.4, 0.15)
 material_override = SubResource("StandardMaterial3D_ggsv2")
 mesh = SubResource("CylinderMesh_o826k")
 
-[node name="PestleTail" type="MeshInstance3D" parent="." unique_id=1356092129]
+[node name="PestleTail" type="MeshInstance3D" parent="." unique_id=1843806571]
 transform = Transform3D(1, 0, 0, 0, 0.4535961, -0.8912074, 0, 0.8912074, 0.4535961, 0, 0.8, 0.55)
 material_override = SubResource("StandardMaterial3D_46qxi")
 mesh = SubResource("CylinderMesh_ruwfa")
 
-[node name="Leg" type="MeshInstance3D" parent="." unique_id=573705311]
+[node name="Leg" type="MeshInstance3D" parent="." unique_id=308530198]
 transform = Transform3D(1, 0, 0, 0, 0.8253356, -0.5646425, 0, 0.5646425, 0.8253356, -0.15, 0.55, 0.15)
 material_override = SubResource("StandardMaterial3D_cp3p0")
 mesh = SubResource("CapsuleMesh_3f2pl")
 
-[node name="Leg2" type="MeshInstance3D" parent="." unique_id=1452870445]
+[node name="Leg2" type="MeshInstance3D" parent="." unique_id=1074289744]
 transform = Transform3D(1, 0, 0, 0, 0.8253356, -0.5646425, 0, 0.5646425, 0.8253356, 0.15, 0.55, 0.15)
 material_override = SubResource("StandardMaterial3D_cp3p0")
 mesh = SubResource("CapsuleMesh_8mhoy")

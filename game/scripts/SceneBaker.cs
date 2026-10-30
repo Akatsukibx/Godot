@@ -9,12 +9,8 @@ public static class SceneBaker
     {
         DirAccess.MakeDirRecursiveAbsolute("res://models");
         Shapes.ShareMaterials = true;
-        foreach (var c in GameData.Classes)
-            Save(Models.BuildPlayer(c), Models.PlayerPath(c.Id));
         foreach (var g in GameData.Ghosts.Values)
             Save(Models.BuildGhost(g), Models.GhostPath(g.Id));
-        foreach (var n in GameData.Npcs.Values)
-            Save(Models.BuildNpc(n), Models.NpcPath(n.Id));
         foreach (var z in GameData.Zones)
             if (z.Scene != null)
                 Save(WorldBuilder.BuildZone(z.Scene), Models.ZonePath(z.Scene));

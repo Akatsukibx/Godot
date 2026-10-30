@@ -36,6 +36,11 @@ public partial class PlayerRig : Node3D
 
     public void Attach(Node3D model)
     {
+        if (model.HasMeta("skinned"))
+        {
+            AttachSkinned(model);
+            return;
+        }
         AddChild(model);
         _hips = model.GetNode<Node3D>("Hips");
         _legL = _hips.GetNode<Node3D>("LegL");
@@ -76,6 +81,7 @@ public partial class PlayerRig : Node3D
         _act = act;
         _actTime = 0f;
         _actDur = Mathf.Max(duration, 0.05f);
+        _actSerial++;
         if (act != Act.Hurt)
             Emote = null;
     }
@@ -96,6 +102,11 @@ public partial class PlayerRig : Node3D
     // localVel: x = rightward speed, y = forward speed (m/s) relative to the body's facing.
     public void Animate(float dt, Vector2 localVel, bool running, bool dead, bool airborne = false)
     {
+        if (_skinned)
+        {
+            AnimateSkinned(dt, localVel, running, dead, airborne);
+            return;
+        }
         _time += dt;
         if (_act != Act.None)
         {
@@ -427,6 +438,11 @@ public partial class PlayerRig : Node3D
     // plus a glow on high-rarity or highly upgraded weapons.
     public void ApplyEquipment(ClassDef def, Dictionary<string, ItemStack> equipped)
     {
+        if (_skinned)
+        {
+            ApplyEquipmentSkinned(def, equipped);
+            return;
+        }
         foreach (var n in _gear)
             if (IsInstanceValid(n))
                 n.QueueFree();
