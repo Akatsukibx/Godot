@@ -109,6 +109,8 @@ public static partial class WorldBuilder
         new Vector3[] { new(-Half, 0f, 30f), new(-140f, 0f, 24f), new(-104f, 0f, 32f), new(-78f, 0f, 30f) },
     };
 
+    static readonly Vector3[] HospEastTrail = { new(78f, 0f, 17f), new(118f, 0f, 12f), new(150f, 0f, 22f), new(Half, 0f, 20f) };
+
     public static Node3D BuildHospital()
     {
         _rng = new RandomNumberGenerator { Seed = 35451 };
@@ -120,9 +122,23 @@ public static partial class WorldBuilder
         HospGrounds(world);
         HospBuilding(world);
         HospBackYard(world);
+        // Jungle trail east to the mountain temple: reserved here, drawn last with its own dice so the
+        // rest of the grounds keep their layout.
+        for (int i = 0; i < HospEastTrail.Length - 1; i++)
+            AddRoad(HospEastTrail[i], HospEastTrail[i + 1], 1.8f);
         HospWilds(world);
         Puddles(world, 30, p => !InHospital(p, 6f));
         PlaceChests(world, "rong_phayaban", 5, p => !InHospital(p, 8f));
+        {
+            var keep = _rng;
+            _rng = new RandomNumberGenerator { Seed = 35452 };
+            var trail = Shapes.Group(world, "EastTrail");
+            DrawRoad(trail, "JungleTrail", Meander(HospEastTrail, 3f, 5f), 3f, new Color(0.3f, 0.26f, 0.2f));
+            foreach (var s in trail.FindChildren("Strip*", "MeshInstance3D", true, false))
+                s.Name = "MudStrip";
+            SignPost(world, new Vector3(92f, 0f, 10f), ("วัดร้างบนดอย", new Vector3(1f, 0f, 0f)), ("โรงพยาบาลร้าง", new Vector3(-1f, 0f, 0f)));
+            _rng = keep;
+        }
         HospMist(world);
         return world;
     }

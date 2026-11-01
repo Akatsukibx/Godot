@@ -223,6 +223,49 @@
     "story": "แม่ที่ตายพร้อมลูกในห้องคลอดคืนเดียวกัน ยังอุ้มห่อผ้าที่ว่างเปล่าเดินร้องเพลงกล่อม ได้ยินเสียงเด็กร้องที่ไหนจะตามไปทันที",
     "releaseText": "ลูกแม่... หลับแล้วนะ"
   },
+  // ---------- วัดร้างบนดอย (Lv 45–58): เปรต, อสุรกาย, ผีเฝ้าทรัพย์ ----------
+  {
+    "id": "phi_pret", "name": "เปรต", "behavior": "chaser", "color": "#8a8478",
+    "maxHp": 240, "speed": 4.4, "damage": 36, "attackRange": 2.6, "attackCooldown": 1.2, "aggroRange": 20, "exp": 80,
+    "activeAtDay": true, "despawnAtDawn": false, "spawnWeightDay": 2, "spawnWeightNight": 3,
+    "weakness": { "rice": 1.7, "blessed": 1.4, "fire": 1.0, "moon": 0.9 },
+    "drops": [
+      { "item": "khao_kon_bat", "chance": 0.4 },
+      { "item": "ya_hom_yai", "chance": 0.1 },
+      { "item": "phlueak_winyan", "chance": 0.07, "minLevel": 48 },
+      { "item": "set_tra_phanuek", "chance": 0.02, "minLevel": 50 }
+    ],
+    "story": "คนที่เคยยักยอกของถวายวัดบนดอย ตายแล้วกลายเป็นเปรตสูงเท่าต้นตาล ปากเท่ารูเข็ม หิวตลอดกาล ได้กลิ่นข้าวก้นบาตรจะตามไม่หยุด",
+    "releaseText": "ข้าวคำแรก... ในรอบร้อยปี"
+  },
+  {
+    "id": "asurakai", "name": "อสุรกาย", "behavior": "brute", "color": "#3a4a6a",
+    "maxHp": 340, "speed": 3.4, "damage": 42, "attackRange": 2.6, "attackCooldown": 1.8, "aggroRange": 16, "exp": 92,
+    "activeAtDay": false, "despawnAtDawn": false, "spawnWeightDay": 0.6, "spawnWeightNight": 2,
+    "weakness": { "blessed": 1.6, "fire": 1.3, "moon": 1.1, "rice": 0.8 },
+    "drops": [
+      { "item": "khiao_asura", "chance": 0.35 },
+      { "item": "lek_nam_phi", "chance": 0.2 },
+      { "item": "phlueak_winyan", "chance": 0.08, "minLevel": 48 },
+      { "item": "set_tra_phanuek", "chance": 0.02, "minLevel": 50 }
+    ],
+    "story": "ยักษ์ร่างทมิฬที่ถูกสาปให้เฝ้าป่ารอบวัด ตัวสูงเกือบสามเมตร เขี้ยวงอกพ้นปาก เดินช้าแต่ตีทีเดียวหินแตก",
+    "releaseText": "ภูเขานี้... เงียบเสียที"
+  },
+  {
+    "id": "phi_fao_sap", "name": "ผีเฝ้าทรัพย์", "behavior": "chaser", "color": "#c8a050",
+    "maxHp": 280, "speed": 4.8, "damage": 38, "attackRange": 1.9, "attackCooldown": 1.1, "aggroRange": 15, "exp": 86,
+    "activeAtDay": true, "despawnAtDawn": false, "spawnWeightDay": 3, "spawnWeightNight": 2,
+    "weakness": { "blessed": 1.5, "moon": 1.4, "rice": 1.1, "fire": 0.9 },
+    "drops": [
+      { "item": "thong_boran", "chance": 0.35 },
+      { "item": "khi_phueng", "chance": 0.15 },
+      { "item": "phlueak_winyan", "chance": 0.06, "minLevel": 48 },
+      { "item": "set_tra_phanuek", "chance": 0.02, "minLevel": 50 }
+    ],
+    "story": "ทาสที่ถูกฝังทั้งเป็นพร้อมไหทองใต้ฐานเจดีย์ ให้เฝ้าทรัพย์ไปชั่วกัลป์ ยังมีโซ่ตรวนติดข้อเท้า ใครแตะไหจะถูกลากลงดินไปด้วย",
+    "releaseText": "โซ่... หลุดแล้ว ฉันไปได้แล้วใช่ไหม"
+  },
   // ---------- บึงบัวสาย (Lv 15–25): ผีน้ำ ไม่ซ้ำกับโซนอื่น ----------
   {
     "id": "phi_phrai", "name": "ผีพราย", "behavior": "chaser", "aquatic": true, "color": "#7fd6c0",
@@ -358,5 +401,20 @@
     ],
     "story": "แม่ซื้อผู้เฝ้าเด็กแรกเกิดในห้องคลอดมาตั้งแต่โรงพยาบาลเปิด คืนที่สมาคมโคมขาวมา นางถูกผูกด้วยด้ายดำให้เฝ้าเศษตราผนึกแทนเด็ก ๆ ที่นางรัก ตั้งแต่นั้นนางก็ไม่ยอมให้ใครเข้าหอผู้ป่วยหลังคลอดอีก",
     "releaseText": "เด็ก ๆ ปลอดภัยแล้ว... ฉันหลับได้แล้ว"
+  },
+  {
+    "id": "boss_asura_prang", "name": "อสุรกายเฝ้าปรางค์", "behavior": "brute", "boss": true, "scale": 2.4, "color": "#2a3a5a",
+    "maxHp": 4400, "speed": 3.8, "damage": 64, "attackRange": 3.6, "attackCooldown": 2.0, "aggroRange": 26, "exp": 2900,
+    "activeAtDay": false, "despawnAtDawn": false, "spawnWeightDay": 0, "spawnWeightNight": 0,
+    "weakness": { "blessed": 1.6, "fire": 1.3, "moon": 1.1, "rice": 0.8 },
+    "drops": [
+      { "item": "prakham_doi", "chance": 0.35 },
+      { "item": "set_tra_phanuek", "chance": 0.6 },
+      { "item": "phlueak_winyan", "chance": 0.8 },
+      { "item": "khiao_asura", "chance": 1 },
+      { "item": "soi_mae_sue", "chance": 0.08 }
+    ],
+    "story": "ยักษ์ทวารบาลที่เฝ้าปรางค์บนยอดดอยมาแต่โบราณ พวกโคมขาวฝังเศษตราผนึกไว้ใต้ฐานปรางค์ ทำให้มันลืมว่าเฝ้าอะไร เหลือแต่ความโกรธต่อทุกคนที่ขึ้นมาถึงยอด",
+    "releaseText": "ข้าจำได้แล้ว... ข้าเฝ้าพระ ไม่ใช่เฝ้าทอง"
   }
 ]

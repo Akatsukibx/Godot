@@ -138,7 +138,7 @@ public partial class Main : Node3D
             var npc = new Npc();
             AddChild(npc);
             npc.Init(def);
-            npc.GlobalPosition = zone.Center + new Vector3(def.X, def.Y != 0f ? def.Y : zone.Scene == "bueng_bua" ? Mathf.Max(0f, WorldBuilder.BuengHeight(def.X, def.Z)) : 0f, def.Z);
+            npc.GlobalPosition = zone.Center + new Vector3(def.X, def.Y != 0f ? def.Y : WorldBuilder.ZoneGround(zone, zone.CenterX + def.X, zone.CenterZ + def.Z), def.Z);
             _npcs.Add(npc);
         }
     }
@@ -483,7 +483,11 @@ public partial class Main : Node3D
     Vector3 SpawnPosition()
     {
         var shrine = _shrines.GetValueOrDefault(Player?.SpawnShrine ?? "lak_mueang") ?? _shrines.GetValueOrDefault("lak_mueang");
-        return shrine != null ? shrine.GlobalPosition + new Vector3(0f, 0.3f, 5f) : new Vector3(0f, 0.3f, 9f);
+        if (shrine == null)
+            return new Vector3(0f, 0.3f, 9f);
+        // In front of the shrine, on whatever ground is there (a slope, an upper floor).
+        var p = shrine.GlobalPosition + new Vector3(0f, 0f, 5f);
+        return p with { Y = GroundAt(p, 4f) + 0.3f };
     }
 
     void RespawnPlayer()
@@ -644,6 +648,16 @@ public partial class Main : Node3D
                 text = $"[{Settings.BindingText("interact")}] เปิดหีบลึกลับ";
             }
         }
+        foreach (var gate in GetTree().GetNodesInGroup("dungeon_gate").OfType<Node3D>())
+        {
+            float d = gate.GlobalPosition.DistanceTo(Player.GlobalPosition);
+            if (gate.IsVisibleInTree() && d < 4f && d < best)
+            {
+                best = d;
+                _interactTarget = gate;
+                text = $"[{Settings.BindingText("interact")}] เข้า{GameData.Zone((string)gate.GetMeta("zone_id"))?.Name}";
+            }
+        }
         foreach (var door in GetTree().GetNodesInGroup("locked_door").OfType<Node3D>())
         {
             if (!door.IsVisibleInTree() || Player.OpenedChests.Contains("door:" + (string)door.GetMeta("door_id")))
@@ -713,6 +727,8 @@ public partial class Main : Node3D
             OpenChest(target);
         else if (target.IsInGroup("locked_door"))
             UnlockDoor(target);
+        else if (target.IsInGroup("dungeon_gate"))
+            ShowDungeonGate(GameData.Zone((string)target.GetMeta("zone_id")));
         else if (target.IsInGroup("bus_stop"))
             ShowBusMenu((string)target.GetMeta("stop_id"));
         else
@@ -727,6 +743,7 @@ public partial class Main : Node3D
         ["bueng_bua"] = new[] { "phlueak_winyan", "bai_tani", "sai_bua", "set_tra_phanuek", "ya_hom_yai", "waen_phirot" },
         ["pa_phai"] = new[] { "phlueak_winyan", "mak_phlu", "mai_phai_sap", "set_tra_phanuek", "ya_hom_yai", "khrueang_rang_khao" },
         ["rong_phayaban"] = new[] { "phlueak_winyan", "phaphan_sap", "pai_khomue", "set_tra_phanuek", "ya_hom_yai", "takrut_phai_tan" },
+        ["wat_doi"] = new[] { "phlueak_winyan", "thong_boran", "khiao_asura", "khao_kon_bat", "set_tra_phanuek", "ya_hom_yai", "soi_mae_sue" },
     };
 
     void OpenChest(Node3D chest)
@@ -783,6 +800,18 @@ public partial class Main : Node3D
                 ApplyChestOpen(chest);
         foreach (var door in GetTree().GetNodesInGroup("locked_door").OfType<Node3D>())
             SetDoorOpen(door, Player.OpenedChests.Contains("door:" + (string)door.GetMeta("door_id")));
+    }
+
+    // Way into a dungeon or instance that lives in a zone of its own (zones.json kind + parent).
+    // Joining and the warp come with the party system; until then the gate says so.
+    void ShowDungeonGate(ZoneDef zone)
+    {
+        if (zone == null)
+            return;
+        string kind = zone.Kind == "dungeon" ? "ดันเจี้ยนปาร์ตี้" : "instance";
+        Hud.ShowMenu($"{zone.Name} · {kind}",
+            $"ศัตรู: {zone.Enemies}\n\nทางลงมืดสนิท ลมเย็นพัดขึ้นมาพร้อมเสียงขุดดินที่ไม่มีใครขุด\n\nยังเข้าไม่ได้: {kind}นี้จะเปิดพร้อมระบบปาร์ตี้",
+            new List<(string, System.Action)> { ("ไว้ก่อน", () => { }) });
     }
 
     // Locked doors (group locked_door): the key item stays in the bag, the door stays open (saved).
@@ -892,6 +921,15 @@ public partial class Main : Node3D
         yield return ("โรงพยาบาลร้าง: บันไดหนีไฟฝั่งตะวันตก", hosp + new Vector3(-48f, 0.3f, 4f));
         yield return ("โรงพยาบาลร้าง: ห้องพระชั้นสอง", hosp + new Vector3(14f, 7.3f, 28f));
         yield return ("โรงพยาบาลร้าง: หอผู้ป่วยหลังคลอด ชั้นสาม", hosp + new Vector3(-24f, 14.3f, 24f));
+        yield return ("โรงพยาบาลร้าง: ทางเดินป่าไปดอย", hosp + new Vector3(150f, 0.3f, 18f));
+        var doi = new Vector3(744f, 0f, -372f);
+        Vector3 Doi(float x, float z) => doi + new Vector3(x, WorldBuilder.DoiHeight(x, z) + 0.6f, z);
+        yield return ("วัดร้างบนดอย: เชิงดอย (กลดพระธุดงค์)", Doi(-150f, 34f));
+        yield return ("วัดร้างบนดอย: ศาลากลางทาง", Doi(8f, 28f));
+        yield return ("วัดร้างบนดอย: ยอดดอย (ประตูวัด)", Doi(24f, -20f));
+        yield return ("วัดร้างบนดอย: หน้าปรางค์", Doi(30f, -50f));
+        yield return ("วัดร้างบนดอย: สะพานข้ามเหว", Doi(95f, 66f));
+        yield return ("วัดร้างบนดอย: ปากเหมืองร้าง", Doi(122f, 80f));
     }
 
     // Admin warp for testing (Settings > ทดสอบ, or clicking the map while admin mode is on).
@@ -1221,6 +1259,9 @@ public partial class Main : Node3D
                     float angle = _rng.Randf() * Mathf.Tau;
                     pos = Player.GlobalPosition + new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * _rng.RandfRange(16f, 26f);
                 }
+                // On the mountain the ground can be far above or below the player: start from the terrain.
+                if (zone.Scene == "wat_doi")
+                    pos.Y = WorldBuilder.ZoneGround(zone, pos.X, pos.Z) + 0.5f;
                 float depth = WaterDepthAt(pos);
                 bool terrainOk = def.Aquatic ? depth > 0.9f : def.Flying || depth <= 0f;
                 bool ok = zone.Contains(pos) && terrainOk && !InSanctuary(pos)

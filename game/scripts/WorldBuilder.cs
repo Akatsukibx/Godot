@@ -40,6 +40,7 @@ public static partial class WorldBuilder
         "bueng_bua" => BuildBuengBua(),
         "pa_phai" => BuildPaPhai(),
         "rong_phayaban" => BuildHospital(),
+        "wat_doi" => BuildWatDoi(),
         _ => BuildThungNa(),
     };
 
@@ -2058,6 +2059,8 @@ void fragment() {
                     if (wp.Y < 0.08f)
                         continue;
                 }
+                else
+                    wp.Y = ZoneGround(zone, wp.X, wp.Z);
                 float s = rng.RandfRange(0.7f, 1.4f);
                 transforms.Add(new Transform3D(new Basis(Vector3.Up, rng.Randf() * Mathf.Tau).Scaled(Vector3.One * s), wp));
                 colors.Add(new Color(1f, 1f, 1f).Lerp(new Color(0.85f, 0.8f, 0.6f), rng.Randf() * 0.5f));

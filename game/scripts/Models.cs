@@ -259,6 +259,10 @@ public static class Models
 			case "winyan_khon_khai": BuildPatient(root, def); break;
 			case "phi_mae_luk_on": BuildMother(root, def); break;
 			case "boss_mae_sue": BuildMaeSue(root, def); break;
+			case "phi_pret": BuildPret(root, def); break;
+			case "asurakai":
+			case "boss_asura_prang": BuildAsura(root, def); break;
+			case "phi_fao_sap": BuildTreasureGhost(root, def); break;
 			case "phi_dek_liang_khwai": BuildHerderChild(root, def); break;
 			case "chorakhe_winyan": BuildSpiritCroc(root, def); break;
 			case "krasue":
@@ -478,6 +482,102 @@ public static class Models
 			Shapes.Sphere(v, p + new Vector3(0f, 0.02f, 0f), 0.04f, new Color(0.65f, 0.85f, 1f), 3f, "GlowSoul");
 		}
 		Shapes.Light(v, new Vector3(0f, 1.8f, -0.7f), new Color(1f, 0.6f, 0.65f), 0.9f, 5f, "GlowLight");
+	}
+
+	// เปรต: impossibly tall and thin, ribs and a swollen belly, a long neck, a mouth no bigger than a
+	// needle's eye, huge hands and feet.
+	static void BuildPret(Node3D v, GhostDef def)
+	{
+		var skin = new Color(0.52f, 0.5f, 0.44f, 0.93f);
+		var dark = skin.Darkened(0.3f);
+		foreach (var x in new[] { -0.16f, 0.16f })
+		{
+			Shapes.Capsule(v, new Vector3(x, 1.1f, 0f), 0.06f, 2.2f, skin, 0f, "Leg");
+			Shapes.Box(v, new Vector3(x, 0.05f, -0.15f), new Vector3(0.22f, 0.1f, 0.55f), dark, 0f, "Foot");
+		}
+		Shapes.Box(v, new Vector3(0f, 2.55f, 0f), new Vector3(0.36f, 0.9f, 0.22f), skin, 0f, "Torso");
+		for (int i = 0; i < 5; i++)
+			Shapes.Box(v, new Vector3(0f, 2.75f - i * 0.12f, -0.115f), new Vector3(0.34f, 0.025f, 0.02f), dark, 0f, "Rib");
+		Shapes.Sphere(v, new Vector3(0f, 2.2f, -0.12f), 0.24f, skin, 0f, "Belly");
+		Shapes.Capsule(v, new Vector3(0f, 3.3f, -0.05f), 0.05f, 0.75f, skin, 0f, "Neck").Rotation = new Vector3(-0.25f, 0f, 0f);
+		Shapes.Sphere(v, new Vector3(0f, 3.75f, -0.18f), 0.2f, skin, 0f, "Head").Scale = new Vector3(0.9f, 1.15f, 1f);
+		for (int i = 0; i < 6; i++)
+			Shapes.Box(v, new Vector3(-0.15f + i * 0.06f, 3.6f, -0.03f), new Vector3(0.04f, 0.6f, 0.03f), new Color(0.15f, 0.14f, 0.13f), 0f, "Hair");
+		Shapes.Sphere(v, new Vector3(0f, 3.66f, -0.37f), 0.015f, new Color(0.05f, 0.02f, 0.02f), 0f, "Mouth");
+		Shapes.Sphere(v, new Vector3(-0.07f, 3.8f, -0.35f), 0.03f, new Color(1f, 0.9f, 0.5f), 4f, "GlowEyeL");
+		Shapes.Sphere(v, new Vector3(0.07f, 3.8f, -0.35f), 0.03f, new Color(1f, 0.9f, 0.5f), 4f, "GlowEyeR");
+		foreach (var s in new[] { -1f, 1f })
+		{
+			Shapes.Capsule(v, new Vector3(s * 0.28f, 2.2f, -0.2f), 0.05f, 1.6f, skin, 0f, "Arm").Rotation = new Vector3(0.35f, 0f, -s * 0.08f);
+			Shapes.Box(v, new Vector3(s * 0.3f, 1.4f, -0.48f), new Vector3(0.28f, 0.36f, 0.08f), dark, 0f, "Hand");
+		}
+		Shapes.Box(v, new Vector3(0f, 1.95f, 0f), new Vector3(0.4f, 0.25f, 0.26f), new Color(0.3f, 0.26f, 0.2f), 0f, "ClothRag");
+		Shapes.Light(v, new Vector3(0f, 3.4f, -0.7f), new Color(1f, 0.85f, 0.5f), 0.5f, 4f, "GlowLight");
+	}
+
+	// อสุรกาย: a hulking dark-blue demon with tusks, a spiked headdress, gold armbands and a stone club.
+	// The boss wears a temple guardian's armour and crown.
+	static void BuildAsura(Node3D v, GhostDef def)
+	{
+		var skin = new Color(Color.FromHtml(def.Color), 0.95f);
+		var gold = new Color(0.8f, 0.62f, 0.22f);
+		foreach (var x in new[] { -0.28f, 0.28f })
+			Shapes.Capsule(v, new Vector3(x, 0.55f, 0f), 0.17f, 1.1f, skin, 0f, "Leg");
+		Shapes.Box(v, new Vector3(0f, 1.15f, 0f), new Vector3(0.9f, 0.4f, 0.55f), new Color(0.5f, 0.12f, 0.1f), 0f, "ClothLoin");
+		Shapes.Box(v, new Vector3(0f, 1.75f, 0f), new Vector3(1.05f, 0.9f, 0.65f), skin, 0f, "Torso");
+		Shapes.Sphere(v, new Vector3(0f, 2.45f, -0.05f), 0.36f, skin, 0f, "Head");
+		foreach (var x in new[] { -0.12f, 0.12f })
+		{
+			Shapes.Sphere(v, new Vector3(x, 2.52f, -0.32f), 0.06f, new Color(1f, 0.35f, 0.1f), 4f, x < 0f ? "GlowEyeL" : "GlowEyeR");
+			Shapes.Cylinder(v, new Vector3(x * 1.2f, 2.3f, -0.34f), 0.01f, 0.05f, 0.22f, new Color(0.92f, 0.9f, 0.82f), 0f, "Tusk");
+		}
+		Shapes.Box(v, new Vector3(0f, 2.3f, -0.33f), new Vector3(0.36f, 0.08f, 0.04f), new Color(0.3f, 0.05f, 0.05f), 0f, "Mouth");
+		for (int i = 0; i < 5; i++)
+		{
+			float a = (i - 2) * 0.35f;
+			Shapes.Cylinder(v, new Vector3(Mathf.Sin(a) * 0.26f, 2.85f, Mathf.Cos(a) * 0.05f), 0.01f, 0.07f, 0.4f, def.Boss ? gold : skin.Darkened(0.3f), def.Boss ? 0.3f : 0f, "Spire").Rotation = new Vector3(0f, 0f, -a * 0.6f);
+		}
+		foreach (var s in new[] { -1f, 1f })
+		{
+			Shapes.Capsule(v, new Vector3(s * 0.66f, 1.7f, -0.05f), 0.15f, 1.1f, skin, 0f, "Arm").Rotation = new Vector3(0.2f, 0f, s * 0.25f);
+			Shapes.Cylinder(v, new Vector3(s * 0.62f, 1.95f, -0.05f), 0.17f, 0.17f, 0.1f, gold, 0.2f, "Ring");
+		}
+		// Club in the right hand.
+		Shapes.Cylinder(v, new Vector3(0.82f, 1.15f, -0.35f), 0.07f, 0.18f, 1.6f, new Color(0.35f, 0.33f, 0.3f), 0f, "StoneClub").Rotation = new Vector3(0.6f, 0f, 0f);
+		if (def.Boss)
+		{
+			Shapes.Box(v, new Vector3(0f, 1.85f, -0.34f), new Vector3(0.9f, 0.6f, 0.05f), gold.Darkened(0.2f), 0.2f, "Armour");
+			Shapes.Cylinder(v, new Vector3(0f, 2.15f, 0f), 0.5f, 0.6f, 0.12f, gold, 0.3f, "Ring");
+			Shapes.Cylinder(v, new Vector3(0f, 3.15f, 0f), 0.02f, 0.2f, 0.7f, gold, 0.3f, "Spire");
+		}
+		Shapes.Light(v, new Vector3(0f, 2.4f, -0.8f), new Color(1f, 0.4f, 0.2f), 0.7f, 5f, "GlowLight");
+	}
+
+	// ผีเฝ้าทรัพย์: a gaunt old slave in a loincloth, chain on one ankle running to the treasure jar he
+	// drags, gold coins spilling out.
+	static void BuildTreasureGhost(Node3D v, GhostDef def)
+	{
+		var skin = new Color(0.6f, 0.55f, 0.42f, 0.9f);
+		var gold = new Color(0.9f, 0.72f, 0.28f);
+		foreach (var x in new[] { -0.11f, 0.11f })
+			Shapes.Capsule(v, new Vector3(x, 0.42f, 0f), 0.06f, 0.85f, skin, 0f, "Leg");
+		Shapes.Box(v, new Vector3(0f, 0.92f, 0f), new Vector3(0.4f, 0.26f, 0.26f), new Color(0.45f, 0.35f, 0.2f), 0f, "ClothLoin");
+		var torso = Shapes.Box(v, new Vector3(0f, 1.3f, -0.06f), new Vector3(0.42f, 0.55f, 0.24f), skin, 0f, "Torso");
+		torso.Rotation = new Vector3(-0.35f, 0f, 0f);
+		Shapes.Sphere(v, new Vector3(0f, 1.66f, -0.28f), 0.18f, skin, 0f, "Head");
+		Shapes.Box(v, new Vector3(0f, 1.82f, -0.25f), new Vector3(0.26f, 0.06f, 0.24f), new Color(0.85f, 0.85f, 0.8f), 0f, "Hair");
+		Shapes.Sphere(v, new Vector3(-0.06f, 1.68f, -0.44f), 0.025f, gold, 4f, "GlowEyeL");
+		Shapes.Sphere(v, new Vector3(0.06f, 1.68f, -0.44f), 0.025f, gold, 4f, "GlowEyeR");
+		foreach (var s in new[] { -1f, 1f })
+			Shapes.Capsule(v, new Vector3(s * 0.28f, 1.15f, -0.35f), 0.05f, 0.75f, skin, 0f, "Arm").Rotation = new Vector3(1.1f, 0f, -s * 0.2f);
+		// The jar he hugs, coins spilling over the brim.
+		Shapes.Cylinder(v, new Vector3(0f, 1.05f, -0.62f), 0.2f, 0.16f, 0.45f, new Color(0.4f, 0.24f, 0.16f), 0f, "Clay");
+		for (int i = 0; i < 5; i++)
+			Shapes.Cylinder(v, new Vector3(-0.1f + i * 0.05f, 1.3f + (i % 2) * 0.03f, -0.62f), 0.05f, 0.05f, 0.015f, gold, 0.6f, "GlowCoin");
+		// Chain from the ankle trailing behind.
+		for (int i = 0; i < 6; i++)
+			Shapes.Box(v, new Vector3(0.11f, 0.06f, 0.15f + i * 0.14f), new Vector3(0.05f, 0.05f, 0.12f), new Color(0.3f, 0.3f, 0.32f), 0f, "MetalChain");
+		Shapes.Light(v, new Vector3(0f, 1.2f, -0.9f), gold, 0.7f, 4f, "GlowLight");
 	}
 
 	// ชาวบ้านถูกสิง: a villager in a farmer's shirt and loincloth, head lolling to one side, a sickle

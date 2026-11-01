@@ -145,6 +145,13 @@ public partial class MapView : Control
             Text(ToMap(Local(0f, -40f)), "ประตูหน้า", 13, new Color(0.85f, 0.8f, 0.75f));
             Text(ToMap(Local(-10f, 66f)), "ลานหลังตึก", 13, new Color(0.8f, 0.75f, 0.85f));
         }
+        else if (zone.Id == "wat_doi")
+        {
+            Text(ToMap(Local(-158f, 50f)), "กลดพระธุดงค์", 15, new Color(0.85f, 0.95f, 0.7f));
+            Text(ToMap(Local(14f, 54f)), "ศาลากลางทาง", 14, new Color(0.9f, 0.85f, 0.75f));
+            Text(ToMap(Local(20f, -82f)), "วัดบนยอดดอย", 15, new Color(1f, 0.85f, 0.6f));
+            Text(ToMap(Local(130f, 118f)), "เหมืองร้าง ⛩", 14, new Color(0.85f, 0.8f, 0.9f));
+        }
         else if (zone.AlleyOnly)
             Text(ToMap(Local(-40f, 70f)), "ซอยมืด (มีผี)", 15, new Color(0.8f, 0.7f, 1f));
 

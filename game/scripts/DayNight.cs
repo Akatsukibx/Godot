@@ -149,9 +149,9 @@ void sky() {
         // a dim overcast murk by day. โรงพยาบาลร้าง is the same but cold grey-blue, like old fluorescent
         // light. The mood fades in and out as you cross the zone edge.
         string zid = Game.Main?.CurrentZone?.Id;
-        float target = zid is "pa_phai" or "rong_phayaban" ? 1f : 0f;
+        float target = zid is "pa_phai" or "rong_phayaban" or "wat_doi" ? 1f : 0f;
         if (target > 0f)
-            _hauntCold = zid == "rong_phayaban";
+            _hauntCold = zid is "rong_phayaban" or "wat_doi";
         _haunt = Mathf.MoveToward(_haunt, target, 0.015f);
         if (_haunt > 0f)
         {

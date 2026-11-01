@@ -85,11 +85,27 @@
 	  { "id": "rp_nursery", "name": "ห้องเด็กอ่อน", "ghosts": [ "phi_mae_luk_on" ], "x": 18, "y": 14, "z": 20, "radius": 2, "count": 3, "respawn": 80, "leash": 24, "time": "night" },
 	  { "id": "rp_backyard", "name": "ลานตากผ้าหลังตึก", "ghosts": [ "phi_mae_luk_on" ], "x": -10, "z": 52, "radius": 10, "count": 3, "respawn": 80, "leash": 30, "time": "night" }
 	],
-	"exits": [ { "to": "pa_phai", "side": "north", "label": "ทางขึ้นป่าไผ่ทึบ" }, { "to": "thung_na", "side": "west", "label": "ถนนร้างสู่ทุ่งนา" }, { "to": "wat_doi", "side": "east" } ]
+	"exits": [ { "to": "pa_phai", "side": "north", "label": "ทางขึ้นป่าไผ่ทึบ" }, { "to": "thung_na", "side": "west", "label": "ถนนร้างสู่ทุ่งนา" }, { "to": "wat_doi", "side": "east", "label": "ทางเดินป่าสู่ดอย" } ]
   },
-  { "id": "wat_doi", "name": "วัดร้างบนดอย", "open": false, "levelText": "45–58", "worldX": 3, "worldY": 0,
-	"enemies": "เปรต, อสุรกาย, ผีเฝ้าทรัพย์",
-	"exits": [ { "to": "muang_kao", "side": "south" } ] },
+  {
+	"id": "wat_doi", "name": "วัดร้างบนดอย", "subtitle": "ยิ่งขึ้นสูง หมอกยิ่งหนา · ระวังเสียงเรียกจากหน้าผา", "open": true,
+	"scene": "wat_doi", "centerX": 744, "centerZ": -372, "sizeX": 372, "sizeZ": 372, "entrance": "west",
+	"levelMin": 45, "levelMax": 58, "levelText": "45–58", "worldX": 3, "worldY": 0,
+	"ghosts": [ "phi_pret", "asurakai", "phi_fao_sap" ], "enemies": "เปรต, อสุรกาย, ผีเฝ้าทรัพย์",
+	"alleyOnly": false, "maxGhostsDay": 7, "maxGhostsNight": 12, "rainChance": 0.45,
+	"boss": { "ghost": "boss_asura_prang", "x": 34, "y": 42, "z": -62, "respawn": 1800, "lair": "ปรางค์บนยอดดอย",
+	  "summon": { "offering": { "khiao_asura": 4, "thong_boran": 3 }, "minLevel": 52, "time": "night", "text": "วางเขี้ยวอสุรกายสี่เขี้ยวกับเหรียญทองโบราณสามเหรียญบนแท่นหน้าปรางค์ ทรัพย์ที่ถูกขุดขึ้นมาจะเรียกผู้เฝ้ามันกลับมา" } },
+	"spawnGroups": [
+	  { "id": "wd_foothill", "name": "เชิงดอย", "ghosts": [ "phi_pret" ], "x": -100, "y": 2, "z": 30, "radius": 16, "count": 3, "respawn": 60, "leash": 30 },
+	  { "id": "wd_switchback", "name": "ทางคดเคี้ยว", "ghosts": [ "phi_pret", "phi_fao_sap" ], "x": -40, "y": 14, "z": 46, "radius": 12, "count": 3, "respawn": 70, "leash": 28 },
+	  { "id": "wd_sala", "name": "รอบศาลากลางทาง", "ghosts": [ "phi_pret" ], "x": 26, "y": 26, "z": 52, "radius": 10, "count": 3, "respawn": 80, "leash": 26, "time": "night" },
+	  { "id": "wd_north_slope", "name": "ไหล่ดอยด้านเหนือ", "ghosts": [ "asurakai" ], "x": -30, "y": 28, "z": -110, "radius": 14, "count": 2, "respawn": 90, "leash": 30, "time": "night" },
+	  { "id": "wd_summit_ruins", "name": "ลานวัดบนยอด", "ghosts": [ "phi_fao_sap" ], "x": 20, "y": 42, "z": -38, "radius": 10, "count": 4, "respawn": 70, "leash": 26 },
+	  { "id": "wd_summit_terrace", "name": "ลานหลังโบสถ์", "ghosts": [ "asurakai" ], "x": 0, "y": 42, "z": -66, "radius": 7, "count": 2, "respawn": 90, "leash": 22 },
+	  { "id": "wd_mine", "name": "ปากเหมืองร้าง", "ghosts": [ "phi_fao_sap", "asurakai" ], "x": 126, "y": 24, "z": 84, "radius": 7, "count": 3, "respawn": 80, "leash": 18 }
+	],
+	"exits": [ { "to": "rong_phayaban", "side": "west", "label": "ทางลงโรงพยาบาลร้าง" }, { "to": "muang_kao", "side": "south" } ]
+  },
   { "id": "muang_kao", "name": "ย่านเมืองเก่าและต้นตะเคียน", "open": false, "levelText": "58–70", "worldX": 3, "worldY": 1,
 	"ghosts": [ "phi_tai_hong" ], "enemies": "ผู้พิทักษ์ที่ถูกลืม, ผีตายโหง, เถาวัลย์สิง",
 	"exits": [] },

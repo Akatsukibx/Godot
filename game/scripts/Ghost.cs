@@ -183,7 +183,9 @@ void fragment() {
         float leash = Leash > 0f ? Leash : Def.Boss ? 40f : zone?.AlleyOnly == true ? 12f : 45f;
         bool tooFar = player.GlobalPosition.DistanceTo(Home) > leash;
         // A player on another storey is out of reach, however close they are on the map.
-        bool otherFloor = Mathf.Abs(player.GlobalPosition.Y - GlobalPosition.Y) > 3.5f;
+        // (Steeply above or below, not just up a hillside.)
+        float dy = Mathf.Abs(player.GlobalPosition.Y - GlobalPosition.Y);
+        bool otherFloor = dy > 3.5f && dy > dist * 0.9f;
         bool chasing = !playerSafe && !tooFar && !otherFloor && (dist < Def.AggroRange * (night ? 1.3f : 1f) || _awake > 0f);
         bool frozen = Def.Behavior == "statue" && dist < 30f && player.LookDir.Dot(-dir) > 0.35f;
         bool enraged = Def.Boss && Hp < MaxHp * 0.5f;

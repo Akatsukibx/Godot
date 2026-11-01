@@ -127,7 +127,7 @@ public static partial class WorldBuilder
                 if (!Free(wp, WildClearance(kind)))
                     continue;
             }
-            float ground = zone.Scene == "bueng_bua" ? Mathf.Max(0f, BuengHeight(wp.X - zone.CenterX, wp.Z - zone.CenterZ)) : 0f;
+            float ground = ZoneGround(zone, wp.X, wp.Z);
             var p = wp with { Y = ground };
             float s = rng.RandfRange(0.8f, 1.25f);
             switch (kind)

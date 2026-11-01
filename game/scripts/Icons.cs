@@ -144,6 +144,13 @@ public static class Icons
         ["bandage"] = Svg(
             "<rect x='12' y='22' width='40' height='20' rx='10' fill='#e6e0cc' stroke='#7a7260' stroke-width='2' transform='rotate(-30 32 32)'/>" +
             "<path d='M22 38l20-12' stroke='#b8b09a' stroke-width='3'/><circle cx='36' cy='34' r='5' fill='#7a1414' opacity='0.8'/>"),
+        ["coin"] = Svg(
+            "<circle cx='32' cy='32' r='21' fill='#d8a83a' stroke='#7a5a14' stroke-width='3'/>" +
+            "<circle cx='32' cy='32' r='14' fill='none' stroke='#9a7420' stroke-width='2'/>" +
+            "<rect x='27' y='27' width='10' height='10' fill='#7a5a14'/>"),
+        ["fang"] = Svg(
+            "<path d='M22 8c10 0 20 6 20 16-2 14-8 26-14 32-1-12-4-26-10-36-2-6 0-12 4-12z' fill='#2a2a34' stroke='#8a8aa0' stroke-width='2'/>" +
+            "<path d='M26 16c4 6 6 16 4 28' stroke='#6a6a80' stroke-width='2' fill='none'/>"),
         ["box"] = Svg(
             "<path d='M10 24l22-10 22 10v26l-22 10-22-10z' fill='#8a3a5a' stroke='#3a1428' stroke-width='2'/>" +
             "<path d='M10 24l22 10 22-10M32 34v26' fill='none' stroke='#3a1428' stroke-width='2'/>" +
