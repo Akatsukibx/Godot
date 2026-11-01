@@ -239,7 +239,7 @@ public static class Textures
                 continue;
             if (gi.GetPath().ToString().Contains("RedBus"))
                 continue; // painted metal, keep it smooth
-            string name = BaseName(gi.Name.ToString());
+            string name = gi.HasMeta("scatter") ? (string)gi.GetMeta("scatter") : BaseName(gi.Name.ToString());
             Kind? kind = gi is MultiMeshInstance3D
                 ? name switch { "Trunks" or "DeadTrees" or "Stems" => Kind.Bark, "Culms" => Kind.Bamboo, "Crowns" or "Fronds" => Kind.Leaves, _ => null }
                 : KindOf(name, mat.AlbedoColor);

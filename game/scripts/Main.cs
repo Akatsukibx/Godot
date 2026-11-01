@@ -106,6 +106,7 @@ public partial class Main : Node3D
             var scene = Models.Zone(zone.Scene);
             scene.Position = zone.Center;
             AddChild(scene);
+            _streamed.Add((zone, scene));
         }
         WorldBuilder.ApplyDistanceCulling(this);
         AddChild(WorldBuilder.BuildRice(GetTree().GetNodesInGroup("map_plot").OfType<Node3D>()));
@@ -148,6 +149,7 @@ public partial class Main : Node3D
         foreach (var g in _grass)
             g.QueueFree();
         _grass.Clear();
+        _streamed.RemoveAll(s => !IsInstanceValid(s.node) || s.node.IsQueuedForDeletion());
         float density = Settings.Graphics switch { 0 => 0.15f, 1 => 0.45f, _ => 0.9f };
         var water = _water.Count > 0 ? _water[0].rect : new Rect2();
         foreach (var zone in GameData.Zones.Where(z => z.Scene != null))
@@ -155,12 +157,14 @@ public partial class Main : Node3D
             var g = WorldBuilder.BuildGrass(zone, GetTree(), density, water);
             AddChild(g);
             _grass.Add(g);
+            _streamed.Add((zone, g));
             // Woodland and undergrowth, as dense as the graphics preset allows.
             var wild = WorldBuilder.BuildWilds(zone, GetTree(), Settings.Graphics switch { 0 => 0.35f, 1 => 0.7f, _ => 1f }, water,
                 GameData.Npcs.Values.Where(n => n.Zone == zone.Id).Select(n => zone.Center + new Vector3(n.X, 0f, n.Z)));
             AddChild(wild);
             Textures.Apply(wild);
             _grass.Add(wild);
+            _streamed.Add((zone, wild));
         }
     }
 
@@ -354,6 +358,7 @@ public partial class Main : Node3D
                 }
             };
         }
+        _fpsLog = args.ContainsKey("fps");
         if (args.TryGetValue("screenshot", out var path))
         {
             float wait = args.TryGetValue("shot-delay", out var d) ? F(d) : 4f;
@@ -962,6 +967,8 @@ public partial class Main : Node3D
     public override void _Process(double delta)
     {
         float dt = (float)delta;
+        if (_fpsLog)
+            LogFps(dt);
         _autosave -= dt;
         if (_autosave <= 0f)
         {
@@ -973,8 +980,12 @@ public partial class Main : Node3D
             }
         }
         UpdateCamera(dt);
-        foreach (var ff in GetTree().GetNodesInGroup("fireflies").OfType<GpuParticles3D>())
-            ff.Emitting = DayNight.NightFactor > 0.5f && Weather.Intensity < 0.5f;
+        UpdateStreaming(dt);
+        _fireflies ??= GetTree().GetNodesInGroup("fireflies").OfType<GpuParticles3D>().ToList();
+        bool flies = DayNight.NightFactor > 0.5f && Weather.Intensity < 0.5f;
+        foreach (var ff in _fireflies)
+            if (ff.Emitting != flies)
+                ff.Emitting = flies;
         if (Player == null)
             return;
 
@@ -990,6 +1001,64 @@ public partial class Main : Node3D
         UpdateZone();
         UpdateInteraction();
         UpdateSpawning(dt);
+    }
+
+    // Zone streaming: a zone (its buildings, grass and woodland) is only drawn while the camera is
+    // within StreamRange of its edge, so far-away zones cost nothing.
+    const float StreamRange = 150f;
+    readonly List<(ZoneDef zone, Node3D node)> _streamed = new();
+    List<GpuParticles3D> _fireflies;
+    float _streamTick;
+    Vector3 _streamAt;
+
+    void UpdateStreaming(float dt)
+    {
+        var cam = GetViewport().GetCamera3D();
+        if (cam == null)
+            return;
+        var at = cam.GlobalPosition;
+        // Re-check at once after a warp so the new place never shows up empty.
+        _streamTick -= dt;
+        if (_streamTick > 0f && at.DistanceSquaredTo(_streamAt) < 40f * 40f)
+            return;
+        _streamTick = 0.25f;
+        _streamAt = at;
+        foreach (var (zone, node) in _streamed)
+        {
+            float dx = Mathf.Max(0f, Mathf.Abs(at.X - zone.CenterX) - zone.SizeX * 0.5f);
+            float dz = Mathf.Max(0f, Mathf.Abs(at.Z - zone.CenterZ) - zone.SizeZ * 0.5f);
+            bool show = dx * dx + dz * dz < StreamRange * StreamRange;
+            if (node.Visible != show)
+                node.Visible = show;
+        }
+        foreach (var npc in _npcs)
+        {
+            bool show = npc.GlobalPosition.DistanceSquaredTo(at) < 160f * 160f;
+            if (npc.Visible != show)
+            {
+                npc.Visible = show;
+                npc.ProcessMode = show ? ProcessModeEnum.Inherit : ProcessModeEnum.Disabled;
+            }
+        }
+    }
+
+    // --fps: every 2 s print the average frame rate, the worst frame and what the renderer drew.
+    bool _fpsLog;
+    float _fpsTime, _fpsWorst;
+    int _fpsFrames;
+
+    void LogFps(float dt)
+    {
+        _fpsTime += dt;
+        _fpsFrames++;
+        _fpsWorst = Mathf.Max(_fpsWorst, dt);
+        if (_fpsTime < 2f)
+            return;
+        var calls = RenderingServer.GetRenderingInfo(RenderingServer.RenderingInfo.TotalDrawCallsInFrame);
+        var prims = RenderingServer.GetRenderingInfo(RenderingServer.RenderingInfo.TotalPrimitivesInFrame);
+        GD.Print($"[fps] zone={CurrentZone?.Id} avg={_fpsFrames / _fpsTime:0} worst={_fpsWorst * 1000f:0}ms draws={calls} prims={prims / 1000}k");
+        _fpsTime = _fpsWorst = 0f;
+        _fpsFrames = 0;
     }
 
     // ---------- ghosts ----------

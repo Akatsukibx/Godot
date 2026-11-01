@@ -1893,6 +1893,32 @@ void fragment() {
         };
     }
 
+    // Splits a scatter into square chunks so the renderer (and the shadow pass) can skip the ones
+    // that are far away or off screen; one MultiMesh spanning a whole zone is always drawn in full.
+    public static void ScatterChunks(Node3D root, string name, Mesh mesh, Material material, List<Transform3D> transforms, List<Color> colors,
+        float visibleTo, float chunk = 40f, bool shadows = true)
+    {
+        var groups = new Dictionary<(int, int), List<int>>();
+        for (int i = 0; i < transforms.Count; i++)
+        {
+            var o = transforms[i].Origin;
+            var key = (Mathf.FloorToInt(o.X / chunk), Mathf.FloorToInt(o.Z / chunk));
+            if (!groups.TryGetValue(key, out var list))
+                groups[key] = list = new List<int>();
+            list.Add(i);
+        }
+        foreach (var (key, idx) in groups)
+        {
+            var mmi = Scatter($"{name}_{key.Item1}_{key.Item2}", mesh, material, idx.Select(i => transforms[i]).ToList(),
+                colors == null ? null : idx.Select(i => colors[i]).ToList(), visibleTo);
+            // The node keeps the base name in meta so Textures can still tell what it is.
+            mmi.SetMeta("scatter", name);
+            if (!shadows)
+                mmi.CastShadow = GeometryInstance3D.ShadowCastingSetting.Off;
+            root.AddChild(mmi);
+        }
+    }
+
     // Rice stalks for every paddy (map_plot), in chunks so far fields are skipped.
     public static Node3D BuildRice(IEnumerable<Node3D> plots)
     {
@@ -2081,9 +2107,9 @@ void fragment() {
         var bark = new StandardMaterial3D { AlbedoColor = new Color(0.24f, 0.19f, 0.14f), Roughness = 0.9f };
         var deadBark = new StandardMaterial3D { AlbedoColor = new Color(0.2f, 0.18f, 0.16f), Roughness = 0.95f };
         var leaves = new StandardMaterial3D { VertexColorUseAsAlbedo = true, Roughness = 0.9f };
-        root.AddChild(Scatter("Trunks", new CylinderMesh { TopRadius = 0.25f, BottomRadius = 0.38f, Height = 3.2f, RadialSegments = 7 }, bark, trunks));
-        root.AddChild(Scatter("Crowns", new SphereMesh { Radius = 2.2f, Height = 4f, RadialSegments = 10, Rings = 6 }, leaves, crowns, crownColors));
-        root.AddChild(Scatter("DeadTrees", new CylinderMesh { TopRadius = 0.06f, BottomRadius = 0.3f, Height = 3.2f, RadialSegments = 6 }, deadBark, dead));
+        ScatterChunks(root, "Trunks", new CylinderMesh { TopRadius = 0.25f, BottomRadius = 0.38f, Height = 3.2f, RadialSegments = 7 }, bark, trunks, null, 240f, 60f);
+        ScatterChunks(root, "Crowns", new SphereMesh { Radius = 2.2f, Height = 4f, RadialSegments = 10, Rings = 6 }, leaves, crowns, crownColors, 240f, 60f);
+        ScatterChunks(root, "DeadTrees", new CylinderMesh { TopRadius = 0.06f, BottomRadius = 0.3f, Height = 3.2f, RadialSegments = 6 }, deadBark, dead, null, 240f, 60f);
         return root;
     }
 
@@ -2097,7 +2123,7 @@ void fragment() {
             if (mi.Mesh == null)
                 continue;
             float size = mi.Mesh.GetAabb().Size.Length() * mi.GlobalBasis.Scale.Length() / 1.732f;
-            mi.VisibilityRangeEnd = size < 0.5f ? 45f : size < 1.5f ? 85f : size < 5f ? 170f : 0f;
+            mi.VisibilityRangeEnd = size < 0.5f ? 45f : size < 1.5f ? 85f : size < 5f ? 170f : size < 25f ? 320f : 0f;
             if (size < 1.5f)
                 mi.CastShadow = GeometryInstance3D.ShadowCastingSetting.Off;
         }

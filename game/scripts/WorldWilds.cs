@@ -212,15 +212,15 @@ public static partial class WorldBuilder
         var leaves = new StandardMaterial3D { VertexColorUseAsAlbedo = true, Roughness = 0.85f };
         var blades = new StandardMaterial3D { VertexColorUseAsAlbedo = true, Roughness = 0.8f, CullMode = BaseMaterial3D.CullModeEnum.Disabled };
         if (trunks.Count > 0)
-            root.AddChild(Scatter("Trunks", new CylinderMesh { TopRadius = 0.7f, BottomRadius = 1f, Height = 1f, RadialSegments = 7 }, bark, trunks, trunkColors, 260f));
+            ScatterChunks(root, "Trunks", new CylinderMesh { TopRadius = 0.7f, BottomRadius = 1f, Height = 1f, RadialSegments = 7 }, bark, trunks, trunkColors, 200f);
         if (crowns.Count > 0)
-            root.AddChild(Scatter("Crowns", new SphereMesh { Radius = 1f, Height = 2f, RadialSegments = 9, Rings = 5 }, leaves, crowns, crownColors, 260f));
+            ScatterChunks(root, "Crowns", new SphereMesh { Radius = 1f, Height = 2f, RadialSegments = 9, Rings = 5 }, leaves, crowns, crownColors, 200f);
         if (fronds.Count > 0)
-            root.AddChild(Scatter("Fronds", new BoxMesh { Size = Vector3.One }, blades, fronds, frondColors, 200f));
+            ScatterChunks(root, "Fronds", new PlaneMesh { Size = Vector2.One }, blades, fronds, frondColors, 130f, shadows: false);
         if (stems.Count > 0)
-            root.AddChild(Scatter("Stems", new CylinderMesh { TopRadius = 1f, BottomRadius = 1f, Height = 1f, RadialSegments = 6 }, bark, stems, stemColors, 200f));
+            ScatterChunks(root, "Stems", new CylinderMesh { TopRadius = 1f, BottomRadius = 1f, Height = 1f, RadialSegments = 6 }, bark, stems, stemColors, 130f, shadows: false);
         if (culms.Count > 0)
-            root.AddChild(Scatter("Culms", new CylinderMesh { TopRadius = 0.8f, BottomRadius = 1f, Height = 1f, RadialSegments = 6 }, bark, culms, culmColors, bambooZone ? 150f : 200f));
+            ScatterChunks(root, "Culms", new CylinderMesh { TopRadius = 0.8f, BottomRadius = 1f, Height = 1f, RadialSegments = 6 }, bark, culms, culmColors, bambooZone ? 120f : 160f);
         if (colliders.Count > 0)
         {
             var body = new StaticBody3D { Name = "WildColliders", CollisionLayer = Layers.World, CollisionMask = 0 };
