@@ -301,7 +301,7 @@ public static partial class WorldBuilder
 
 	// Rustic fences running beside the roads in short pieces with gaps (for lanes and junctions),
 	// kept clear of houses, their paths, paddies and trees.
-	static void FenceRoads(Node3D parent, string name, float chance, Vector2 pieceLen, System.Func<Vector2, bool> allowed = null)
+	static void FenceRoads(Node3D parent, string name, float chance, Vector2 pieceLen, float maxRoadHalf, System.Func<Vector2, bool> allowed = null)
 	{
 		var root = Shapes.Group(parent, name);
 		int n = 0;
