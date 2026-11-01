@@ -132,6 +132,7 @@ void fragment() {
             if (_slowTimer <= 0f)
                 _slowFactor = 1f;
         }
+        TickElements(dt);
         UpdateTint();
 
         if (Weakened)
@@ -199,7 +200,7 @@ void fragment() {
             move = _chargeDir * Def.Speed * 3.2f;
             if (dist < 1.8f * Def.Scale && _attackCd <= 0f)
             {
-                player.TakeDamage(_damage * 0.8f, Def.Name);
+                player.TakeDamage(Sealed * _damage * 0.8f, Def.Name);
                 _attackCd = 0.8f;
             }
         }
@@ -214,10 +215,10 @@ void fragment() {
                     float radius = Def.AttackRange + 1.5f;
                     Fx.Ring(GetParent(), GlobalPosition, radius, new Color(1f, 0.25f, 0.2f), 0.4f);
                     if (dist <= radius)
-                        player.TakeDamage(_damage * (night ? Cfg.NightDamageMult : 1f), Def.Name);
+                        player.TakeDamage(Sealed * _damage * (night ? Cfg.NightDamageMult : 1f), Def.Name);
                 }
                 else if (dist <= Def.AttackRange + 0.5f)
-                    player.TakeDamage(_damage * (night ? Cfg.NightDamageMult : 1f), Def.Name);
+                    player.TakeDamage(Sealed * _damage * (night ? Cfg.NightDamageMult : 1f), Def.Name);
                 _attackCd = Def.AttackCooldown * (enraged ? 0.65f : 1f);
             }
         }
@@ -333,6 +334,9 @@ void fragment() {
         if (_flash > 0f) { tint = Colors.White; w = 0.7f; }
         else if (_windup > 0f) { tint = new Color(1f, 0.1f, 0.1f); w = 0.55f; }
         else if (Weakened) { tint = new Color(0.6f, 0.7f, 1f); w = 0.45f; }
+        else if (_burnTimer > 0f) { tint = Elements.ColorOf("fire"); w = 0.3f + 0.15f * Mathf.Sin(_time * 14f); }
+        else if (_sealTimer > 0f) { tint = Elements.ColorOf("blessed"); w = 0.25f; }
+        else if (_moonTimer > 0f) { tint = Elements.ColorOf("moon"); w = 0.3f; }
         foreach (var (mat, color) in _mats)
             mat.AlbedoColor = w > 0f ? color.Lerp(new Color(tint, color.A), w) : color;
     }
@@ -353,12 +357,80 @@ void fragment() {
         return diff <= -5 ? new Color(0.7f, 0.7f, 0.72f) : diff <= 1 ? new Color(1f, 0.92f, 0.9f) : diff <= 4 ? new Color(1f, 0.85f, 0.35f) : new Color(1f, 0.4f, 0.35f);
     }
 
+    // ---------- element status (see Elements) ----------
+    float _burnTimer, _burnDps, _burnTick, _sealTimer, _moonTimer;
+
+    // Ghost attacks are softer while sealed by a blessed hit.
+    float Sealed => _sealTimer > 0f ? 0.75f : 1f;
+
+    void TickElements(float dt)
+    {
+        _sealTimer = Mathf.Max(0f, _sealTimer - dt);
+        _moonTimer = Mathf.Max(0f, _moonTimer - dt);
+        if (_burnTimer <= 0f || Weakened || Gone)
+            return;
+        _burnTimer -= dt;
+        _burnTick -= dt;
+        if (_burnTick > 0f)
+            return;
+        _burnTick = 1f;
+        Hp -= _burnDps;
+        Fx.DamageNumber(GetParent(), GlobalPosition + Vector3.Up * 2f, $"{Mathf.RoundToInt(_burnDps)} 🔥", Elements.ColorOf("fire"));
+        Fx.Ring(GetParent(), GlobalPosition + Vector3.Up * 0.2f, 0.9f, Elements.ColorOf("fire"), 0.3f);
+        if (Hp <= 0f)
+        {
+            Hp = 0f;
+            _burnTimer = 0f;
+            EnterWeakened();
+        }
+        UpdateLabel();
+    }
+
+    // Leaves the element's mark on the ghost; returns the bonus multiplier for this hit (moon).
+    float ApplyElement(string element, float dmg)
+    {
+        var info = Elements.Of(element);
+        if (info == null)
+            return 1f;
+        var at = GlobalPosition + Vector3.Up * 1f;
+        switch (element)
+        {
+            case "fire":
+                _burnDps = Mathf.Max(_burnDps * (_burnTimer > 0f ? 1f : 0f), dmg * 0.1f);
+                if (_burnTimer <= 0f)
+                    _burnTick = 1f;
+                _burnTimer = 3f;
+                break;
+            case "blessed":
+                _sealTimer = 4f;
+                break;
+            case "rice":
+                if (_slowTimer <= 0f || _slowFactor > 0.7f)
+                    ApplySlow(0.3f, 2f);
+                break;
+            case "moon":
+                if (_moonTimer > 0f)
+                {
+                    _moonTimer = 0f;
+                    Fx.Ring(GetParent(), at, 1.6f, info.Color, 0.35f);
+                    return 1.4f;
+                }
+                _moonTimer = 5f;
+                break;
+        }
+        Fx.Ring(GetParent(), at, 1.1f, info.Color, 0.3f);
+        return 1f;
+    }
+
     public void TakeDamage(float amount, string element)
     {
         if (Weakened || Gone)
             return;
-        float mult = Def.Weakness != null && Def.Weakness.TryGetValue(element, out float m) ? m : 1f;
+        float mult = Def.Weakness != null && Def.Weakness.TryGetValue(element ?? "", out float m) ? m : 1f;
         float dmg = amount * mult;
+        // A ghost that resists the element shrugs off its effect.
+        if (mult >= 1f)
+            dmg *= ApplyElement(element, dmg);
         Hp -= dmg;
         _flash = 0.12f;
 
@@ -366,9 +438,10 @@ void fragment() {
             Game.Log($"{Def.Name}ตื่นขึ้นกลางวันแสกๆ!");
         _awake = Mathf.Max(_awake, 15f);
 
-        Color color = mult >= 1.5f ? new Color(1f, 0.6f, 0.15f) : mult < 1f ? new Color(0.65f, 0.65f, 0.7f) : Colors.White;
+        var elem = Elements.Of(element);
+        Color color = mult >= 1.5f ? new Color(1f, 0.6f, 0.15f) : mult < 1f ? new Color(0.65f, 0.65f, 0.7f) : elem?.Color.Lerp(Colors.White, 0.5f) ?? Colors.White;
         string suffix = mult >= 1.5f ? " แพ้ทาง!" : mult < 1f ? " ต้านทาน" : "";
-        Fx.DamageNumber(GetParent(), GlobalPosition + Vector3.Up * 2.3f, Mathf.RoundToInt(dmg) + suffix, color);
+        Fx.DamageNumber(GetParent(), GlobalPosition + Vector3.Up * 2.3f, (elem != null ? elem.Glyph + " " : "") + Mathf.RoundToInt(dmg) + suffix, color);
         Audio.Play("hit", -6f);
 
         if (Hp <= 0f)

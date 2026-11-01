@@ -29,15 +29,15 @@
   { "id": "phom_krasue", "name": "ปอยผมแม่บัว", "icon": "seal", "rarity": 4, "description": "ปอยผมของกระสือแม่บัว ใช้ทำเครื่องรางชั้นสูง" },
 
   // ---------- อาวุธ ----------
-  { "id": "yan_kradat", "name": "ยันต์กระดาษ", "icon": "fire_talisman", "rarity": 0, "description": "ยันต์เขียนมือแผ่นแรกของหมอยันต์ ถอดออกจะต้องใช้มือเปล่า", "equip": "weapon", "class": "mor_yan", "attack": 0 },
-  { "id": "dab_mai", "name": "ดาบไม้ลงยันต์", "icon": "sword_iron", "color": "#9a7a50", "rarity": 0, "description": "ดาบไม้ฝึกหัดที่ยายจันทร์ลงยันต์ให้", "equip": "weapon", "class": "nak_dab", "attack": 0 },
-  { "id": "mit_lek", "name": "มีดเหล็กคู่ฝึก", "icon": "dagger", "rarity": 0, "description": "มีดเหล็กธรรมดาคู่แรกของนักฆ่า", "equip": "weapon", "class": "nak_kha", "attack": 0 },
-  { "id": "dab_nam_phi", "name": "ดาบเหล็กน้ำพี้", "icon": "sword_iron", "rarity": 1, "description": "ดาบเหล็กลงยันต์", "equip": "weapon", "class": "nak_dab", "attack": 8 },
-  { "id": "dab_saksit", "name": "ดาบศักดิ์สิทธิ์", "icon": "sword_holy", "rarity": 3, "description": "ดาบที่ปลุกเสกด้วยแสงวิญญาณ", "equip": "weapon", "class": "nak_dab", "attack": 20, "skill": 0.1 },
-  { "id": "yan_takiang", "name": "ยันต์ตะเกียงผี", "icon": "talisman_green", "rarity": 1, "description": "ยันต์หมึกผสมไฟผีโพง", "equip": "weapon", "class": "mor_yan", "attack": 6 },
-  { "id": "yan_maha_ut", "name": "ยันต์มหาอุด", "icon": "talisman_gold", "rarity": 3, "description": "ยันต์ชั้นครู", "equip": "weapon", "class": "mor_yan", "attack": 14, "skill": 0.15 },
-  { "id": "mit_ngao", "name": "มีดเงาเหล็ก", "icon": "dagger", "rarity": 1, "description": "มีดสั้นมือขวาของนักฆ่า", "equip": "weapon", "class": "nak_kha", "attack": 7 },
-  { "id": "mit_ngao_chan", "name": "มีดเงาจันทร์", "icon": "dagger_moon", "rarity": 3, "description": "มีดที่ชุบน้ำค้างราตรี คมจนตัดเงาได้", "equip": "weapon", "class": "nak_kha", "attack": 17, "stamina": 15 },
+  { "id": "yan_kradat", "element": "fire", "name": "ยันต์กระดาษ", "icon": "fire_talisman", "rarity": 0, "description": "ยันต์เขียนมือแผ่นแรกของหมอยันต์ ถอดออกจะต้องใช้มือเปล่า", "equip": "weapon", "class": "mor_yan", "attack": 0 },
+  { "id": "dab_mai", "element": "blessed", "name": "ดาบไม้ลงยันต์", "icon": "sword_iron", "color": "#9a7a50", "rarity": 0, "description": "ดาบไม้ฝึกหัดที่ยายจันทร์ลงยันต์ให้", "equip": "weapon", "class": "nak_dab", "attack": 0 },
+  { "id": "mit_lek", "element": "moon", "name": "มีดเหล็กคู่ฝึก", "icon": "dagger", "rarity": 0, "description": "มีดเหล็กธรรมดาคู่แรกของนักฆ่า", "equip": "weapon", "class": "nak_kha", "attack": 0 },
+  { "id": "dab_nam_phi", "element": "fire", "name": "ดาบเหล็กน้ำพี้", "icon": "sword_iron", "rarity": 1, "description": "ดาบเหล็กลงยันต์", "equip": "weapon", "class": "nak_dab", "attack": 8 },
+  { "id": "dab_saksit", "element": "blessed", "name": "ดาบศักดิ์สิทธิ์", "icon": "sword_holy", "rarity": 3, "description": "ดาบที่ปลุกเสกด้วยแสงวิญญาณ", "equip": "weapon", "class": "nak_dab", "attack": 20, "skill": 0.1 },
+  { "id": "yan_takiang", "element": "fire", "name": "ยันต์ตะเกียงผี", "icon": "talisman_green", "rarity": 1, "description": "ยันต์หมึกผสมไฟผีโพง", "equip": "weapon", "class": "mor_yan", "attack": 6 },
+  { "id": "yan_maha_ut", "element": "blessed", "name": "ยันต์มหาอุด", "icon": "talisman_gold", "rarity": 3, "description": "ยันต์ชั้นครู", "equip": "weapon", "class": "mor_yan", "attack": 14, "skill": 0.15 },
+  { "id": "mit_ngao", "element": "moon", "name": "มีดเงาเหล็ก", "icon": "dagger", "rarity": 1, "description": "มีดสั้นมือขวาของนักฆ่า", "equip": "weapon", "class": "nak_kha", "attack": 7 },
+  { "id": "mit_ngao_chan", "element": "moon", "name": "มีดเงาจันทร์", "icon": "dagger_moon", "rarity": 3, "description": "มีดที่ชุบน้ำค้างราตรี คมจนตัดเงาได้", "equip": "weapon", "class": "nak_kha", "attack": 17, "stamina": 15 },
 
   // ---------- มือรอง ----------
   { "id": "lo_mai_yan", "name": "โล่ไม้ลงยันต์", "icon": "shield_wood", "rarity": 1, "description": "โล่ไม้เขียนยันต์กันผี", "equip": "offhand", "offhandType": "shield", "defense": 8 },

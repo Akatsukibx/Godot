@@ -149,6 +149,20 @@ public partial class Player : CharacterBody3D
         if (!InCombat && Hp < MaxHp)
             Hp = Mathf.Min(MaxHp, Hp + MaxHp * Cfg.HpRegenPercent * dt);
 
+        // Seated in a rowing boat: the boat does the moving.
+        if (Boat != null)
+        {
+            Velocity = Vector3.Zero;
+            GlobalPosition = Boat.Seat;
+            _yaw = Boat.Yaw;
+            Facing = new Vector3(-Mathf.Sin(_yaw), 0f, -Mathf.Cos(_yaw));
+            _localVel = Vector2.Zero;
+            Sprinting = false;
+            Swimming = false;
+            WaterDepth = 0f;
+            return;
+        }
+
         bool controls = Game.Main.ControlsEnabled;
         Vector2 input = controls ? Input.GetVector("move_left", "move_right", "move_up", "move_down") : Vector2.Zero;
         Basis cam = Game.Main.CameraYawBasis;
@@ -298,7 +312,9 @@ public partial class Player : CharacterBody3D
             DebugAnimate(dt);
             return;
         }
-        _rig.Crouch = Crouching;
+        _rig.Crouch = Crouching || Boat != null;
+        if (Boat != null)
+            GlobalPosition = Boat.Seat;
         _rig.Swim = Swimming || Flying;
         bool airborne = !IsOnFloor() && Velocity.Y > -4f && !_rig.Rolling && !Dead;
         airborne &= !Swimming && !Flying;
@@ -464,8 +480,8 @@ public partial class Player : CharacterBody3D
             _rig.Play(PlayerRig.Act.Finisher, 0.6f);
             Audio.Play("swing", 1f, 0f);
             Audio.Play("skill", -6f, 0f);
-            HitArc(dir, a.Range + 0.8f, 360f, AttackDamage * Cfg.ComboFinisherMult, a.Element);
-            Fx.Ring(GetParent(), GlobalPosition, a.Range + 1.2f, new Color(1f, 0.9f, 0.55f), 0.35f);
+            HitArc(dir, a.Range + 0.8f, 360f, AttackDamage * Cfg.ComboFinisherMult, WeaponElement(a.Element));
+            Fx.Ring(GetParent(), GlobalPosition, a.Range + 1.2f, Elements.ColorOf(WeaponElement(a.Element)), 0.35f);
             return;
         }
         if (Def.Offhand == "dagger")
@@ -480,8 +496,8 @@ public partial class Player : CharacterBody3D
             _rig.Play(_lastSwing, Mathf.Min(0.38f, _attackCd));
         }
         Audio.Play("swing", -2f);
-        HitArc(dir, a.Range, a.Arc, AttackDamage, a.Element);
-        Fx.Ring(GetParent(), GlobalPosition + dir * (a.Range * 0.5f), a.Range * 0.6f, new Color(0.85f, 0.9f, 1f), 0.15f);
+        HitArc(dir, a.Range, a.Arc, AttackDamage, WeaponElement(a.Element));
+        Fx.Ring(GetParent(), GlobalPosition + dir * (a.Range * 0.5f), a.Range * 0.6f, Elements.ColorOf(WeaponElement(a.Element)).Lerp(new Color(0.85f, 0.9f, 1f), 0.5f), 0.15f);
     }
 
     // Right click: a fan of talismans (projectile classes) or a lunge (melee classes; the assassin's goes further).
@@ -511,11 +527,15 @@ public partial class Player : CharacterBody3D
         Audio.Play("swing", 0f, 0f);
         StartDash(dir, s.Distance, 0.15f + s.Distance * 0.02f, s.Distance > 4f);
         _dashCd = 0f;
-        HitArc(dir, s.Range, s.Arc, SpecialDamage, s.Element, 1.2f);
+        HitArc(dir, s.Range, s.Arc, SpecialDamage, WeaponElement(s.Element), 1.2f);
         Fx.Ring(GetParent(), GlobalPosition + dir * s.Distance, 1.6f, new Color(1f, 0.9f, 0.6f), 0.25f);
     }
 
-    Vector3 Muzzle => GlobalPosition + new Vector3(0f, 1.2f, 0f) + Facing * 0.6f;
+    // A weapon with its own element (ItemDef.Element) overrides the class's attack element.
+    public string WeaponElement(string fallback) =>
+        Equipped.TryGetValue("weapon", out var w) && w != null && !string.IsNullOrEmpty(w.Def.Element) ? w.Def.Element : fallback;
+
+    Vector3 Muzzle =>GlobalPosition + new Vector3(0f, 1.2f, 0f) + Facing * 0.6f;
 
     // Projectiles fly from the hand to whatever the crosshair points at.
     Vector3 AimedDir(float range)
@@ -529,7 +549,7 @@ public partial class Player : CharacterBody3D
         var p = new Projectile();
         GetParent().AddChild(p);
         p.GlobalPosition = Muzzle;
-        p.Setup(dir, a.ProjectileSpeed, a.Range, damage, a.Element);
+        p.Setup(dir, a.ProjectileSpeed, a.Range, damage, WeaponElement(a.Element));
     }
 
     void HitArc(Vector3 dir, float range, float arcDeg, float damage, string element, float reach = 0f)
@@ -572,7 +592,7 @@ public partial class Player : CharacterBody3D
                         g.ApplySlow(s.Slow, s.SlowDuration);
                 }
                 Fx.Ring(GetParent(), GlobalPosition, s.Radius,
-                    s.Element == "rice" ? new Color(1f, 1f, 0.92f) : new Color(1f, 0.85f, 0.4f));
+                    Elements.ColorOf(s.Element));
                 break;
             case "heal":
                 Audio.Play("heal");
@@ -633,8 +653,34 @@ public partial class Player : CharacterBody3D
         Died?.Invoke();
     }
 
+    // ---------- rowing ----------
+
+    public RowBoat Boat { get; private set; }
+
+    public void EnterBoat(RowBoat boat)
+    {
+        Boat = boat;
+        Crouching = false;
+        _rig.Emote = null;
+        CollisionMask = 0u;
+        Velocity = Vector3.Zero;
+    }
+
+    public void LeaveBoat(Vector3 at)
+    {
+        Boat = null;
+        CollisionMask = Flying ? 0u : Layers.World | Layers.Npc;
+        GlobalPosition = at;
+        Velocity = Vector3.Zero;
+    }
+
     public void Respawn(Vector3 position)
     {
+        if (Boat != null)
+        {
+            Boat.Eject();
+            LeaveBoat(position);
+        }
         Dead = false;
         Hp = MaxHp;
         Stamina = MaxStamina;
@@ -645,6 +691,11 @@ public partial class Player : CharacterBody3D
 
     public void Teleport(Vector3 position)
     {
+        if (Boat != null)
+        {
+            Boat.Eject();
+            LeaveBoat(position);
+        }
         GlobalPosition = position;
         Velocity = Vector3.Zero;
     }

@@ -341,6 +341,8 @@ public partial class Hud
             Line("ชีวิต", d.Hp * s.Scale, (worn?.Def.Hp ?? 0f) * (worn?.Scale ?? 1f));
             Line("ความอึด", d.Stamina * s.Scale, (worn?.Def.Stamina ?? 0f) * (worn?.Scale ?? 1f));
             Line("พลังจิต", d.Skill * s.Scale, (worn?.Def.Skill ?? 0f) * (worn?.Scale ?? 1f), true);
+            if (Elements.Of(d.Element) is { } el)
+                sb.AppendLine($"• ธาตุ{el.Name} {el.Glyph}: ศัตรูที่โดน{el.EffectText}");
             if (d.Set != null && GameData.Sets.TryGetValue(d.Set, out var set))
                 sb.AppendLine($"• เซ็ต {set.Name}");
             if (d.Class != null)

@@ -428,24 +428,31 @@ public static partial class WorldBuilder
 		var water = WaterMaterial();
 		var bank = new Color(0.3f, 0.25f, 0.17f);
 		int made = 0;
-		for (int attempt = 0; attempt < 60 && made < count; attempt++)
+		for (int attempt = 0; attempt < 200 && made < count; attempt++)
 		{
 			// Gap lines lie half-way between plot centres (plots are 13 m apart).
 			bool alongX = _rng.Randf() < 0.6f;
 			float line = (_rng.RandiRange(-12, 12) + 0.5f) * 13f;
 			if (!alongX && Mathf.Abs(line) < 30f || alongX && (line < ThungNaShoreZ + 30f || line > Half - 20f))
 				continue;
-			float start = _rng.RandfRange(-Half + 30f, 20f), length = _rng.RandfRange(60f, 140f);
+			float start = _rng.RandfRange(-Half + 30f, Half - 60f), length = _rng.RandfRange(22f, 44f);
+			Vector3 At(float t) => alongX ? new Vector3(t, 0f, line) : new Vector3(line, 0f, t);
+			// A short ditch out in the fields only: drop it if any stretch runs near a house, a yard or a landmark.
+			bool clear = true;
+			for (float t = start; t < start + length && clear; t += 2f)
+			{
+				var p = At(t);
+				clear = Mathf.Abs(p.X) < Half - 10f && p.Z > ThungNaShoreZ + 14f && p.Z < Half - 10f
+					&& (DistToRoads(p) < 0.6f || !Blocked(p, 6f)) && !NearLandmark(p, 10f) && Flat(p).Length() > 80f; // the village core stays dry
+			}
+			if (!clear)
+				continue;
 			var g = Shapes.Group(root, $"Canal{made}");
 			bool any = false;
 			for (float t = start; t < start + length; t += 2f)
 			{
-				var p = alongX ? new Vector3(t, 0f, line) : new Vector3(line, 0f, t);
-				if (Mathf.Abs(p.X) > Half - 10f || p.Z < ThungNaShoreZ + 14f || p.Z > Half - 10f)
-					continue;
+				var p = At(t);
 				float road = DistToRoads(p);
-				if (Blocked(p, 0.6f) && road > 0.5f)
-					continue;
 				if (road < 0.6f)
 				{
 					// A road crosses here: lay planks over the ditch.

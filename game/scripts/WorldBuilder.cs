@@ -937,7 +937,7 @@ public static partial class WorldBuilder
         BuildPaddies(world);
         BuildFieldTrees(world);
         BuildThickets(world, 26);
-        Canals(world, 6);
+        Canals(world, 10);
         ScatterRoadside(world, "FieldProps", 0.8f, 45, p => p.Y > ThungNaShoreZ + 10f);
         Puddles(world, 22, p => p.Y > ThungNaShoreZ + 12f);
         PlaceChests(world, "thung_na", 5, p => p.Y > ThungNaShoreZ + 18f);
@@ -1590,7 +1590,7 @@ void fragment() {
     }
 
     // เรือมาด: a narrow dugout with upturned ends.
-    static void Boat(Node3D parent, string name, Vector3 pos, float yaw, bool lantern)
+    public static void Boat(Node3D parent, string name, Vector3 pos, float yaw, bool lantern)
     {
         var b = Shapes.Group(parent, name, pos, yaw);
         Shapes.MapTag(b, "map_boat", new Vector2(1.2f, 5.6f));

@@ -126,6 +126,7 @@ public static partial class WorldBuilder
     {
         var water = Shapes.Group(world, "Marsh");
         water.AddToGroup("water_area", true);
+        water.SetMeta("map_size", new Vector2(Half * 2f, Half * 2f)); // the whole marsh is wadeable water
         var surface = Shapes.Child(water, new MeshInstance3D
         {
             Mesh = new PlaneMesh { Size = new Vector2(Half * 2f, Half * 2f), SubdivideWidth = 110, SubdivideDepth = 110 },
@@ -183,12 +184,14 @@ public static partial class WorldBuilder
     {
         var root = Shapes.Group(world, "Boardwalks");
         int k = 0, lamp = 0;
+        // Every point where walks meet stays at deck level so branches always join flush.
+        var joints = BuengWalks.SelectMany(r => r).Select(Flat).ToList();
         foreach (var route in BuengWalks)
         {
             var pts = route.Length == 2 ? route.ToList() : Meander(route, 7f, 6f);
             // Over deep channels the walk rises into an arch (high enough for a boat to pass under),
-            // easing back down to the islands on either side.
-            var lift = pts.Select(p => BuengHeight(p.X, p.Z) < -1.0f ? 1.6f : 0f).ToArray();
+            // easing back down to the islands on either side and to every junction.
+            var lift = pts.Select(p => BuengHeight(p.X, p.Z) < -1.0f && joints.All(j => j.DistanceTo(Flat(p)) > 16f) ? 1.6f : 0f).ToArray();
             lift[0] = lift[^1] = 0f;
             for (int pass = 0; pass < 3; pass++)
                 for (int j = 1; j < lift.Length - 1; j++)
@@ -297,8 +300,59 @@ public static partial class WorldBuilder
             if (onLand && TryHouse(g, $"MarshHouse{built}", p, kind, OnGround(p.X, p.Z).Y))
                 built++;
         }
-        for (int i = 0; i < 3; i++)
-            Boat(g, $"HamletBoat{i}", new Vector3(c.X + 34f + i * 3f, 0f, c.Z - 8f + i * 5f), 0.4f + i * 0.3f, i == 0);
+        BoatDock(g, "hamlet", new Vector2(c.X, c.Z));
+        BoatDock(g, "lung_puk", new Vector2(18f, 158f));
+    }
+
+    // A jetty from the nearest open shore out to water deep enough to row, clear of the boardwalks.
+    // The mooring is marked for Main, which puts a rowing boat (RowBoat) there at runtime.
+    static void BoatDock(Node3D parent, string id, Vector2 land)
+    {
+        float best = float.MaxValue;
+        Vector2 dir = Vector2.Right, shore = land, deep = land;
+        for (int a = 0; a < 24; a++)
+        {
+            var d = Vector2.FromAngle(a / 24f * Mathf.Tau);
+            Vector2? s = null;
+            for (float t = 2f; t < 70f; t += 1f)
+            {
+                var p = land + d * t;
+                float h = BuengHeight(p.X, p.Y);
+                // Out over the water it must keep clear of the boardwalks.
+                if (h < 0.1f && DistToRoads(new Vector3(p.X, 0f, p.Y)) < 6f)
+                    break;
+                if (s == null && h < 0f)
+                    s = p;
+                var q = land + d * (t + 5f);
+                if (s != null && h < -1.1f && BuengHeight(q.X, q.Y) < -1.1f)
+                {
+                    if (t < best)
+                        (best, dir, shore, deep) = (t, d, s.Value, p);
+                    break;
+                }
+            }
+        }
+        if (best == float.MaxValue)
+            GD.PushWarning($"BoatDock {id}: no open water found");
+        var d3 = new Vector3(dir.X, 0f, dir.Y);
+        var from = new Vector3(shore.X, 0f, shore.Y) - d3 * 2.5f;
+        var to = new Vector3(deep.X, 0f, deep.Y) + d3 * 1.5f;
+        float yaw = Mathf.Atan2(-dir.X, -dir.Y);
+        var jetty = Shapes.Group(parent, $"Jetty_{id}", (from + to) * 0.5f, yaw);
+        float len = from.DistanceTo(to);
+        Shapes.Box(jetty, new Vector3(0f, DeckTop - 0.08f, 0f), new Vector3(2.2f, 0.16f, len), Wood, 0f, "JettyDeck");
+        Shapes.Solid(jetty, new Vector3(0f, DeckTop - 0.08f, 0f), new Vector3(2.2f, 0.16f, len));
+        for (float z = -len * 0.5f + 1f; z <= len * 0.5f; z += 2.5f)
+            foreach (var sx in new[] { -1f, 1f })
+                Shapes.Cylinder(jetty, new Vector3(sx, -0.7f, z), 0.09f, 0.1f, 2.4f, DarkWood, 0f, "Piling");
+        Shapes.Cylinder(jetty, new Vector3(1.15f, 0.75f, -len * 0.5f + 0.4f), 0.11f, 0.12f, 1f, DarkWood, 0f, "MooringPost");
+        LanternPost(jetty, $"JettyLantern_{id}", new Vector3(-1.2f, DeckTop, -len * 0.5f + 0.6f), 2.2f, true, new Vector3(0f, DeckTop, -len * 0.5f));
+        Shapes.MapTag(jetty, "map_deck", new Vector2(2.2f, len));
+        var right = new Vector3(dir.Y, 0f, -dir.X);
+        var dock = Shapes.Group(parent, $"BoatDock_{id}", to + d3 * 0.5f + right * 2.1f, yaw);
+        dock.AddToGroup("boat_dock", true);
+        dock.SetMeta("dock_id", id);
+        AddRoad(from, to, 1.1f);
     }
 
     static void BuildBuengSights(Node3D world)

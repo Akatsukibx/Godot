@@ -593,10 +593,10 @@ public partial class Hud : CanvasLayer
         _statDerived.Text = string.Join("\n",
             $"เลเวล {p.Level} · EXP {p.Exp}/{GameData.ExpToNext(p.Level)}",
             $"ชีวิตสูงสุด {p.MaxHp:0} · ความอึดสูงสุด {p.MaxStamina:0} (ฟื้น {p.StaminaRegen:0.#}/วินาที)",
-            $"{p.Def.Attack.Name} {p.AttackDamage:0.0} · {p.Def.Special.Name} {p.SpecialDamage:0.0}",
+            $"{p.Def.Attack.Name} {p.AttackDamage:0.0} · {p.Def.Special.Name} {p.SpecialDamage:0.0} · ธาตุ{Elements.Name(p.WeaponElement(p.Def.Attack.Element))}",
             $"ความเสียหายพลังจิต (สกิล) {p.SkillMult * 100f:0}%" + (p.WeaponBonus > 0f ? $" · อาวุธ +{p.WeaponBonus:0}" : ""));
         _codexLabel.Text = string.Join("\n\n", GameData.Ghosts.Values.Select(g =>
-            p.Codex.Contains(g.Id) ? $"• {g.Name}\n{g.Story}" : "• ??? (ยังไม่พบ)"));
+            p.Codex.Contains(g.Id) ? $"• {g.Name}  ({Elements.WeaknessText(g.Weakness)})\n{g.Story}" : "• ??? (ยังไม่พบ)"));
     }
 
     // --- quests ---

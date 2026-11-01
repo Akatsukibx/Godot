@@ -55,8 +55,8 @@
 	"moveSpeed": 6.6,
 	"hpPerLevel": 11,
 	"damagePerLevel": 0.09,
-	"attack": { "type": "melee", "name": "แทงมีดคู่", "icon": "dagger", "damage": 13, "range": 2.3, "arc": 80, "cooldown": 0.32, "element": "blessed" },
-	"special": { "type": "lunge", "name": "ก้าวเงา", "icon": "dash", "damage": 38, "range": 6.5, "arc": 30, "cooldown": 4, "element": "blessed", "distance": 6 },
+	"attack": { "type": "melee", "name": "แทงมีดคู่", "icon": "dagger", "damage": 13, "range": 2.3, "arc": 80, "cooldown": 0.32, "element": "moon" },
+	"special": { "type": "lunge", "name": "ก้าวเงา", "icon": "dash", "damage": 38, "range": 6.5, "arc": 30, "cooldown": 4, "element": "moon", "distance": 6 },
 	"skills": [
 	  { "name": "พิษหมอกควัน", "icon": "smoke", "type": "aoe", "damage": 18, "radius": 4, "cooldown": 6, "element": "rice", "slow": 0.4, "slowDuration": 3 },
 	  { "name": "ม่านเงาจันทร์", "icon": "moon", "type": "frenzy", "duration": 5, "cooldown": 15 }

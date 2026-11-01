@@ -125,6 +125,8 @@ public partial class Main : Node3D
             var p = w.GlobalPosition;
             _water.Add((new Rect2(p.X - size.X * 0.5f, p.Z - size.Y * 0.5f, size.X, size.Y), p.Y));
         }
+        foreach (var dock in GetTree().GetNodesInGroup("boat_dock").OfType<Node3D>().ToList())
+            RowBoat.Moor(dock);
         foreach (var def in GameData.Npcs.Values)
         {
             var zone = GameData.Zone(def.Zone);
@@ -282,6 +284,16 @@ public partial class Main : Node3D
             Player.GlobalPosition = new Vector3(F(xz[0]), 0.3f, F(xz[1]));
             _camPivot.GlobalPosition = Player.GlobalPosition;
         }
+        // --boat[=seconds]: board the nearest rowing boat and (optionally) row straight ahead for a while.
+        if (Player != null && args.TryGetValue("boat", out var rowFor))
+            GetTree().CreateTimer(0.8).Timeout += () =>
+            {
+                var boat = GetTree().GetNodesInGroup("rowboat").OfType<RowBoat>().OrderBy(b => b.GlobalPosition.DistanceTo(Player.GlobalPosition)).FirstOrDefault();
+                if (boat == null)
+                    return;
+                boat.Board(Player);
+                boat.DevRow = string.IsNullOrEmpty(rowFor) ? 0f : F(rowFor);
+            };
         if (Player != null && args.TryGetValue("level", out var lv))
             for (int i = 1; i < int.Parse(lv); i++)
                 Player.GainExp(GameData.ExpToNext(Player.Level));
@@ -550,6 +562,27 @@ public partial class Main : Node3D
         }
         float best = float.MaxValue;
         string text = null;
+        // Aboard a boat the only thing to do is step ashore.
+        if (Player.Boat != null)
+        {
+            _interactTarget = Player.Boat;
+            _prompt.Visible = true;
+            _prompt.Text = $"[{Settings.BindingText("interact")}] ขึ้นฝั่ง";
+            _prompt.GlobalPosition = Player.Boat.GlobalPosition + new Vector3(0f, 2.4f, 0f);
+            if (ControlsEnabled && Input.IsActionJustPressed("interact"))
+                Interact(Player.Boat);
+            return;
+        }
+        foreach (var boat in GetTree().GetNodesInGroup("rowboat").OfType<RowBoat>())
+        {
+            float d = boat.GlobalPosition.DistanceTo(Player.GlobalPosition);
+            if (boat.Rider == null && d < 3.5f && d < best)
+            {
+                best = d;
+                _interactTarget = boat;
+                text = $"[{Settings.BindingText("interact")}] ขึ้นเรือพาย";
+            }
+        }
         foreach (var npc in _npcs)
         {
             float d = npc.GlobalPosition.DistanceTo(Player.GlobalPosition);
@@ -611,7 +644,17 @@ public partial class Main : Node3D
             Hud.ShowDialogue(npc);
             return;
         }
-        if (target.IsInGroup("chest"))
+        if (target is RowBoat boat)
+        {
+            if (boat.Rider == Player)
+            {
+                if (!boat.TryLeave())
+                    Game.Toast("พายเข้าใกล้ฝั่งหรือท่าเรือก่อน");
+            }
+            else
+                boat.Board(Player);
+        }
+        else if (target.IsInGroup("chest"))
             OpenChest(target);
         else if (target.IsInGroup("bus_stop"))
             ShowBusMenu((string)target.GetMeta("stop_id"));

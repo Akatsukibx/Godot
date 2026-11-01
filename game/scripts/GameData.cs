@@ -116,6 +116,7 @@ public class ItemDef
     public float Defense { get; set; }
     public string Set { get; set; }
     public string Color { get; set; }
+    public string Element { get; set; } // weapons: overrides the class's attack element (see Elements)
     public bool Stackable => Equip == null;
 }
 
