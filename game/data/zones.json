@@ -11,7 +11,8 @@
 	"ghosts": [ "winyan_long_soi" ], "alleyOnly": true, "maxGhostsDay": 2, "maxGhostsNight": 6,
 	"rainChance": 0.2, "worldX": 1, "worldY": 1,
 	"exits": [
-	  { "to": "thung_na", "side": "north", "label": "ประตูเมืองทิศเหนือ" }
+	  { "to": "thung_na", "side": "north", "label": "ประตูเมืองทิศเหนือ" },
+	  { "to": "talat_phi", "side": "south", "label": "ประตูเมืองทิศใต้" }
 	]
   },
   {
@@ -60,11 +61,11 @@
 	"exits": [ { "to": "muang_kao", "side": "south" } ] },
   { "id": "muang_kao", "name": "ย่านเมืองเก่าและต้นตะเคียน", "open": false, "levelText": "58–70", "worldX": 3, "worldY": 1,
 	"ghosts": [ "phi_tai_hong" ], "enemies": "ผู้พิทักษ์ที่ถูกลืม, ผีตายโหง, เถาวัลย์สิง",
-	"exits": [ { "to": "yommalok", "side": "south" } ] },
+	"exits": [] },
   { "id": "mueang_rang", "name": "เหมืองร้างใต้ดิน", "open": false, "kind": "dungeon", "parent": "wat_doi", "levelText": "ดันเจี้ยนปาร์ตี้",
 	"enemies": "ผีคนงานเหมือง, ผีเฝ้าแร่", "exits": [] },
   { "id": "hong_404", "name": "ห้อง 404", "open": false, "kind": "instance", "parent": "muang_kao", "levelText": "instance สุ่ม",
 	"enemies": "เปลี่ยนตามรอบ", "exits": [] },
-  { "id": "yommalok", "name": "ยมโลก", "open": false, "kind": "raid", "levelText": "endgame raid", "worldX": 3, "worldY": 2,
-	"enemies": "ทหารยม, หัวหน้าสมาคมโคมขาว", "exits": [] }
+  { "id": "talat_phi", "name": "ตลาดผีริมน้ำ", "open": false, "levelText": "-", "worldX": 1, "worldY": 2, "exits": [ { "to": "wiang_mok", "side": "north" } ] },
+  { "id": "yommalok", "name": "ยมโลก", "open": false, "levelText": "raid", "worldX": 0, "worldY": 2, "exits": [] }
 ]
