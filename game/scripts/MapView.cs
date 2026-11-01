@@ -131,6 +131,13 @@ public partial class MapView : Control
             Text(ToMap(Local(90f, -140f)), "เกาะตะเคียน", 15, new Color(0.7f, 1f, 0.8f));
             Text(ToMap(Local(-110f, -140f)), "ป่าไม้ตาย", 15, new Color(0.8f, 0.75f, 0.7f));
         }
+        else if (zone.Id == "pa_phai")
+        {
+            Text(ToMap(Local(-148f, 62f)), "ค่ายพราน", 15, new Color(0.85f, 0.95f, 0.7f));
+            Text(ToMap(Local(0f, 24f)), "หมู่บ้านร้าง", 15, new Color(0.9f, 0.8f, 0.7f));
+            Text(ToMap(Local(122f, -96f)), "เรือนผู้ใหญ่บ้าน", 15, new Color(1f, 0.6f, 0.55f));
+            Text(ToMap(Local(48f, 146f)), "ป่าช้าเก่า", 15, new Color(0.8f, 0.75f, 0.85f));
+        }
         else if (zone.AlleyOnly)
             Text(ToMap(Local(-40f, 70f)), "ซอยมืด (มีผี)", 15, new Color(0.8f, 0.7f, 1f));
 

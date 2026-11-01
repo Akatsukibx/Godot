@@ -50,9 +50,22 @@
 	"exits": [ { "to": "thung_na", "side": "south", "label": "สะพานไม้สู่ทุ่งนา" }, { "to": "pa_phai", "side": "east", "label": "ทางเข้าป่าไผ่" } ]
   },
   // ---------- พื้นที่ถัดไป (ตามตารางโซน) · parent = อยู่ภายในโซนนั้น เข้าร่วมแล้ววาปไปฉากเฉพาะ ----------
-  { "id": "pa_phai", "name": "ป่าไผ่ทึบ", "open": false, "levelText": "25–35", "worldX": 2, "worldY": -1,
-	"ghosts": [ "phi_pong" ], "enemies": "ปอบ, ชาวบ้านถูกสิง, ผีโป่ง",
-	"exits": [ { "to": "bueng_bua", "side": "west" }, { "to": "rong_phayaban", "side": "south" } ] },
+  {
+	"id": "pa_phai", "name": "ป่าไผ่ทึบ", "subtitle": "หมู่บ้านร้างกลางดงไผ่ · อย่าขานรับเสียงเรียกจากใต้ถุนบ้าน", "open": true,
+	"scene": "pa_phai", "centerX": 372, "centerZ": -744, "sizeX": 372, "sizeZ": 372, "entrance": "west",
+	"levelMin": 25, "levelMax": 35, "levelText": "25–35", "worldX": 2, "worldY": -1,
+	"ghosts": [ "phi_pop", "chao_ban_thuk_sing", "phi_pong" ], "enemies": "ปอบ, ชาวบ้านถูกสิง, ผีโป่ง",
+	"alleyOnly": false, "maxGhostsDay": 8, "maxGhostsNight": 14, "rainChance": 0.35,
+	"boss": { "ghost": "boss_pop_chao_ruean", "x": 122, "z": -62, "respawn": 1200, "lair": "เรือนผู้ใหญ่บ้าน",
+	  "summon": { "offering": { "mak_phlu": 6, "phlueak_winyan": 1 }, "minLevel": 30, "time": "night", "text": "วางหมากพลูหกคำกับผลึกวิญญาณในถ้วยเซ่นหน้าเรือน แล้วรอ... ปอบไม่เคยปฏิเสธของกิน" } },
+	"spawnGroups": [
+	  { "id": "pp_village", "name": "หมู่บ้านร้าง", "ghosts": [ "chao_ban_thuk_sing" ], "x": 0, "z": 0, "radius": 26, "count": 4, "respawn": 60, "leash": 34 },
+	  { "id": "pp_graveyard", "name": "ป่าช้าเก่า", "ghosts": [ "phi_pop" ], "x": 48, "z": 124, "radius": 16, "count": 3, "respawn": 80, "leash": 30, "time": "night" },
+	  { "id": "pp_north_grove", "name": "ดงไผ่ผีโพง", "ghosts": [ "phi_pong" ], "x": -60, "z": -60, "radius": 22, "count": 3, "respawn": 60, "leash": 30, "time": "night" },
+	  { "id": "pp_east_thicket", "name": "ดงไผ่ตะวันออก", "ghosts": [ "chao_ban_thuk_sing", "phi_pop" ], "x": 80, "z": 40, "radius": 22, "count": 3, "respawn": 70, "leash": 32 }
+	],
+	"exits": [ { "to": "bueng_bua", "side": "west", "label": "สะพานไม้สู่บึงบัวสาย" }, { "to": "rong_phayaban", "side": "south", "label": "ทางลงโรงพยาบาลร้าง" } ]
+  },
   { "id": "rong_phayaban", "name": "โรงพยาบาลร้าง", "open": false, "levelText": "35–45", "worldX": 2, "worldY": 0,
 	"enemies": "ผีพยาบาล, วิญญาณคนไข้, ผีแม่ลูกอ่อน",
 	"exits": [ { "to": "wat_doi", "side": "east" } ] },

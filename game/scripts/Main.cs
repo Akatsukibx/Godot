@@ -704,6 +704,7 @@ public partial class Main : Node3D
         ["wiang_mok"] = new[] { "saeng_winyan", "lek_sanim", "mai_phu", "sai_sin_khat", "ya_hom_yai" },
         ["thung_na"] = new[] { "khao_san_sek", "namkhang_ratri", "lek_nam_phi", "fang_sap", "ya_hom_yai", "takrut" },
         ["bueng_bua"] = new[] { "phlueak_winyan", "bai_tani", "sai_bua", "set_tra_phanuek", "ya_hom_yai", "waen_phirot" },
+        ["pa_phai"] = new[] { "phlueak_winyan", "mak_phlu", "mai_phai_sap", "set_tra_phanuek", "ya_hom_yai", "khrueang_rang_khao" },
     };
 
     void OpenChest(Node3D chest)
@@ -814,6 +815,12 @@ public partial class Main : Node3D
         yield return ("บึงบัวสาย: ป่าไม้ตาย", bueng + new Vector3(-110f, 0.8f, -100f));
         yield return ("บึงบัวสาย: ท่าเรือลุงพุก", bueng + new Vector3(24f, 0.8f, 158f));
         yield return ("บึงบัวสาย: ท่าเรือหมู่บ้าน", bueng + new Vector3(-114f, 0.8f, 70f));
+        var phai = new Vector3(372f, 0f, -744f);
+        yield return ("ป่าไผ่ทึบ: ทางเข้า (ค่ายพราน)", phai + new Vector3(-150f, 0.3f, 36f));
+        yield return ("ป่าไผ่ทึบ: หมู่บ้านร้าง", phai + new Vector3(0f, 0.3f, 8f));
+        yield return ("ป่าไผ่ทึบ: ศาลเจ้าพ่อไผ่", phai + new Vector3(-30f, 0.3f, -104f));
+        yield return ("ป่าไผ่ทึบ: ป่าช้าเก่า", phai + new Vector3(40f, 0.3f, 108f));
+        yield return ("บึงบัวสาย: สะพานไปป่าไผ่", bueng + new Vector3(150f, 1f, 30f));
     }
 
     // Admin warp for testing (Settings > ทดสอบ, or clicking the map while admin mode is on).
@@ -1130,7 +1137,13 @@ public partial class Main : Node3D
     {
         if (zone.AlleyOnly)
             return _rng.RandiRange(zone.LevelMin, zone.LevelMax);
-        var entrance = zone.Center + new Vector3(0f, 0f, zone.SizeZ * 0.5f);
+        var entrance = zone.Center + zone.Entrance switch
+        {
+            "west" => new Vector3(-zone.SizeX * 0.5f, 0f, 0f),
+            "east" => new Vector3(zone.SizeX * 0.5f, 0f, 0f),
+            "north" => new Vector3(0f, 0f, -zone.SizeZ * 0.5f),
+            _ => new Vector3(0f, 0f, zone.SizeZ * 0.5f),
+        };
         float t = Mathf.Clamp(at.DistanceTo(entrance) / (zone.SizeZ * 0.95f), 0f, 1f);
         int lv = Mathf.RoundToInt(Mathf.Lerp(zone.LevelMin, zone.LevelMax, t)) + _rng.RandiRange(-1, 1);
         return Mathf.Clamp(lv, zone.LevelMin, zone.LevelMax);

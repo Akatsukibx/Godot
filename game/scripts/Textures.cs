@@ -7,7 +7,7 @@ using System.Collections.Generic;
 // from its colour (brown → wood, brick red → brick, white → plaster, grey → stone, gold, green → leaves).
 public static class Textures
 {
-    public enum Kind { Wood, Road, Grass, Tile, Thatch, Brick, Plaster, Slab, Gold, Bark, Leaves }
+    public enum Kind { Wood, Road, Grass, Tile, Thatch, Brick, Plaster, Slab, Gold, Bark, Leaves, Bamboo }
 
     static readonly Dictionary<Kind, ImageTexture> _tex = new();
     static readonly Dictionary<(Material, Kind), Material> _cache = new();
@@ -108,6 +108,14 @@ public static class Textures
                     v = 0.85f + Mathf.Sin(y * 0.8f) * 0.08f + (y % 16 < 2 ? -0.15f : 0f) + nz * 0.05f;
                     break;
                 }
+                case Kind.Bamboo:
+                {
+                    // Smooth culms with a ring at every node and faint lengthwise streaks.
+                    int node = y % 48;
+                    float ring = node < 3 ? -0.3f : node < 6 ? 0.12f : 0f;
+                    v = 0.86f + ring + Mathf.Sin(x * 0.9f + nz * 2f) * 0.04f + fz * 0.05f;
+                    break;
+                }
                 case Kind.Bark:
                 {
                     // Vertical furrows broken by rough plates.
@@ -143,6 +151,7 @@ public static class Textures
         Kind.Slab => 0.35f,
         Kind.Gold => 1.2f,
         Kind.Bark => 1.4f,
+        Kind.Bamboo => 0.6f,
         _ => 0.6f,
     };
 
@@ -178,7 +187,9 @@ public static class Textures
             return Kind.Slab;
         if (Has(name, "Trunk", "Branch", "Root", "Stump", "Pole") && !name.Contains("Pestle"))
             return Kind.Bark;
-        if (Has(name, "Crown", "Leaf", "Frond", "Herbs"))
+        if (Has(name, "Bamboo", "Culm") && c.H is > 0.1f and < 0.3f)
+            return Kind.Bamboo;
+        if (Has(name, "Crown", "Leaf", "Frond", "Herbs", "Vine", "Moss"))
             return Kind.Leaves;
         if (Has(name, "Mud", "Dike"))
             return Kind.Grass;
@@ -230,7 +241,7 @@ public static class Textures
                 continue; // painted metal, keep it smooth
             string name = BaseName(gi.Name.ToString());
             Kind? kind = gi is MultiMeshInstance3D
-                ? name switch { "Trunks" or "DeadTrees" or "Stems" => Kind.Bark, "Crowns" or "Fronds" => Kind.Leaves, _ => null }
+                ? name switch { "Trunks" or "DeadTrees" or "Stems" => Kind.Bark, "Culms" => Kind.Bamboo, "Crowns" or "Fronds" => Kind.Leaves, _ => null }
                 : KindOf(name, mat.AlbedoColor);
             if (kind is Kind k)
                 gi.MaterialOverride = Textured(mat, k);

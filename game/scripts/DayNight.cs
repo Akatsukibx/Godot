@@ -120,6 +120,8 @@ void sky() {
     // 0..1 progress of the sun across the day; outside daytime it is clamped.
     float SunProgress() => (Hour - Cfg.DayStartHour) / (Cfg.NightStartHour - Cfg.DayStartHour);
 
+    float _haunt;
+
     void Apply()
     {
         float p = SunProgress();
@@ -141,6 +143,20 @@ void sky() {
         _env.AmbientLightEnergy = Mathf.Lerp(0.85f, 0.9f, k);
         _env.FogLightColor = new Color(0.06f, 0.08f, 0.16f).Lerp(new Color(0.78f, 0.82f, 0.85f), k);
         _env.FogDensity = Mathf.Lerp(0.012f, 0.004f, k) + Overcast * 0.012f;
+
+        // ป่าไผ่ทึบ has its own mood: pale, green-grey moonlight and a heavy greenish haze by night,
+        // a dim overcast murk by day. It fades in and out as you cross the zone edge.
+        float target = Game.Main?.CurrentZone?.Id == "pa_phai" ? 1f : 0f;
+        _haunt = Mathf.MoveToward(_haunt, target, 0.015f);
+        if (_haunt > 0f)
+        {
+            float h = _haunt;
+            _sun.LightColor = _sun.LightColor.Lerp(new Color(0.72f, 0.82f, 0.78f).Lerp(new Color(0.85f, 0.88f, 0.8f), k), h);
+            _sun.LightEnergy = Mathf.Lerp(_sun.LightEnergy, Mathf.Lerp(0.7f, 0.8f, k), h);
+            _env.AmbientLightColor = _env.AmbientLightColor.Lerp(new Color(0.34f, 0.42f, 0.38f).Lerp(new Color(0.52f, 0.58f, 0.52f), k), h);
+            _env.FogLightColor = _env.FogLightColor.Lerp(new Color(0.2f, 0.26f, 0.23f).Lerp(new Color(0.5f, 0.56f, 0.5f), k), h);
+            _env.FogDensity += 0.012f * h;
+        }
 
         _sky.SetShaderParameter("top_color", new Color(0.015f, 0.025f, 0.08f).Lerp(new Color(0.3f, 0.5f, 0.82f), k));
         _sky.SetShaderParameter("horizon_color", new Color(0.08f, 0.1f, 0.2f).Lerp(new Color(0.85f, 0.72f, 0.58f), k));

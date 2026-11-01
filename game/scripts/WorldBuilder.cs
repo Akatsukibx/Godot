@@ -38,6 +38,7 @@ public static partial class WorldBuilder
     {
         "wiang_mok" => BuildWiangMok(),
         "bueng_bua" => BuildBuengBua(),
+        "pa_phai" => BuildPaPhai(),
         _ => BuildThungNa(),
     };
 
@@ -1837,14 +1838,31 @@ void fragment() {
         Strip("North", minX, maxX, minZ - m, minZ);
         Strip("South", minX, maxX, maxZ, maxZ + m);
 
+        // The world is a grid of zone-sized cells. Cells inside the bounds that hold no zone still get
+        // ground (and forest at runtime); every zone edge that does not lead into another zone is walled.
+        var zones = GameData.Zones.Where(z => z.Scene != null).ToList();
+        float cs = zones[0].SizeX;
+        for (float cx = minX + cs * 0.5f; cx < maxX; cx += cs)
+        for (float cz = minZ + cs * 0.5f; cz < maxZ; cz += cs)
+            if (!zones.Any(z => z.Contains(new Vector3(cx, 0f, cz))))
+                Shapes.Add(g, new PlaneMesh { Size = new Vector2(cs, cs) }, new Vector3(cx, 0f, cz), GroundGreen, 0f, "GroundStripCell");
+
         var walls = Shapes.Group(o, "Bounds");
-        float w = maxX - minX, d = maxZ - minZ;
-        Shapes.Solid(walls, new Vector3((minX + maxX) * 0.5f, 4f, minZ - 0.5f), new Vector3(w + 2f, 8f, 1f), "WallN");
-        Shapes.Solid(walls, new Vector3((minX + maxX) * 0.5f, 4f, maxZ + 0.5f), new Vector3(w + 2f, 8f, 1f), "WallS");
-        Shapes.Solid(walls, new Vector3(minX - 0.5f, 4f, (minZ + maxZ) * 0.5f), new Vector3(1f, 8f, d + 2f), "WallW");
-        Shapes.Solid(walls, new Vector3(maxX + 0.5f, 4f, (minZ + maxZ) * 0.5f), new Vector3(1f, 8f, d + 2f), "WallE");
+        foreach (var z in zones)
+            foreach (var dir in new[] { Vector3.Forward, Vector3.Back, Vector3.Left, Vector3.Right })
+            {
+                if (zones.Any(n => n != z && n.Contains(z.Center + dir * z.SizeX)))
+                    continue;
+                var edge = z.Center + dir * (z.SizeX * 0.5f + 0.5f);
+                var size = dir.X != 0f ? new Vector3(1f, 8f, z.SizeZ + 2f) : new Vector3(z.SizeX + 2f, 8f, 1f);
+                Shapes.Solid(walls, edge + Vector3.Up * 4f, size, $"Wall_{z.Id}");
+            }
         return o;
     }
+
+    // True inside any zone (with a margin), so the outer forest stays out of them.
+    static bool InAnyZone(float x, float z, float pad) =>
+        GameData.Zones.Any(zn => zn.Scene != null && Mathf.Abs(x - zn.CenterX) < zn.SizeX * 0.5f + pad && Mathf.Abs(z - zn.CenterZ) < zn.SizeZ * 0.5f + pad);
 
     // ======================================================================
     //  Runtime scatter: rice, grass, forest, visibility ranges
@@ -2032,13 +2050,15 @@ void fragment() {
         var crowns = new List<Transform3D>();
         var crownColors = new List<Color>();
         var dead = new List<Transform3D>();
+        // Fills everything around the zones: the ring outside the bounds and any empty cell inside them,
+        // thinning out deep inside an empty cell where nobody can see.
         float pad = 3f, depth = 70f;
-        int count = (int)((bounds.Size.X + bounds.Size.Y) * 2f * depth / 55f);
+        int count = (int)((bounds.Size.X + depth * 2f) * (bounds.Size.Y + depth * 2f) / 55f);
         for (int i = 0; i < count; i++)
         {
             float x = rng.RandfRange(bounds.Position.X - depth, bounds.End.X + depth);
             float z = rng.RandfRange(bounds.Position.Y - depth, bounds.End.Y + depth);
-            if (x > bounds.Position.X - pad && x < bounds.End.X + pad && z > bounds.Position.Y - pad && z < bounds.End.Y + pad)
+            if (InAnyZone(x, z, pad) || !InAnyZone(x, z, depth + 30f))
                 continue;
             float s = rng.RandfRange(1.1f, 2.2f);
             var p = new Vector3(x, 0f, z);

@@ -307,6 +307,7 @@ public class ZoneDef
     public string Kind { get; set; } = "field";
     public string Parent { get; set; }
     public string Enemies { get; set; } = ""; // main enemies, for the world map
+    public string Entrance { get; set; } = "south"; // edge you arrive from: ghosts get stronger away from it
     public bool AlleyOnly { get; set; }
     public int MaxGhostsDay { get; set; }
     public int MaxGhostsNight { get; set; }

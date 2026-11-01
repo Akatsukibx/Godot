@@ -252,6 +252,9 @@ public static class Models
 			case "nang_tani": BuildNangTani(root, def); break;
 			case "boss_hun_yak": BuildScarecrow(root, def); break;
 			case "phi_khwai_thanu": BuildKhwaiThanu(root, def); break;
+			case "phi_pop":
+			case "boss_pop_chao_ruean": BuildPop(root, def); break;
+			case "chao_ban_thuk_sing": BuildPossessed(root, def); break;
 			case "phi_dek_liang_khwai": BuildHerderChild(root, def); break;
 			case "chorakhe_winyan": BuildSpiritCroc(root, def); break;
 			case "krasue":
@@ -300,6 +303,72 @@ public static class Models
 		var tail = Shapes.Cylinder(v, new Vector3(0f, 1.1f, 1.15f), 0.03f, 0.05f, 0.7f, hide.Darkened(0.2f), 0f, "Tail");
 		tail.Rotation = new Vector3(0.4f, 0f, 0f);
 		Shapes.Light(v, new Vector3(0f, 1.3f, -1.6f), new Color(1f, 0.3f, 0.2f), 0.9f, 4f, "GlowLight");
+	}
+
+	// ปอบ: a hunched old woman in a faded sarong, wild white hair, betel-red mouth, long clawed arms.
+	// The boss (ปอบเจ้าเรือน) is the same figure scaled up, with a gold-trimmed shawl.
+	static void BuildPop(Node3D v, GhostDef def)
+	{
+		var skin = new Color(0.62f, 0.55f, 0.46f, 0.92f);
+		var hair = new Color(0.86f, 0.85f, 0.8f);
+		var sarong = new Color(0.32f, 0.22f, 0.26f);
+		Shapes.Cylinder(v, new Vector3(0f, 0.5f, 0.05f), 0.24f, 0.34f, 1f, sarong, 0f, "ClothSarong");
+		var torso = Shapes.Box(v, new Vector3(0f, 1.15f, -0.05f), new Vector3(0.42f, 0.55f, 0.28f), skin, 0f, "Torso");
+		torso.Rotation = new Vector3(-0.55f, 0f, 0f);
+		Shapes.Box(v, new Vector3(0f, 1.05f, 0.02f), new Vector3(0.46f, 0.18f, 0.3f), sarong.Lightened(0.15f), 0f, "ClothBreastCloth").Rotation = torso.Rotation;
+		Shapes.Sphere(v, new Vector3(0f, 1.42f, -0.36f), 0.2f, skin, 0f, "Head");
+		for (int i = 0; i < 7; i++)
+		{
+			var strand = Shapes.Box(v, new Vector3(-0.2f + i * 0.065f, 1.28f, -0.22f + Mathf.Abs(i - 3) * 0.02f), new Vector3(0.06f, 0.55f, 0.05f), hair, 0f, "Hair");
+			strand.Rotation = new Vector3(0.3f, 0f, (i - 3) * 0.12f);
+		}
+		Shapes.Sphere(v, new Vector3(0f, 1.52f, -0.32f), 0.22f, hair, 0f, "Hair");
+		Shapes.Box(v, new Vector3(0f, 1.32f, -0.54f), new Vector3(0.12f, 0.04f, 0.03f), new Color(0.7f, 0.06f, 0.06f), 0f, "Mouth");
+		Shapes.Sphere(v, new Vector3(-0.07f, 1.45f, -0.54f), 0.03f, new Color(0.9f, 1f, 0.4f), 4f, "GlowEyeL");
+		Shapes.Sphere(v, new Vector3(0.07f, 1.45f, -0.54f), 0.03f, new Color(0.9f, 1f, 0.4f), 4f, "GlowEyeR");
+		foreach (var s in new[] { -1f, 1f })
+		{
+			var arm = Shapes.Capsule(v, new Vector3(s * 0.3f, 0.95f, -0.35f), 0.05f, 1f, skin, 0f, "Arm");
+			arm.Rotation = new Vector3(0.9f, 0f, -s * 0.25f);
+			for (int f = 0; f < 3; f++)
+				Shapes.Box(v, new Vector3(s * 0.34f + (f - 1) * 0.04f, 0.62f, -0.72f), new Vector3(0.02f, 0.02f, 0.16f), new Color(0.25f, 0.22f, 0.18f), 0f, "Claw")
+					.Rotation = new Vector3(0.6f, 0f, 0f);
+		}
+		if (def.Boss)
+		{
+			Shapes.Box(v, new Vector3(0f, 1.25f, 0.05f), new Vector3(0.62f, 0.08f, 0.4f), new Color(0.55f, 0.08f, 0.1f), 0f, "ClothShawl").Rotation = torso.Rotation;
+			Shapes.Box(v, new Vector3(0f, 1.2f, 0.05f), new Vector3(0.64f, 0.03f, 0.42f), new Color(0.9f, 0.7f, 0.25f), 0.3f, "ClothShawlTrim").Rotation = torso.Rotation;
+		}
+		Shapes.Light(v, new Vector3(0f, 1.4f, -0.7f), new Color(0.8f, 1f, 0.4f), 0.7f, 4f, "GlowLight");
+	}
+
+	// ชาวบ้านถูกสิง: a villager in a farmer's shirt and loincloth, head lolling to one side, a sickle
+	// in hand and red eyes; dark smoke hangs around the shoulders.
+	static void BuildPossessed(Node3D v, GhostDef def)
+	{
+		var skin = new Color(0.5f, 0.42f, 0.34f);
+		var shirt = new Color(0.18f, 0.2f, 0.26f);
+		foreach (var x in new[] { -0.13f, 0.13f })
+			Shapes.Capsule(v, new Vector3(x, 0.45f, 0f), 0.08f, 0.9f, skin, 0f, "Leg");
+		Shapes.Box(v, new Vector3(0f, 0.95f, 0f), new Vector3(0.44f, 0.3f, 0.28f), new Color(0.55f, 0.18f, 0.16f), 0f, "ClothPhaKhaoMa");
+		Shapes.Box(v, new Vector3(0f, 1.35f, 0f), new Vector3(0.5f, 0.55f, 0.3f), shirt, 0f, "ClothShirt");
+		var head = Shapes.Sphere(v, new Vector3(0.12f, 1.78f, -0.02f), 0.2f, skin, 0f, "Head");
+		head.Rotation = new Vector3(0f, 0f, -0.6f);
+		Shapes.Sphere(v, new Vector3(0.14f, 1.86f, 0.02f), 0.2f, new Color(0.06f, 0.05f, 0.05f), 0f, "Hair").Scale = new Vector3(1f, 0.7f, 1f);
+		Shapes.Sphere(v, new Vector3(0.03f, 1.78f, -0.2f), 0.03f, new Color(1f, 0.15f, 0.1f), 4f, "GlowEyeL");
+		Shapes.Sphere(v, new Vector3(0.18f, 1.7f, -0.2f), 0.03f, new Color(1f, 0.15f, 0.1f), 4f, "GlowEyeR");
+		Shapes.Capsule(v, new Vector3(-0.34f, 1.15f, 0f), 0.07f, 0.8f, skin, 0f, "Arm").Rotation = new Vector3(0.1f, 0f, 0.15f);
+		Shapes.Capsule(v, new Vector3(0.34f, 1.25f, -0.2f), 0.07f, 0.8f, skin, 0f, "Arm").Rotation = new Vector3(1f, 0f, -0.2f);
+		// Sickle: a wooden handle and a hooked blade.
+		Shapes.Cylinder(v, new Vector3(0.38f, 1.25f, -0.55f), 0.025f, 0.025f, 0.45f, new Color(0.35f, 0.25f, 0.15f), 0f, "SickleHandle").Rotation = new Vector3(1.2f, 0f, 0f);
+		for (int i = 0; i < 5; i++)
+		{
+			float a = i / 4f * 2.4f;
+			Shapes.Box(v, new Vector3(0.38f + Mathf.Sin(a) * 0.18f, 1.48f + Mathf.Cos(a) * 0.18f - 0.18f, -0.75f), new Vector3(0.1f, 0.03f, 0.02f), new Color(0.6f, 0.6f, 0.62f), 0.1f, "SickleBlade")
+				.Rotation = new Vector3(0f, 0f, -a);
+		}
+		Shapes.Sphere(v, new Vector3(0f, 1.6f, 0.1f), 0.42f, new Color(0.05f, 0.04f, 0.06f, 0.35f), 0f, "SmokeAura");
+		Shapes.Light(v, new Vector3(0.1f, 1.7f, -0.5f), new Color(1f, 0.2f, 0.15f), 0.6f, 3f, "GlowLight");
 	}
 
 	// ผีเด็กเลี้ยงควาย: a drowned herder child in an indigo shirt, a switch in one hand and a lantern in the other.

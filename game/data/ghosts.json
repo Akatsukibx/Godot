@@ -89,19 +89,50 @@
     "releaseText": "เจอควายแล้ว... กลับบ้านได้แล้วใช่ไหม"
   },
 
-  // ---------- เก็บไว้ใช้โซนอื่น (ไม่เกิดในทุ่งนาแล้ว): ผีโพง → ป่าไผ่ทึบ · ผีตายโหง → ย่านเมืองเก่า ----------
+  // ---------- ป่าไผ่ทึบ (Lv 25–35): ปอบ, ชาวบ้านถูกสิง, ผีโพง ----------
+  {
+    "id": "phi_pop", "name": "ปอบ", "behavior": "chaser", "color": "#b8a890",
+    "maxHp": 150, "speed": 4.9, "damage": 23, "attackRange": 1.8, "attackCooldown": 1.1, "aggroRange": 18, "exp": 46,
+    "activeAtDay": true, "despawnAtDawn": false, "spawnWeightDay": 1, "spawnWeightNight": 3,
+    "weakness": { "blessed": 1.8, "rice": 1.4, "fire": 0.9, "moon": 1.0 },
+    "drops": [
+      { "item": "mak_phlu", "chance": 0.35 },
+      { "item": "khi_phueng", "chance": 0.15 },
+      { "item": "phlueak_winyan", "chance": 0.07, "minLevel": 28 },
+      { "item": "set_tra_phanuek", "chance": 0.02, "minLevel": 30 },
+      { "item": "ya_hom_yai", "chance": 0.07 }
+    ],
+    "story": "หญิงชราที่เรียนวิชาไม่จบ ของในตัวกลับกินเจ้าของจนกลายเป็นปอบ ออกหาเครื่องในคนตามบ้านร้าง ปากแดงด้วยหมากที่เคี้ยวไม่หยุด กลัวของปลุกเสก",
+    "releaseText": "หมากคำสุดท้าย... ขมเหลือเกิน"
+  },
+  {
+    "id": "chao_ban_thuk_sing", "name": "ชาวบ้านถูกสิง", "behavior": "brute", "color": "#7a6a58",
+    "maxHp": 200, "speed": 3.5, "damage": 27, "attackRange": 2.2, "attackCooldown": 1.7, "aggroRange": 15, "exp": 52,
+    "activeAtDay": true, "despawnAtDawn": false, "spawnWeightDay": 3, "spawnWeightNight": 2,
+    "weakness": { "blessed": 1.5, "fire": 1.3, "rice": 1.0, "moon": 1.2 },
+    "drops": [
+      { "item": "mai_phai_sap", "chance": 0.3 },
+      { "item": "sai_sin_khat", "chance": 0.3 },
+      { "item": "lek_nam_phi", "chance": 0.2 },
+      { "item": "pha_yan_kao", "chance": 0.2 },
+      { "item": "set_tra_phanuek", "chance": 0.015, "minLevel": 30 }
+    ],
+    "story": "ชาวบ้านที่ถูกปอบสิงจนไม่เหลือตัวตน ยังถือเคียวเดินวนในหมู่บ้านตามความเคยชิน คอเอียง ตาแดงก่ำ ถ้าปลดปล่อยได้ทันอาจจำชื่อตัวเองได้",
+    "releaseText": "บ้านฉัน... มีใครยังอยู่ไหม"
+  },
+  // ผีโพง: เกิดในป่าไผ่ทึบ (ค่าพลังเลเวล 1 ปรับให้เข้ากับโซน 25–35)
   {
     "id": "phi_pong",
     "name": "ผีโพง",
     "behavior": "chaser",
     "color": "#7dff9a",
-    "maxHp": 40,
+    "maxHp": 105,
     "speed": 6.4,
-    "damage": 8,
+    "damage": 16,
     "attackRange": 1.6,
     "attackCooldown": 0.9,
     "aggroRange": 20,
-    "exp": 15,
+    "exp": 38,
     "activeAtDay": false,
     "despawnAtDawn": true,
     "spawnWeightDay": 0,
@@ -111,9 +142,10 @@
       { "item": "takiang_pong", "chance": 0.3 },
       { "item": "khi_phueng", "chance": 0.12, "minLevel": 5 },
       { "item": "namkhang_ratri", "chance": 0.04, "minLevel": 10, "nightOnly": true },
-      { "item": "ya_hom", "chance": 0.06 }
+      { "item": "mai_phai_sap", "chance": 0.2 },
+      { "item": "ya_hom_yai", "chance": 0.05 }
     ],
-    "story": "ผู้ที่เผลอเลี้ยงของจนของกลับมากินตัว ตอนกลางคืนจมูกจะเรืองแสงสีเขียวออกหากินตามทุ่ง ผีทั้งหลายกลัวข้าวสารเสก",
+    "story": "ผู้ที่เผลอเลี้ยงของจนของกลับมากินตัว ตอนกลางคืนจมูกจะเรืองแสงสีเขียวออกหากินในดงไผ่รอบหมู่บ้านร้าง กลัวข้าวสารเสก",
     "releaseText": "แสงนี้... ไม่ต้องส่องหาอะไรอีกแล้วสินะ"
   },
   {
@@ -250,5 +282,20 @@
     ],
     "story": "แม่บัว หญิงหมอยาริมบึงที่ชาวบ้านกล่าวหาว่าเป็นกระสือจนถูกไล่ลงน้ำตาย ความแค้นทำให้คำกล่าวหากลายเป็นจริง",
     "releaseText": "มีคนเชื่อแล้ว... ว่าฉันไม่ได้ทำ"
+  },
+  {
+    "id": "boss_pop_chao_ruean", "name": "ปอบเจ้าเรือน", "behavior": "chaser", "boss": true, "scale": 2.1, "color": "#c8b498",
+    "maxHp": 2600, "speed": 4.6, "damage": 44, "attackRange": 3.2, "attackCooldown": 1.8, "aggroRange": 24, "exp": 1600,
+    "activeAtDay": false, "despawnAtDawn": false, "spawnWeightDay": 0, "spawnWeightNight": 0,
+    "weakness": { "blessed": 1.8, "rice": 1.4, "fire": 0.8, "moon": 1.1 },
+    "drops": [
+      { "item": "takrut_phai_tan", "chance": 0.35 },
+      { "item": "set_tra_phanuek", "chance": 0.6 },
+      { "item": "phlueak_winyan", "chance": 0.6 },
+      { "item": "mak_phlu", "chance": 1 },
+      { "item": "khrueang_rang_khao", "chance": 0.15 }
+    ],
+    "story": "เมียผู้ใหญ่บ้านที่รับวิชาจากชายถือโคมขาว หวังให้หมู่บ้านพ้นโรคระบาด แต่ของที่เลี้ยงไว้กินคนทั้งหมู่บ้านทีละเรือน จนเหลือแต่เรือนของนางเอง",
+    "releaseText": "ฉันแค่อยากให้ทุกคนหายป่วย... โคมขาวนั่นโกหก"
   }
 ]

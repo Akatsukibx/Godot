@@ -90,17 +90,19 @@ void fragment() {
 		{
 			"thung_na" => new Color(0.72f, 0.78f, 0.7f),
 			"bueng_bua" => new Color(0.7f, 0.78f, 0.88f),
+			"pa_phai" => new Color(0.6f, 0.66f, 0.6f),
 			_ => new Color(0.78f, 0.76f, 0.82f),
 		};
 		Color nightBody = zone switch
 		{
 			"thung_na" => new Color(0.1f, 0.16f, 0.14f),
 			"bueng_bua" => new Color(0.1f, 0.15f, 0.26f),
+			"pa_phai" => new Color(0.08f, 0.12f, 0.1f),
 			_ => new Color(0.12f, 0.12f, 0.2f),
 		};
 		var body = dayBody.Lerp(nightBody, night).Darkened(rain * 0.3f);
 		var edge = new Color(1f, 0.93f, 0.85f).Lerp(new Color(0.55f, 0.65f, 0.9f), night);
-		float cover = 0.42f + rain * 0.3f + (zone == "bueng_bua" ? 0.08f : 0f);
+		float cover = 0.42f + rain * 0.3f + (zone == "bueng_bua" ? 0.08f : zone == "pa_phai" ? 0.18f : 0f);
 		foreach (var mat in new[] { _highMat, _midMat })
 		{
 			mat.SetShaderParameter("body", body);

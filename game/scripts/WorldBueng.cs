@@ -178,6 +178,7 @@ public static partial class WorldBuilder
         new Vector3[] { new(-44f, 0f, -62f), new(-60f, 0f, -20f), new(-30f, 0f, 30f) },
         new Vector3[] { new(-116f, 0f, 2f), new(-160f, 0f, 60f) },
         new Vector3[] { new(98f, 0f, -48f), new(120f, 0f, -80f) },
+        new Vector3[] { new(70f, 0f, 20f), new(118f, 0f, 26f), new(150f, 0f, 30f), new(Half - 4f, 0f, 30f) }, // east to ป่าไผ่ทึบ
     };
 
     static void BuildBoardwalks(Node3D world)
@@ -372,6 +373,7 @@ public static partial class WorldBuilder
         BuengShrine("bueng_bua", "ศาลริมบึง", 22f, 156f);
         BuengShrine("bueng_village", "ศาลชาวบึง", -106f, 50f);
         BuengShrine("bueng_sala", "ศาลข้างศาลาร้าง", 62f, 30f);
+        SignPost(s, OnGround(80f, 30f), ("ป่าไผ่ทึบ", new Vector3(1f, 0f, 0.1f)), ("หมู่บ้านชาวบึง", new Vector3(-1f, 0f, 0.6f)));
         SignPost(s, OnGround(9f, 152f), ("ทุ่งนาหุ่นไล่กา", new Vector3(0.2f, 0f, 1f)), ("หมู่บ้านชาวบึง", new Vector3(-1f, 0f, -0.7f)),
             ("ศาลาร้างกลางบึง", new Vector3(1f, 0f, -1.2f)));
 

@@ -76,11 +76,13 @@ public static partial class WorldBuilder
         var rng = new RandomNumberGenerator { Seed = (ulong)zone.Id.GetHashCode() + 5 };
         var clusters = new FastNoiseLite { Seed = zone.Id.GetHashCode(), Frequency = 0.02f };
         // City streets stay tidier than the countryside.
-        float zoneMult = zone.AlleyOnly ? 0.45f : 1f;
+        float zoneMult = zone.AlleyOnly ? 0.45f : zone.Scene == "pa_phai" ? 1.35f : 1f;
         var trunks = new List<Transform3D>(); var trunkColors = new List<Color>();
         var crowns = new List<Transform3D>(); var crownColors = new List<Color>();
         var fronds = new List<Transform3D>(); var frondColors = new List<Color>();
         var stems = new List<Transform3D>(); var stemColors = new List<Color>();
+        var culms = new List<Transform3D>(); var culmColors = new List<Color>();
+        bool bambooZone = zone.Scene == "pa_phai";
         var colliders = new List<(Vector3 p, float r)>();
         Color Leaf(float dark) => new Color(0.12f, 0.24f, 0.12f).Lightened(rng.RandfRange(0f, 0.1f)).Darkened(dark);
         Color Bark() => new Color(0.27f, 0.2f, 0.14f).Lightened(rng.RandfRange(-0.05f, 0.08f));
@@ -116,6 +118,9 @@ public static partial class WorldBuilder
                 : roll < 0.5f ? Wild.Banana : roll < 0.58f ? Wild.Bamboo : roll < 0.82f ? Wild.Bush : Wild.Fern;
             if (zone.Scene == "bueng_bua" && kind is Wild.Palm or Wild.Rain)
                 kind = Wild.Bush;
+            // ป่าไผ่ทึบ: bamboo nearly everywhere, the odd tall tree, ferns and brush underneath.
+            if (bambooZone)
+                kind = roll < 0.72f ? Wild.Bamboo : roll < 0.78f ? Wild.Tall : roll < 0.88f ? Wild.Bush : Wild.Fern;
             if (!Free(wp, WildClearance(kind)))
             {
                 kind = Wild.Fern;
@@ -166,15 +171,27 @@ public static partial class WorldBuilder
                             Blade(bp + Vector3.Up * h, rng.Randf() * Mathf.Tau, rng.RandfRange(-0.9f, -0.2f), new Vector3(0.55f, 0.04f, 1.9f), new Color(0.24f, 0.45f, 0.18f).Lightened(rng.RandfRange(-0.05f, 0.1f)));
                     }
                     break;
-                case Wild.Bamboo: // ไผ่: a clump of leaning canes, leafy at the top
-                    for (int k = 0; k < 8; k++)
+                case Wild.Bamboo: // ไผ่: a clump of leaning canes, leafy at the top (taller, darker and denser in ป่าไผ่ทึบ)
+                    for (int k = 0; k < (bambooZone ? 9 : 8); k++)
                     {
-                        var bp = p + new Vector3(rng.RandfRange(-0.8f, 0.8f), 0f, rng.RandfRange(-0.8f, 0.8f));
-                        float h = rng.RandfRange(5f, 9f);
-                        var lean = new Basis(new Vector3(rng.RandfRange(-1f, 1f), 0f, rng.RandfRange(-1f, 1f)).Normalized(), rng.RandfRange(0.05f, 0.25f));
-                        stems.Add(new Transform3D(lean.Scaled(new Vector3(0.07f, h, 0.07f)), bp + lean * (Vector3.Up * h * 0.5f)));
-                        stemColors.Add(new Color(0.45f, 0.55f, 0.25f).Lightened(rng.RandfRange(-0.05f, 0.05f)));
-                        Crown(bp + lean * (Vector3.Up * h), new Vector3(0.9f, 1.3f, 0.9f), -0.05f);
+                        var bp = p + new Vector3(rng.RandfRange(-0.9f, 0.9f), 0f, rng.RandfRange(-0.9f, 0.9f));
+                        float h = bambooZone ? rng.RandfRange(8f, 15f) : rng.RandfRange(5f, 9f);
+                        var lean = new Basis(new Vector3(rng.RandfRange(-1f, 1f), 0f, rng.RandfRange(-1f, 1f)).Normalized(), rng.RandfRange(0.05f, bambooZone ? 0.32f : 0.25f));
+                        float r = bambooZone ? rng.RandfRange(0.07f, 0.11f) : 0.07f;
+                        culms.Add(new Transform3D(lean.Scaled(new Vector3(r, h, r)), bp + lean * (Vector3.Up * h * 0.5f)));
+                        culmColors.Add(bambooZone
+                            ? new Color(0.36f, 0.42f, 0.24f).Lerp(new Color(0.42f, 0.38f, 0.24f), rng.Randf()).Darkened(rng.RandfRange(0f, 0.2f))
+                            : new Color(0.45f, 0.55f, 0.25f).Lightened(rng.RandfRange(-0.05f, 0.05f)));
+                        if (!bambooZone)
+                            Crown(bp + lean * (Vector3.Up * h), new Vector3(0.9f, 1.3f, 0.9f), -0.05f);
+                        else
+                            // Feathery sprays of narrow leaves drooping from the upper nodes.
+                            for (int f = 0; f < 4; f++)
+                            {
+                                var at = bp + lean * (Vector3.Up * h * rng.RandfRange(0.7f, 1f));
+                                Blade(at, rng.Randf() * Mathf.Tau, rng.RandfRange(-0.7f, -0.25f), new Vector3(0.45f, 0.03f, rng.RandfRange(1.6f, 2.6f)),
+                                    new Color(0.2f, 0.3f, 0.16f).Lerp(new Color(0.3f, 0.34f, 0.2f), rng.Randf()).Darkened(rng.RandfRange(0f, 0.2f)));
+                            }
                     }
                     colliders.Add((p, 0.9f));
                     break;
@@ -202,6 +219,8 @@ public static partial class WorldBuilder
             root.AddChild(Scatter("Fronds", new BoxMesh { Size = Vector3.One }, blades, fronds, frondColors, 200f));
         if (stems.Count > 0)
             root.AddChild(Scatter("Stems", new CylinderMesh { TopRadius = 1f, BottomRadius = 1f, Height = 1f, RadialSegments = 6 }, bark, stems, stemColors, 200f));
+        if (culms.Count > 0)
+            root.AddChild(Scatter("Culms", new CylinderMesh { TopRadius = 0.8f, BottomRadius = 1f, Height = 1f, RadialSegments = 6 }, bark, culms, culmColors, bambooZone ? 150f : 200f));
         if (colliders.Count > 0)
         {
             var body = new StaticBody3D { Name = "WildColliders", CollisionLayer = Layers.World, CollisionMask = 0 };

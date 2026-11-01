@@ -124,6 +124,15 @@ public static class Icons
             "<path d='M22 18c0-8 20-8 20 0' fill='none' stroke='#7a4a2a' stroke-width='4'/>" +
             "<path d='M14 24h36l4 30a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4z' fill='#b06a3a' stroke='#5a3018' stroke-width='2'/>" +
             "<path d='M12 32h40' stroke='#7a3e1a' stroke-width='3'/><rect x='27' y='28' width='10' height='9' rx='2' fill='#e8c060'/>"),
+        ["betel"] = Svg(
+            "<path d='M14 40c4-16 18-26 36-26-2 18-14 32-32 32z' fill='#3a7a34' stroke='#1a3a18' stroke-width='2'/>" +
+            "<path d='M18 42c8-8 18-16 30-24' stroke='#1a3a18' stroke-width='2' fill='none'/>" +
+            "<circle cx='40' cy='44' r='9' fill='#a0562a' stroke='#4a2410' stroke-width='2'/>" +
+            "<circle cx='37' cy='41' r='3' fill='#c8222a'/>"),
+        ["bamboo"] = Svg(
+            "<rect x='26' y='6' width='12' height='52' rx='4' fill='#6a7a3a' stroke='#2a3416' stroke-width='2'/>" +
+            "<path d='M26 20h12M26 36h12M26 50h12' stroke='#2a3416' stroke-width='3'/>" +
+            "<path d='M38 16c8-6 14-6 18-4-6 4-12 6-18 6z' fill='#4a6a2a'/>"),
         ["box"] = Svg(
             "<path d='M10 24l22-10 22 10v26l-22 10-22-10z' fill='#8a3a5a' stroke='#3a1428' stroke-width='2'/>" +
             "<path d='M10 24l22 10 22-10M32 34v26' fill='none' stroke='#3a1428' stroke-width='2'/>" +
