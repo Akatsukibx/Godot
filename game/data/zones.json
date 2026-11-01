@@ -11,49 +11,60 @@
 	"ghosts": [ "winyan_long_soi" ], "alleyOnly": true, "maxGhostsDay": 2, "maxGhostsNight": 6,
 	"rainChance": 0.2, "worldX": 1, "worldY": 1,
 	"exits": [
-	  { "to": "thung_na", "side": "north", "label": "ประตูเมืองทิศเหนือ" },
-	  { "to": "talat_phi", "side": "south", "label": "ประตูเมืองทิศใต้" }
+	  { "to": "thung_na", "side": "north", "label": "ประตูเมืองทิศเหนือ" }
 	]
   },
   {
 	"id": "thung_na", "name": "ทุ่งนาหุ่นไล่กา", "subtitle": "หุ่นไล่กาขยับเมื่อคุณละสายตา", "open": true,
 	"scene": "thung_na", "centerX": 0, "centerZ": -372, "sizeX": 372, "sizeZ": 372,
 	"levelMin": 1, "levelMax": 15, "levelText": "1–15",
-	"ghosts": [ "hun_lai_ka", "phi_pong", "phi_tai_hong" ], "alleyOnly": false, "maxGhostsDay": 10, "maxGhostsNight": 16,
+	"ghosts": [ "hun_lai_ka", "phi_khwai_thanu", "phi_dek_liang_khwai" ], "alleyOnly": false, "maxGhostsDay": 10, "maxGhostsNight": 16,
 	"boss": { "ghost": "boss_hun_yak", "x": 100, "z": -30, "respawn": 600, "lair": "ทุ่งตะวันออก",
 	  "summon": { "offering": { "fang_sap": 8 }, "minLevel": 8, "time": "any", "text": "กองฟางสาปแปดฟ่อนบนแท่นหน้าหุ่นยักษ์ แล้วจุดไฟ" } },
 	"spawnGroups": [
 	  { "id": "tn_west_field", "name": "แปลงนาหุ่นตะวันตก", "ghosts": [ "hun_lai_ka" ], "x": -90, "z": -40, "radius": 22, "count": 4, "respawn": 45, "leash": 32 },
-	  { "id": "tn_pong_grove", "name": "ดงผีโพง", "ghosts": [ "phi_pong" ], "x": -120, "z": 110, "radius": 18, "count": 3, "respawn": 60, "leash": 30, "time": "night" },
-	  { "id": "tn_tai_hong", "name": "คันนาตายโหง", "ghosts": [ "phi_tai_hong", "phi_pong" ], "x": 60, "z": -70, "radius": 18, "count": 3, "respawn": 75, "leash": 30, "time": "night" },
-	  { "id": "tn_east_field", "name": "แปลงนาตะวันออก", "ghosts": [ "hun_lai_ka", "phi_pong" ], "x": 130, "z": 110, "radius": 20, "count": 3, "respawn": 50, "leash": 30 }
+	  { "id": "tn_pong_grove", "name": "ทุ่งเด็กเลี้ยงควาย", "ghosts": [ "phi_dek_liang_khwai" ], "x": -120, "z": 110, "radius": 18, "count": 3, "respawn": 60, "leash": 30, "time": "night" },
+	  { "id": "tn_tai_hong", "name": "ทุ่งควายธนู", "ghosts": [ "phi_khwai_thanu" ], "x": 60, "z": -70, "radius": 20, "count": 3, "respawn": 75, "leash": 32 },
+	  { "id": "tn_east_field", "name": "แปลงนาตะวันออก", "ghosts": [ "hun_lai_ka", "phi_khwai_thanu" ], "x": 130, "z": 110, "radius": 20, "count": 3, "respawn": 50, "leash": 30 }
 	],
 	"rainChance": 0.3, "worldX": 1, "worldY": 0,
 	"exits": [
 	  { "to": "wiang_mok", "side": "south", "label": "ทางลงเวียงหมอก" },
-	  { "to": "bueng_bua", "side": "north", "label": "ท่าน้ำ" },
-	  { "to": "pa_phai", "side": "east", "label": "ทางเดินคันนา" }
+	  { "to": "bueng_bua", "side": "north", "label": "ท่าน้ำ" }
 	]
   },
   {
 	"id": "bueng_bua", "name": "บึงบัวสาย", "subtitle": "บัวสายบานกลางหมอก · อย่าก้าวพ้นสะพาน", "open": true,
 	"scene": "bueng_bua", "centerX": 0, "centerZ": -744, "sizeX": 372, "sizeZ": 372,
 	"levelMin": 15, "levelMax": 25, "levelText": "15–25",
-	"ghosts": [ "phi_phrai", "phi_krahang", "nang_tani" ], "alleyOnly": false, "maxGhostsDay": 8, "maxGhostsNight": 14,
+	"ghosts": [ "phi_phrai", "krasue", "chorakhe_winyan" ], "alleyOnly": false, "maxGhostsDay": 8, "maxGhostsNight": 14,
 	"boss": { "ghost": "boss_krasue", "x": 90, "z": -112, "respawn": 900, "lair": "เกาะตะเคียน",
 	  "summon": { "offering": { "sai_bua": 5, "khi_phueng": 1 }, "minLevel": 18, "time": "night", "text": "วางสายบัวแช่ผีห้าสายกับขี้ผึ้งปลุกเสกใต้ต้นตะเคียน กลางคืนเท่านั้น" } },
 	"spawnGroups": [
 	  { "id": "bb_phrai_channel", "name": "ร่องน้ำผีพราย", "ghosts": [ "phi_phrai" ], "x": 100, "z": 60, "radius": 30, "count": 3, "respawn": 60, "leash": 28 },
-	  { "id": "bb_krahang_marsh", "name": "ดงกระหัง", "ghosts": [ "phi_krahang" ], "x": -60, "z": -20, "radius": 20, "count": 3, "respawn": 70, "leash": 32, "time": "night" },
-	  { "id": "bb_tani_forest", "name": "ป่าไม้ตายนางตานี", "ghosts": [ "nang_tani" ], "x": -110, "z": -110, "radius": 18, "count": 3, "respawn": 80, "leash": 30 }
+	  { "id": "bb_krahang_marsh", "name": "ดงกล้วยกระสือ", "ghosts": [ "krasue" ], "x": -60, "z": -20, "radius": 20, "count": 3, "respawn": 70, "leash": 32, "time": "night" },
+	  { "id": "bb_tani_forest", "name": "หนองจระเข้", "ghosts": [ "chorakhe_winyan" ], "x": -62, "z": 100, "radius": 24, "count": 3, "respawn": 80, "leash": 30 }
 	],
 	"rainChance": 0.4, "worldX": 1, "worldY": -1,
-	"exits": [ { "to": "thung_na", "side": "south", "label": "สะพานไม้สู่ทุ่งนา" } ]
+	"exits": [ { "to": "thung_na", "side": "south", "label": "สะพานไม้สู่ทุ่งนา" }, { "to": "pa_phai", "side": "east", "label": "ทางเข้าป่าไผ่" } ]
   },
-  { "id": "pa_phai", "name": "ป่าไผ่ทึบ", "open": false, "levelText": "25–35", "worldX": 2, "worldY": 0, "exits": [ { "to": "thung_na", "side": "west" }, { "to": "rong_phayaban", "side": "south" } ] },
-  { "id": "rong_phayaban", "name": "โรงพยาบาลร้าง", "open": false, "levelText": "35–45", "worldX": 2, "worldY": 1, "exits": [ { "to": "wat_doi", "side": "east" } ] },
-  { "id": "wat_doi", "name": "วัดร้างบนดอย", "open": false, "levelText": "45–58", "worldX": 3, "worldY": 1, "exits": [ { "to": "muang_kao", "side": "south" } ] },
-  { "id": "muang_kao", "name": "ย่านเมืองเก่าและต้นตะเคียน", "open": false, "levelText": "58–70", "worldX": 3, "worldY": 2, "exits": [] },
-  { "id": "talat_phi", "name": "ตลาดผีริมน้ำ", "open": false, "levelText": "-", "worldX": 1, "worldY": 2, "exits": [ { "to": "wiang_mok", "side": "north" } ] },
-  { "id": "yommalok", "name": "ยมโลก", "open": false, "levelText": "raid", "worldX": 0, "worldY": 2, "exits": [] }
+  // ---------- พื้นที่ถัดไป (ตามตารางโซน) · parent = อยู่ภายในโซนนั้น เข้าร่วมแล้ววาปไปฉากเฉพาะ ----------
+  { "id": "pa_phai", "name": "ป่าไผ่ทึบ", "open": false, "levelText": "25–35", "worldX": 2, "worldY": -1,
+	"ghosts": [ "phi_pong" ], "enemies": "ปอบ, ชาวบ้านถูกสิง, ผีโป่ง",
+	"exits": [ { "to": "bueng_bua", "side": "west" }, { "to": "rong_phayaban", "side": "south" } ] },
+  { "id": "rong_phayaban", "name": "โรงพยาบาลร้าง", "open": false, "levelText": "35–45", "worldX": 2, "worldY": 0,
+	"enemies": "ผีพยาบาล, วิญญาณคนไข้, ผีแม่ลูกอ่อน",
+	"exits": [ { "to": "wat_doi", "side": "east" } ] },
+  { "id": "wat_doi", "name": "วัดร้างบนดอย", "open": false, "levelText": "45–58", "worldX": 3, "worldY": 0,
+	"enemies": "เปรต, อสุรกาย, ผีเฝ้าทรัพย์",
+	"exits": [ { "to": "muang_kao", "side": "south" } ] },
+  { "id": "muang_kao", "name": "ย่านเมืองเก่าและต้นตะเคียน", "open": false, "levelText": "58–70", "worldX": 3, "worldY": 1,
+	"ghosts": [ "phi_tai_hong" ], "enemies": "ผู้พิทักษ์ที่ถูกลืม, ผีตายโหง, เถาวัลย์สิง",
+	"exits": [ { "to": "yommalok", "side": "south" } ] },
+  { "id": "mueang_rang", "name": "เหมืองร้างใต้ดิน", "open": false, "kind": "dungeon", "parent": "wat_doi", "levelText": "ดันเจี้ยนปาร์ตี้",
+	"enemies": "ผีคนงานเหมือง, ผีเฝ้าแร่", "exits": [] },
+  { "id": "hong_404", "name": "ห้อง 404", "open": false, "kind": "instance", "parent": "muang_kao", "levelText": "instance สุ่ม",
+	"enemies": "เปลี่ยนตามรอบ", "exits": [] },
+  { "id": "yommalok", "name": "ยมโลก", "open": false, "kind": "raid", "levelText": "endgame raid", "worldX": 3, "worldY": 2,
+	"enemies": "ทหารยม, หัวหน้าสมาคมโคมขาว", "exits": [] }
 ]

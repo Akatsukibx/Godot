@@ -251,6 +251,14 @@ public static class Models
 			case "phi_krahang": BuildKrahang(root, def); break;
 			case "nang_tani": BuildNangTani(root, def); break;
 			case "boss_hun_yak": BuildScarecrow(root, def); break;
+			case "phi_khwai_thanu": BuildKhwaiThanu(root, def); break;
+			case "phi_dek_liang_khwai": BuildHerderChild(root, def); break;
+			case "chorakhe_winyan": BuildSpiritCroc(root, def); break;
+			case "krasue":
+				var small = BuildKrasue();
+				small.Position = new Vector3(0f, 1.5f, 0f);
+				root.AddChild(small);
+				break;
 			case "boss_krasue":
 				var head = BuildKrasue();
 				head.Position = new Vector3(0f, 1.7f, 0f);
@@ -259,6 +267,88 @@ public static class Models
 			default: BuildTaiHong(root, def); break;
 		}
 		return root;
+	}
+
+	// ผีควายธนู: a smoky black water buffalo with bow-curved horns, a sacred cloth at the neck and a
+	// talisman stuck to its brow, eyes burning red.
+	static void BuildKhwaiThanu(Node3D v, GhostDef def)
+	{
+		var hide = new Color(Color.FromHtml(def.Color), 0.9f);
+		var horn = new Color(0.82f, 0.78f, 0.68f);
+		Shapes.Box(v, new Vector3(0f, 1.15f, 0.1f), new Vector3(0.95f, 0.85f, 1.9f), hide, 0f, "Hide");
+		Shapes.Box(v, new Vector3(0f, 1.32f, -0.55f), new Vector3(1.0f, 0.75f, 0.7f), hide.Lightened(0.05f), 0f, "Shoulders");
+		foreach (var x in new[] { -0.32f, 0.32f })
+		foreach (var z in new[] { -0.6f, 0.75f })
+			Shapes.Cylinder(v, new Vector3(x, 0.38f, z), 0.1f, 0.12f, 0.8f, hide.Darkened(0.2f), 0f, "Leg");
+		var head = Shapes.Box(v, new Vector3(0f, 1.2f, -1.15f), new Vector3(0.55f, 0.55f, 0.7f), hide, 0f, "Head");
+		head.Rotation = new Vector3(0.35f, 0f, 0f);
+		Shapes.Box(v, new Vector3(0f, 0.98f, -1.45f), new Vector3(0.4f, 0.3f, 0.25f), hide.Lightened(0.1f), 0f, "Muzzle");
+		// Horns: two bows sweeping out, back and up.
+		foreach (var s in new[] { -1f, 1f })
+			for (int i = 0; i < 6; i++)
+			{
+				float t = i / 5f;
+				var p = new Vector3(s * (0.3f + t * 0.55f), 1.45f + Mathf.Sin(t * Mathf.Pi) * 0.22f + t * 0.15f, -1.1f + t * 0.35f);
+				var seg = Shapes.Box(v, p, new Vector3(0.14f - t * 0.07f, 0.12f - t * 0.06f, 0.2f), horn.Darkened(t * 0.2f), 0f, "Horn");
+				seg.Rotation = new Vector3(0f, s * (0.3f + t * 0.9f), s * (0.4f - t * 0.6f));
+			}
+		Shapes.Box(v, new Vector3(0f, 1.42f, -1.4f), new Vector3(0.22f, 0.3f, 0.02f), new Color(0.85f, 0.75f, 0.4f), 0f, "Talisman").Rotation = new Vector3(0.35f, 0f, 0.1f);
+		Shapes.Cylinder(v, new Vector3(0f, 1.2f, -0.85f), 0.55f, 0.55f, 0.14f, new Color(0.75f, 0.15f, 0.12f), 0f, "ClothSash").Rotation = new Vector3(Mathf.Pi * 0.5f, 0f, 0f);
+		Shapes.Cylinder(v, new Vector3(0f, 1.2f, -0.78f), 0.56f, 0.56f, 0.05f, new Color(0.95f, 0.8f, 0.3f), 0f, "ClothSash").Rotation = new Vector3(Mathf.Pi * 0.5f, 0f, 0f);
+		Shapes.Sphere(v, new Vector3(-0.22f, 1.28f, -1.42f), 0.05f, new Color(1f, 0.2f, 0.1f), 4f, "GlowEyeL");
+		Shapes.Sphere(v, new Vector3(0.22f, 1.28f, -1.42f), 0.05f, new Color(1f, 0.2f, 0.1f), 4f, "GlowEyeR");
+		var tail = Shapes.Cylinder(v, new Vector3(0f, 1.1f, 1.15f), 0.03f, 0.05f, 0.7f, hide.Darkened(0.2f), 0f, "Tail");
+		tail.Rotation = new Vector3(0.4f, 0f, 0f);
+		Shapes.Light(v, new Vector3(0f, 1.3f, -1.6f), new Color(1f, 0.3f, 0.2f), 0.9f, 4f, "GlowLight");
+	}
+
+	// ผีเด็กเลี้ยงควาย: a drowned herder child in an indigo shirt, a switch in one hand and a lantern in the other.
+	static void BuildHerderChild(Node3D v, GhostDef def)
+	{
+		var skin = new Color(0.7f, 0.76f, 0.74f, 0.88f);
+		var indigo = new Color(0.16f, 0.2f, 0.32f, 0.9f);
+		foreach (var x in new[] { -0.1f, 0.1f })
+			Shapes.Capsule(v, new Vector3(x, 0.32f, 0f), 0.06f, 0.6f, skin, 0f, "Leg");
+		Shapes.Box(v, new Vector3(0f, 0.68f, 0f), new Vector3(0.36f, 0.22f, 0.22f), new Color(0.1f, 0.1f, 0.12f), 0f, "Shorts");
+		Shapes.Box(v, new Vector3(0f, 0.95f, 0f), new Vector3(0.38f, 0.38f, 0.24f), indigo, 0f, "ClothShirt");
+		Shapes.Box(v, new Vector3(0f, 0.85f, 0.02f), new Vector3(0.4f, 0.06f, 0.26f), new Color(0.75f, 0.2f, 0.15f), 0f, "ClothSash");
+		Shapes.Sphere(v, new Vector3(0f, 1.32f, 0f), 0.19f, skin, 0f, "Head");
+		var hair = Shapes.Sphere(v, new Vector3(0f, 1.38f, 0.03f), 0.2f, new Color(0.04f, 0.04f, 0.05f, 0.95f), 0f, "Hair");
+		hair.Scale = new Vector3(1f, 0.7f, 1f);
+		Shapes.Sphere(v, new Vector3(-0.06f, 1.32f, -0.17f), 0.025f, new Color(1f, 0.85f, 0.5f), 3f, "GlowEyeL");
+		Shapes.Sphere(v, new Vector3(0.06f, 1.32f, -0.17f), 0.025f, new Color(1f, 0.85f, 0.5f), 3f, "GlowEyeR");
+		Shapes.Capsule(v, new Vector3(-0.26f, 0.95f, -0.05f), 0.05f, 0.45f, skin, 0f, "Arm").Rotation = new Vector3(0.3f, 0f, 0.2f);
+		Shapes.Capsule(v, new Vector3(0.26f, 0.98f, -0.12f), 0.05f, 0.45f, skin, 0f, "Arm").Rotation = new Vector3(0.9f, 0f, -0.2f);
+		Shapes.Cylinder(v, new Vector3(-0.32f, 0.95f, -0.25f), 0.012f, 0.018f, 1.0f, new Color(0.4f, 0.3f, 0.18f), 0f, "Switch").Rotation = new Vector3(0.9f, 0f, 0.2f);
+		// Oil lantern hanging from the right hand.
+		Shapes.Box(v, new Vector3(0.3f, 0.78f, -0.3f), new Vector3(0.14f, 0.18f, 0.14f), new Color(0.3f, 0.25f, 0.2f), 0f, "LanternFrame");
+		Shapes.Sphere(v, new Vector3(0.3f, 0.78f, -0.3f), 0.06f, Color.FromHtml(def.Color), 4f, "GlowFlame");
+		Shapes.Light(v, new Vector3(0.3f, 0.8f, -0.3f), new Color(1f, 0.75f, 0.4f), 1.4f, 5f, "GlowLight");
+	}
+
+	// จระเข้วิญญาณ: a long ghostly crocodile lying at the surface, ridged back, green eyes above the water.
+	// Aquatic ghosts float with their origin 0.85 m below the surface, so the back sits at about y 0.85.
+	static void BuildSpiritCroc(Node3D v, GhostDef def)
+	{
+		var hide = new Color(Color.FromHtml(def.Color), 0.75f);
+		var belly = new Color(0.7f, 0.8f, 0.65f, 0.6f);
+		Shapes.Box(v, new Vector3(0f, 0.72f, 0f), new Vector3(0.85f, 0.32f, 2.2f), hide, 0.3f, "Hide");
+		Shapes.Box(v, new Vector3(0f, 0.6f, 0f), new Vector3(0.75f, 0.12f, 2.0f), belly, 0f, "Belly");
+		Shapes.Box(v, new Vector3(0f, 0.74f, -1.35f), new Vector3(0.6f, 0.26f, 0.6f), hide, 0.3f, "Head");
+		Shapes.Box(v, new Vector3(0f, 0.68f, -1.95f), new Vector3(0.38f, 0.16f, 0.75f), hide, 0.3f, "Snout");
+		Shapes.Box(v, new Vector3(0f, 0.62f, -1.95f), new Vector3(0.36f, 0.08f, 0.72f), hide.Darkened(0.3f), 0f, "Jaw");
+		for (int i = 0; i < 6; i++)
+			Shapes.Box(v, new Vector3(0f, 0.68f, 0.9f + i * 0.32f), new Vector3(0.6f - i * 0.09f, 0.22f - i * 0.025f, 0.34f), hide, 0.3f, "Tail");
+		for (int i = 0; i < 9; i++)
+			foreach (var x in new[] { -0.2f, 0.2f })
+				Shapes.Box(v, new Vector3(x * (1f - i * 0.07f), 0.92f, -0.9f + i * 0.35f), new Vector3(0.08f, 0.1f, 0.12f), hide.Darkened(0.25f), 0f, "Ridge");
+		foreach (var x in new[] { -0.5f, 0.5f })
+		foreach (var z in new[] { -0.7f, 0.7f })
+			Shapes.Box(v, new Vector3(x, 0.55f, z), new Vector3(0.2f, 0.1f, 0.3f), hide.Darkened(0.15f), 0f, "Leg").Rotation = new Vector3(0f, 0f, x * 0.6f);
+		Shapes.Sphere(v, new Vector3(-0.16f, 0.9f, -1.45f), 0.05f, new Color(0.6f, 1f, 0.6f), 4f, "GlowEyeL");
+		Shapes.Sphere(v, new Vector3(0.16f, 0.9f, -1.45f), 0.05f, new Color(0.6f, 1f, 0.6f), 4f, "GlowEyeR");
+		Shapes.Cylinder(v, new Vector3(0f, 0.85f, -0.3f), 1.1f, 1.1f, 0.02f, new Color(0.6f, 1f, 0.75f, 0.3f), 1.2f, "GlowRipple");
+		Shapes.Light(v, new Vector3(0f, 1.1f, -1.4f), new Color(0.5f, 1f, 0.6f), 1f, 5f, "GlowLight");
 	}
 
 	// ผีพราย: a drowned woman risen to the waist from the water, long wet hair, arms reaching out.

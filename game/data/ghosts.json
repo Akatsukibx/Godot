@@ -30,7 +30,7 @@
   },
   {
     "id": "hun_lai_ka",
-    "name": "หุ่นไล่กาสาป",
+    "name": "หุ่นไล่กาสิง",
     "behavior": "statue",
     "color": "#8a5a3a",
     "maxHp": 60,
@@ -56,6 +56,40 @@
     "story": "ชาวนาที่ล้มตายกลางทุ่งก่อนได้เกี่ยวข้าว วิญญาณติดอยู่ในหุ่นที่ตัวเองสร้าง ขยับได้เฉพาะตอนไม่มีใครมอง",
     "releaseText": "ข้าวรวงสุดท้าย... ฝากเกี่ยวให้ทีนะ"
   },
+  // ---------- ทุ่งนาหุ่นไล่กา (Lv 1–15): หุ่นไล่กาสิง, ผีควายธนู, ผีเด็กเลี้ยงควาย ----------
+  {
+    "id": "phi_khwai_thanu", "name": "ผีควายธนู", "behavior": "brute", "color": "#4a3e4a",
+    "maxHp": 120, "speed": 3.8, "damage": 17, "attackRange": 2.3, "attackCooldown": 1.6, "aggroRange": 15, "exp": 34,
+    "activeAtDay": true, "despawnAtDawn": false, "spawnWeightDay": 2, "spawnWeightNight": 2,
+    "weakness": { "blessed": 1.7, "fire": 1.0, "rice": 1.0, "moon": 0.8 },
+    "drops": [
+      { "item": "sai_sin_khat", "chance": 0.3 },
+      { "item": "lek_sanim", "chance": 0.25 },
+      { "item": "lek_nam_phi", "chance": 0.15, "minLevel": 5 },
+      { "item": "namkhang_ratri", "chance": 0.03, "minLevel": 10, "nightOnly": true },
+      { "item": "set_tra_phanuek", "chance": 0.015, "minLevel": 13 },
+      { "item": "ya_hom", "chance": 0.08 }
+    ],
+    "story": "ควายธนูที่ชาวนาปลุกเสกไว้เฝ้าทุ่ง เจ้าของตายโดยไม่ได้ถอนวิชา มันจึงเฝ้าต่อไปไม่รู้จบ ขวิดทุกคนที่ล้ำเข้ามา แพ้ของปลุกเสก",
+    "releaseText": "หมดหน้าที่แล้ว... ขอบใจที่ปล่อยข้าไป"
+  },
+  {
+    "id": "phi_dek_liang_khwai", "name": "ผีเด็กเลี้ยงควาย", "behavior": "chaser", "color": "#ffd27a",
+    "maxHp": 38, "speed": 6.0, "damage": 7, "attackRange": 1.5, "attackCooldown": 0.9, "aggroRange": 18, "exp": 15,
+    "activeAtDay": false, "despawnAtDawn": true, "spawnWeightDay": 0, "spawnWeightNight": 4,
+    "weakness": { "rice": 2.0, "fire": 0.6, "blessed": 1.0, "moon": 1.2 },
+    "drops": [
+      { "item": "takiang_pong", "chance": 0.3 },
+      { "item": "khi_phueng", "chance": 0.12, "minLevel": 5 },
+      { "item": "khao_san_sek", "chance": 0.08 },
+      { "item": "namkhang_ratri", "chance": 0.04, "minLevel": 10, "nightOnly": true },
+      { "item": "ya_hom", "chance": 0.06 }
+    ],
+    "story": "เด็กที่จมน้ำตายตอนพาควายข้ามคลองเมื่อสิบปีก่อน ยังถือตะเกียงเดินเรียกควายทุกคืน ใครขานรับจะถูกตามไม่เลิก กลัวข้าวสารเสก",
+    "releaseText": "เจอควายแล้ว... กลับบ้านได้แล้วใช่ไหม"
+  },
+
+  // ---------- เก็บไว้ใช้โซนอื่น (ไม่เกิดในทุ่งนาแล้ว): ผีโพง → ป่าไผ่ทึบ · ผีตายโหง → ย่านเมืองเก่า ----------
   {
     "id": "phi_pong",
     "name": "ผีโพง",
@@ -126,6 +160,38 @@
     "story": "หญิงสาวที่จมน้ำในบึงเมื่อหลายสิบปีก่อน อยู่ได้แต่ในน้ำ คอยดึงขาคนที่เดินใกล้ริมสะพาน",
     "releaseText": "น้ำมันเย็นเหลือเกิน... ขอบใจที่ดึงฉันขึ้นมา"
   },
+  {
+    "id": "krasue", "name": "กระสือ", "behavior": "chaser", "flying": true, "color": "#ff6a5a",
+    "maxHp": 115, "speed": 4.6, "damage": 17, "attackRange": 1.9, "attackCooldown": 1.2, "aggroRange": 18, "exp": 36,
+    "activeAtDay": false, "despawnAtDawn": false, "spawnWeightDay": 0, "spawnWeightNight": 3,
+    "weakness": { "fire": 0.7, "rice": 1.5, "blessed": 1.6, "moon": 1.3 },
+    "drops": [
+      { "item": "bai_tani", "chance": 0.35 },
+      { "item": "sai_bua", "chance": 0.15 },
+      { "item": "phlueak_winyan", "chance": 0.08, "minLevel": 18 },
+      { "item": "set_tra_phanuek", "chance": 0.02, "minLevel": 20 },
+      { "item": "ya_hom_yai", "chance": 0.05 }
+    ],
+    "story": "หัวผู้หญิงลอยลากไส้เรืองแดง ออกหากินของคาวกลางดึก กลางวันซ่อนร่างไว้ใต้ใบตองในดงกล้วยบนเกาะ",
+    "releaseText": "ร่างของฉัน... ยังรออยู่ใต้ใบตองไหมนะ"
+  },
+  {
+    "id": "chorakhe_winyan", "name": "จระเข้วิญญาณ", "behavior": "brute", "aquatic": true, "color": "#6fae8a",
+    "maxHp": 160, "speed": 3.2, "damage": 22, "attackRange": 2.6, "attackCooldown": 1.8, "aggroRange": 13, "exp": 42,
+    "activeAtDay": true, "despawnAtDawn": false, "spawnWeightDay": 2, "spawnWeightNight": 2,
+    "weakness": { "blessed": 1.5, "fire": 1.2, "rice": 0.8, "moon": 1.0 },
+    "drops": [
+      { "item": "lek_nam_phi", "chance": 0.2 },
+      { "item": "pha_yan_kao", "chance": 0.2 },
+      { "item": "saeng_winyan", "chance": 0.12 },
+      { "item": "phlueak_winyan", "chance": 0.06, "minLevel": 18 },
+      { "item": "set_tra_phanuek", "chance": 0.02, "minLevel": 20 }
+    ],
+    "story": "จระเข้เจ้าบึงที่ชาวบ้านล้อมฆ่าเมื่อร้อยปีก่อน วิญญาณยังนอนรอใต้น้ำลึกระหว่างเกาะ งับทุกคนที่เดินชิดขอบสะพาน",
+    "releaseText": "บึงนี้... เป็นของทุกคนแล้วสินะ"
+  },
+
+  // ---------- เก็บไว้ใช้โซนอื่น (ไม่เกิดในบึงบัวสายแล้ว) ----------
   {
     "id": "phi_krahang", "name": "ผีกระหัง", "behavior": "chaser", "flying": true, "color": "#c9a46a",
     "maxHp": 120, "speed": 4.6, "damage": 17, "attackRange": 1.9, "attackCooldown": 1.2, "aggroRange": 18, "exp": 36,

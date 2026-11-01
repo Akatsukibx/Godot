@@ -286,6 +286,21 @@ public partial class Main : Node3D
             Player.GlobalPosition = new Vector3(F(xz[0]), 0.3f, F(xz[1]));
             _camPivot.GlobalPosition = Player.GlobalPosition;
         }
+        // --spawn=id,id…: call those ghosts in a row in front of the player (model checks).
+        if (Player != null && args.TryGetValue("spawn", out var spawnIds))
+            GetTree().CreateTimer(1.0).Timeout += () =>
+            {
+                var ids = spawnIds.Split(',');
+                for (int i = 0; i < ids.Length; i++)
+                    if (GameData.Ghosts.TryGetValue(ids[i], out var gd))
+                    {
+                        var at = Player.GlobalPosition + new Vector3((i - (ids.Length - 1) * 0.5f) * 3.2f, 0f, -7f);
+                        float y = gd.Aquatic && WaterSurfaceAt(at) is float ws ? ws - 0.85f : GroundAt(at + Vector3.Up * 3f);
+                        var g = SpawnGhost(CurrentZone ?? GameData.Zone("wiang_mok"), gd, at with { Y = y });
+                        if (g != null)
+                            g.SetPhysicsProcess(false); // hold still for the picture
+                    }
+            };
         // --boat[=seconds]: board the nearest rowing boat and (optionally) row straight ahead for a while.
         if (Player != null && args.TryGetValue("boat", out var rowFor))
             GetTree().CreateTimer(0.8).Timeout += () =>
@@ -331,6 +346,8 @@ public partial class Main : Node3D
                     default:
                         if (screen.StartsWith("shop:"))
                             Hud.OpenShop(screen[5..]);
+                        else if (screen == "worldmap")
+                            Hud.OpenWorldMap();
                         else
                             Hud.OpenWindow(screen);
                         break;
@@ -1152,7 +1169,7 @@ public partial class Main : Node3D
         if (Player == null || Cutscene.Active)
             return;
         Hud.Banner("รุ่งอรุณ", new Color(1f, 0.85f, 0.55f));
-        Game.Toast("รุ่งเช้าแล้ว ผีโพงหายไปกับแสงตะวัน หุ่นไล่กากลับไปนิ่ง", "sun");
+        Game.Toast("รุ่งเช้าแล้ว ผีที่ออกตอนกลางคืนหายไปกับแสงตะวัน หุ่นไล่กากลับไปนิ่ง", "sun");
         foreach (var g in Ghost.All.ToArray())
             if (!g.Gone && !g.Weakened && g.Def.DespawnAtDawn)
                 g.Vanish();

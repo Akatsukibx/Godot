@@ -180,7 +180,8 @@ public partial class MapView : Control
 
     void DrawWorld()
     {
-        var zones = GameData.Zones;
+        // Dungeons and instances sit inside the zone that holds their entrance.
+        var zones = GameData.Zones.Where(z => z.Parent == null).ToList();
         int minX = zones.Min(z => z.WorldX), maxX = zones.Max(z => z.WorldX);
         int minY = zones.Min(z => z.WorldY), maxY = zones.Max(z => z.WorldY);
         float cell = Mathf.Min(Size.X / (maxX - minX + 1), Size.Y / (maxY - minY + 1));
@@ -197,13 +198,28 @@ public partial class MapView : Control
         foreach (var z in zones)
         {
             var c = Center(z);
-            var box = new Rect2(c - new Vector2(cell * 0.36f, cell * 0.26f), new Vector2(cell * 0.72f, cell * 0.52f));
+            var box = new Rect2(c - new Vector2(cell * 0.4f, cell * 0.3f), new Vector2(cell * 0.8f, cell * 0.6f));
             bool here = z.Id == CurrentZone;
-            DrawRect(box, z.Open ? new Color(0.16f, 0.22f, 0.15f, 0.95f) : new Color(0.1f, 0.1f, 0.11f, 0.9f));
+            var fill = z.Kind == "raid" ? new Color(0.22f, 0.06f, 0.06f, 0.95f)
+                : z.Open ? new Color(0.16f, 0.22f, 0.15f, 0.95f) : new Color(0.1f, 0.1f, 0.11f, 0.9f);
+            DrawRect(box, fill);
             DrawRect(box, here ? UiTheme.Gold : new Color(1f, 1f, 1f, 0.25f), false, here ? 3f : 1.5f);
-            Text(c + new Vector2(0f, -4f), z.Name, 18, z.Open ? UiTheme.Cream : UiTheme.Muted);
-            Text(c + new Vector2(0f, 20f), (here ? "คุณอยู่ที่นี่" : z.Open ? "เปิดแล้ว" : "ยังไม่เปิด") + $" · Lv {z.LevelText}", 13,
+            var children = GameData.Zones.Where(k => k.Parent == z.Id).ToList();
+            float top = box.Position.Y + 22f;
+            Text(new Vector2(c.X, top), z.Name, 17, z.Open ? UiTheme.Cream : UiTheme.Muted);
+            Text(new Vector2(c.X, top + 19f), (here ? "คุณอยู่ที่นี่" : z.Open ? "เปิดแล้ว" : "ยังไม่เปิด") + $" · Lv {z.LevelText}", 12,
                 here ? UiTheme.Gold : UiTheme.Muted);
+            if (z.Enemies != "")
+                Text(new Vector2(c.X, top + 36f), z.Enemies, 11, new Color(0.85f, 0.6f, 0.55f, z.Open ? 1f : 0.7f));
+            // Entrances to dungeons and instances inside this zone.
+            for (int i = 0; i < children.Count; i++)
+            {
+                var k = children[i];
+                var kb = new Rect2(new Vector2(box.Position.X + 8f, box.End.Y - 30f - i * 30f), new Vector2(box.Size.X - 16f, 26f));
+                DrawRect(kb, new Color(0.05f, 0.04f, 0.08f, 0.95f));
+                DrawRect(kb, new Color(0.7f, 0.55f, 1f, 0.6f), false, 1.2f);
+                Text(kb.GetCenter() + new Vector2(0f, 5f), $"⛩ {k.Name} · {k.LevelText}", 12, new Color(0.82f, 0.72f, 1f));
+            }
         }
     }
 }

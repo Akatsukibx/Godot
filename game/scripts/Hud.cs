@@ -834,6 +834,12 @@ public partial class Hud : CanvasLayer
         SetMapMode(false);
     }
 
+    public void OpenWorldMap()
+    {
+        OpenWindow("map");
+        SetMapMode(true);
+    }
+
     void SetMapMode(bool world)
     {
         _map.WorldMode = world;

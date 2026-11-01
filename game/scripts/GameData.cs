@@ -303,6 +303,10 @@ public class ZoneDef
     public string LevelText { get; set; } = "";
     public List<string> Ghosts { get; set; } = new();
     public List<SpawnGroupDef> SpawnGroups { get; set; } = new();
+    // field (default) / dungeon / instance / raid · parent = the zone whose entrance leads here
+    public string Kind { get; set; } = "field";
+    public string Parent { get; set; }
+    public string Enemies { get; set; } = ""; // main enemies, for the world map
     public bool AlleyOnly { get; set; }
     public int MaxGhostsDay { get; set; }
     public int MaxGhostsNight { get; set; }
