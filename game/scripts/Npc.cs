@@ -23,6 +23,8 @@ public partial class Npc : Node3D
         AddChild(_rig);
         _rig.Attach(Models.Npc(def));
         AddProp(def.Activity);
+        if (def.Activity != "wander")
+            WorldBuilder.NpcDecor(this, def.Id, _baseYaw);
 
         float top = 2.05f * def.Look.Height;
         AddChild(new Label3D

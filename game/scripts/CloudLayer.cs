@@ -53,7 +53,9 @@ void fragment() {
 		_mistMat.SetShaderParameter("fade_dist", 160f);
 		_high = Layer(900f, 1600f, _highMat);
 		_mid = Layer(420f, 1400f, _midMat);
+		// No ground-level mist sheet: seen from above it washed the whole view out; the scene fog does that job.
 		_mist = Layer(3.5f, 260f, _mistMat);
+		_mist.Visible = false;
 	}
 
 	MeshInstance3D Layer(float height, float size, Material mat)

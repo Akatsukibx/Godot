@@ -171,6 +171,7 @@ public partial class ClassSelect : Control
 			_entries[i].name.AddThemeColorOverride("font_color", on ? UiTheme.Gold : _classes[i].Locked ? UiTheme.Muted : UiTheme.Cream);
 		}
 		_preview.SetClass(def);
+		_preview.SetBackdrop(def.Id);
 		_preview.PlayAction(def.Offhand == "dagger" ? PlayerRig.Act.StabR : def.Attack.Type == "projectile" ? PlayerRig.Act.Cast : PlayerRig.Act.Swing1, 0.6f);
 		_emblemIcon.Texture = Icons.Get(def.Emblem ?? def.Attack.Icon);
 		_name.Text = def.Name;

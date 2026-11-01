@@ -417,3 +417,136 @@ public static partial class WorldBuilder
 		}
 	}
 }
+
+public static partial class WorldBuilder
+{
+	// Irrigation ditches (คลองส่งน้ำ) in the 2 m gaps between paddy rows: a strip of water with muddy
+	// banks, broken where it would cross a road or a house; a plank bridge carries each road over it.
+	static void Canals(Node3D world, int count)
+	{
+		var root = Shapes.Group(world, "Canals");
+		var water = WaterMaterial();
+		var bank = new Color(0.3f, 0.25f, 0.17f);
+		int made = 0;
+		for (int attempt = 0; attempt < 60 && made < count; attempt++)
+		{
+			// Gap lines lie half-way between plot centres (plots are 13 m apart).
+			bool alongX = _rng.Randf() < 0.6f;
+			float line = (_rng.RandiRange(-12, 12) + 0.5f) * 13f;
+			if (!alongX && Mathf.Abs(line) < 30f || alongX && (line < ThungNaShoreZ + 30f || line > Half - 20f))
+				continue;
+			float start = _rng.RandfRange(-Half + 30f, 20f), length = _rng.RandfRange(60f, 140f);
+			var g = Shapes.Group(root, $"Canal{made}");
+			bool any = false;
+			for (float t = start; t < start + length; t += 2f)
+			{
+				var p = alongX ? new Vector3(t, 0f, line) : new Vector3(line, 0f, t);
+				if (Mathf.Abs(p.X) > Half - 10f || p.Z < ThungNaShoreZ + 14f || p.Z > Half - 10f)
+					continue;
+				float road = DistToRoads(p);
+				if (Blocked(p, 0.6f) && road > 0.5f)
+					continue;
+				if (road < 0.6f)
+				{
+					// A road crosses here: lay planks over the ditch.
+					var plank = Shapes.Box(g, p + new Vector3(0f, 0.12f, 0f), alongX ? new Vector3(2.2f, 0.1f, 2.6f) : new Vector3(2.6f, 0.1f, 2.2f), Wood, 0f, "PlankBridge");
+					continue;
+				}
+				var seg = Shapes.Child(g, new MeshInstance3D
+				{
+					Mesh = new BoxMesh { Size = alongX ? new Vector3(2.05f, 0.02f, 1.1f) : new Vector3(1.1f, 0.02f, 2.05f) },
+					MaterialOverride = water,
+					CastShadow = GeometryInstance3D.ShadowCastingSetting.Off,
+					Position = p + new Vector3(0f, 0.09f, 0f),
+				}, "CanalWater");
+				seg.AddToGroup("water_surface", true);
+				foreach (float s in new[] { -0.75f, 0.75f })
+					Shapes.Box(g, p + (alongX ? new Vector3(0f, 0.09f, s) : new Vector3(s, 0.09f, 0f)), alongX ? new Vector3(2.05f, 0.14f, 0.4f) : new Vector3(0.4f, 0.14f, 2.05f), bank, 0f, "MudBank");
+				any = true;
+			}
+			if (any)
+			{
+				Shapes.MapTag(Shapes.Group(g, "CanalMap", alongX ? new Vector3(start + length * 0.5f, 0f, line) : new Vector3(line, 0f, start + length * 0.5f)), "map_water", alongX ? new Vector2(length, 1.2f) : new Vector2(1.2f, length));
+				made++;
+			}
+		}
+	}
+}
+
+public static partial class WorldBuilder
+{
+	// Things that belong to a villager, set around them so you can tell what they do at a glance.
+	// Offsets are in the villager's own frame (they face -Z); the group is added to the NPC node.
+	public static void NpcDecor(Node3D npc, string id, float yaw)
+	{
+		_rng ??= new RandomNumberGenerator { Seed = 7 };
+		var g = Shapes.Group(npc, "Decor", Vector3.Zero, yaw);
+		void Table(Vector3 at, Vector3 size)
+		{
+			Shapes.Box(g, at + new Vector3(0f, 0.75f, 0f), new Vector3(size.X, 0.08f, size.Z), Wood, 0f, "TableTop");
+			foreach (var sx in new[] { -1f, 1f })
+			foreach (var sz in new[] { -1f, 1f })
+				Shapes.Box(g, at + new Vector3(sx * (size.X * 0.5f - 0.08f), 0.37f, sz * (size.Z * 0.5f - 0.08f)), new Vector3(0.07f, 0.74f, 0.07f), DarkWood, 0f, "TableLeg");
+			Shapes.Solid(g, at + new Vector3(0f, 0.4f, 0f), new Vector3(size.X, 0.8f, size.Z));
+		}
+		void FishTrap(Vector3 at) => Shapes.Cylinder(g, at + new Vector3(0f, 0.3f, 0f), 0.18f, 0.32f, 0.6f, Straw, 0f, "BasketWeave");
+		switch (id)
+		{
+			case "yai_jan": // a little altar: candles, an incense pot, jars of herbal liquor
+				Table(new Vector3(0f, 0f, 1.6f), new Vector3(1.4f, 0f, 0.7f));
+				Shapes.Cylinder(g, new Vector3(0f, 0.95f, 1.6f), 0.14f, 0.1f, 0.3f, Clay, 0f, "ClayPot");
+				foreach (var x in new[] { -0.5f, 0.5f })
+					Shapes.Sphere(g, new Vector3(x, 0.92f, 1.55f), 0.05f, new Color(1f, 0.7f, 0.3f), 4f, "GlowCandle");
+				for (int i = 0; i < 3; i++)
+					Shapes.Cylinder(g, new Vector3(-1.3f + i * 0.28f, 0.22f, 1.2f), 0.1f, 0.12f, 0.45f, new Color(0.45f, 0.32f, 0.15f, 0.9f), 0f, "ClayJar");
+				break;
+			case "thongdee": // alms bowl on a stand, a monk's fan
+				Shapes.Cylinder(g, new Vector3(0.9f, 0.4f, 0.6f), 0.05f, 0.05f, 0.8f, DarkWood, 0f, "Pole");
+				Shapes.Sphere(g, new Vector3(0.9f, 0.9f, 0.6f), 0.22f, new Color(0.15f, 0.13f, 0.12f), 0f, "AlmsBowl").Scale = new Vector3(1f, 0.75f, 1f);
+				Shapes.Box(g, new Vector3(-0.8f, 0.8f, 0.5f), new Vector3(0.45f, 0.6f, 0.03f), new Color(0.85f, 0.55f, 0.2f), 0f, "ClothFan");
+				break;
+			case "khon_khap": // the timetable board of the last bus
+				Shapes.Cylinder(g, new Vector3(1.4f, 0.9f, 0.3f), 0.05f, 0.05f, 1.8f, Colors.DimGray, 0f, "Pole");
+				Shapes.Box(g, new Vector3(1.4f, 1.6f, 0.3f), new Vector3(0.9f, 0.6f, 0.05f), new Color(0.9f, 0.85f, 0.7f), 0f, "SignBoard");
+				Shapes.Cylinder(g, new Vector3(-1.2f, 0.4f, 0.8f), 0.3f, 0.3f, 0.8f, new Color(0.6f, 0.15f, 0.12f), 0f, "OilDrum");
+				break;
+			case "ta_saeng":
+			case "lung_khiao": // hay, a hoe and a sickle
+				Shapes.Sphere(g, new Vector3(-1.4f, 0.5f, 1f), 0.8f, Straw, 0f, "HayPile").Scale = new Vector3(1f, 0.6f, 1f);
+				var hoe = Shapes.Box(g, new Vector3(1.2f, 0.75f, 0.8f), new Vector3(0.05f, 1.5f, 0.05f), Wood, 0f, "HoeHandle");
+				hoe.Rotation = new Vector3(0.25f, 0f, 0f);
+				Shapes.Box(g, new Vector3(1.2f, 0.08f, 0.55f), new Vector3(0.3f, 0.04f, 0.2f), Colors.DimGray, 0f, "HoeBlade");
+				break;
+			case "mae_ploy":
+			case "mae_khai_rua":
+			case "pa_bua": // a charcoal stove with a pot or a grill, and a basket of food
+				Shapes.Cylinder(g, new Vector3(0f, 0.35f, -1f), 0.3f, 0.25f, 0.7f, Clay, 0f, "ClayStove");
+				Shapes.Sphere(g, new Vector3(0f, 0.72f, -1f), 0.05f, new Color(1f, 0.45f, 0.15f), 3f, "GlowEmber");
+				Shapes.Cylinder(g, new Vector3(0f, 0.85f, -1f), 0.28f, 0.25f, 0.28f, new Color(0.25f, 0.25f, 0.27f), 0f, "IronPot");
+				FishTrap(new Vector3(0.9f, 0f, -0.7f));
+				Shapes.Solid(g, new Vector3(0f, 0.4f, -1f), new Vector3(0.6f, 0.8f, 0.6f));
+				break;
+			case "lung_puk":
+			case "lung_pla":
+			case "dek_bet": // fish trap, a net hung to dry
+				FishTrap(new Vector3(0.8f, 0f, 0.3f));
+				Shapes.Box(g, new Vector3(-1f, 0.5f, 0.6f), new Vector3(0.9f, 0.9f, 0.02f), new Color(0.7f, 0.68f, 0.6f, 0.9f), 0f, "RopeNet");
+				break;
+			case "pa_yaem": // herbs drying on a tray, mortar and pestle
+				Shapes.Cylinder(g, new Vector3(1f, 0.55f, 0.6f), 0.5f, 0.5f, 0.05f, Straw, 0f, "BasketWeave");
+				for (int i = 0; i < 8; i++)
+					Shapes.Sphere(g, new Vector3(1f + _rng.RandfRange(-0.35f, 0.35f), 0.6f, 0.6f + _rng.RandfRange(-0.35f, 0.35f)), 0.06f, new Color(0.35f, 0.5f, 0.25f), 0f, "HerbBunch");
+				Shapes.Cylinder(g, new Vector3(1f, 0.27f, 0.6f), 0.06f, 0.06f, 0.54f, DarkWood, 0f, "Pole");
+				Shapes.Cylinder(g, new Vector3(-0.9f, 0.2f, -0.6f), 0.22f, 0.18f, 0.4f, Stone, 0f, "StoneMortar");
+				break;
+			case "dek_noi":
+			case "ai_tee":
+			case "dek_kwai": // a rattan ball (takraw) and a kite
+				Shapes.Sphere(g, new Vector3(0.7f, 0.12f, -0.6f), 0.12f, Straw, 0f, "BasketWeave");
+				var kite = Shapes.Box(g, new Vector3(-0.8f, 0.35f, 0.6f), new Vector3(0.5f, 0.5f, 0.02f), new Color(0.85f, 0.3f, 0.25f), 0f, "ClothKite");
+				kite.Rotation = new Vector3(-1.3f, 0f, Mathf.Pi * 0.25f);
+				break;
+		}
+		Textures.Apply(g);
+	}
+}

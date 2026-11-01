@@ -200,241 +200,241 @@ height = 0.063999996
 radius = 0.027999997
 height = 0.055999994
 
-[node name="Ghost_boss_krasue" type="Node3D" unique_id=1273445431]
+[node name="Ghost_boss_krasue" type="Node3D" unique_id=444123302]
 
-[node name="Krasue" type="Node3D" parent="." unique_id=164760479]
+[node name="Krasue" type="Node3D" parent="." unique_id=2088653981]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
 
-[node name="Head" type="MeshInstance3D" parent="Krasue" unique_id=163287783]
+[node name="Head" type="MeshInstance3D" parent="Krasue" unique_id=1903368942]
 material_override = SubResource("StandardMaterial3D_p1uwn")
 mesh = SubResource("SphereMesh_3cmey")
 
-[node name="Hair" type="MeshInstance3D" parent="Krasue" unique_id=65121866]
+[node name="Hair" type="MeshInstance3D" parent="Krasue" unique_id=1075912607]
 transform = Transform3D(1, 0, 0, 0, 1.05, 0, 0, 0, 1, 0, 0.06, 0.06)
 material_override = SubResource("StandardMaterial3D_1ct06")
 mesh = SubResource("SphereMesh_74csd")
 
-[node name="Strand" type="MeshInstance3D" parent="Krasue" unique_id=1584895814]
+[node name="Strand" type="MeshInstance3D" parent="Krasue" unique_id=688752243]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.22, -0.45, 0.14)
 material_override = SubResource("StandardMaterial3D_1ct06")
 mesh = SubResource("BoxMesh_2uewb")
 
-[node name="Strand2" type="MeshInstance3D" parent="Krasue" unique_id=1950253076]
+[node name="Strand2" type="MeshInstance3D" parent="Krasue" unique_id=1964087289]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.13, -0.45, 0.14)
 material_override = SubResource("StandardMaterial3D_1ct06")
 mesh = SubResource("BoxMesh_mj3nl")
 
-[node name="Strand3" type="MeshInstance3D" parent="Krasue" unique_id=1825580138]
+[node name="Strand3" type="MeshInstance3D" parent="Krasue" unique_id=1403685165]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.03999999, -0.45, 0.14)
 material_override = SubResource("StandardMaterial3D_1ct06")
 mesh = SubResource("BoxMesh_b5dh5")
 
-[node name="Strand4" type="MeshInstance3D" parent="Krasue" unique_id=83049505]
+[node name="Strand4" type="MeshInstance3D" parent="Krasue" unique_id=1850930457]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.050000012, -0.45, 0.14)
 material_override = SubResource("StandardMaterial3D_1ct06")
 mesh = SubResource("BoxMesh_op1r5")
 
-[node name="Strand5" type="MeshInstance3D" parent="Krasue" unique_id=1152533118]
+[node name="Strand5" type="MeshInstance3D" parent="Krasue" unique_id=349859875]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.14000002, -0.45, 0.14)
 material_override = SubResource("StandardMaterial3D_1ct06")
 mesh = SubResource("BoxMesh_qke83")
 
-[node name="Strand6" type="MeshInstance3D" parent="Krasue" unique_id=1215144339]
+[node name="Strand6" type="MeshInstance3D" parent="Krasue" unique_id=1395462210]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.23000002, -0.45, 0.14)
 material_override = SubResource("StandardMaterial3D_1ct06")
 mesh = SubResource("BoxMesh_e1v4f")
 
-[node name="GlowEyeL" type="MeshInstance3D" parent="Krasue" unique_id=930708778]
+[node name="GlowEyeL" type="MeshInstance3D" parent="Krasue" unique_id=1748006806]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.09, 0.03, -0.25)
 material_override = SubResource("StandardMaterial3D_p30ot")
 mesh = SubResource("SphereMesh_kq33i")
 
-[node name="GlowEyeR" type="MeshInstance3D" parent="Krasue" unique_id=655995747]
+[node name="GlowEyeR" type="MeshInstance3D" parent="Krasue" unique_id=1647362292]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09, 0.03, -0.25)
 material_override = SubResource("StandardMaterial3D_p30ot")
 mesh = SubResource("SphereMesh_6grkf")
 
-[node name="GlowGut" type="MeshInstance3D" parent="Krasue" unique_id=450533382]
+[node name="GlowGut" type="MeshInstance3D" parent="Krasue" unique_id=1559486332]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.12, -0.3, -0.006849304)
 material_override = SubResource("StandardMaterial3D_cd8cr")
 mesh = SubResource("SphereMesh_6pcgh")
 
-[node name="GlowGut2" type="MeshInstance3D" parent="Krasue" unique_id=1442275674]
+[node name="GlowGut2" type="MeshInstance3D" parent="Krasue" unique_id=378669899]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.065167114, -0.42000002, 0.020707)
 material_override = SubResource("StandardMaterial3D_cd8cr")
 mesh = SubResource("SphereMesh_k84j0")
 
-[node name="GlowGut3" type="MeshInstance3D" parent="Krasue" unique_id=2030346668]
+[node name="GlowGut3" type="MeshInstance3D" parent="Krasue" unique_id=1757919155]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.051830664, -0.54, 0.040040288)
 material_override = SubResource("StandardMaterial3D_cd8cr")
 mesh = SubResource("SphereMesh_etnux")
 
-[node name="GlowGut4" type="MeshInstance3D" parent="Krasue" unique_id=1226630563]
+[node name="GlowGut4" type="MeshInstance3D" parent="Krasue" unique_id=768227074]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.09008339, -0.65999997, 0.01705743)
 material_override = SubResource("StandardMaterial3D_cd8cr")
 mesh = SubResource("SphereMesh_n4n2k")
 
-[node name="GlowGut5" type="MeshInstance3D" parent="Krasue" unique_id=1951642347]
+[node name="GlowGut5" type="MeshInstance3D" parent="Krasue" unique_id=21028938]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.15097642, -0.78, 0.030031953)
 material_override = SubResource("StandardMaterial3D_cd8cr")
 mesh = SubResource("SphereMesh_dib5r")
 
-[node name="GlowGut6" type="MeshInstance3D" parent="Krasue" unique_id=358136981]
+[node name="GlowGut6" type="MeshInstance3D" parent="Krasue" unique_id=238683931]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.1884271, -0.9, 0.02556834)
 material_override = SubResource("StandardMaterial3D_cd8cr")
 mesh = SubResource("SphereMesh_rw5q0")
 
-[node name="GlowGut7" type="MeshInstance3D" parent="Krasue" unique_id=1391930328]
+[node name="GlowGut7" type="MeshInstance3D" parent="Krasue" unique_id=1985598462]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.17409353, -1.02, -0.04519661)
 material_override = SubResource("StandardMaterial3D_cd8cr")
 mesh = SubResource("SphereMesh_h2e4f")
 
-[node name="GlowGut8" type="MeshInstance3D" parent="Krasue" unique_id=1842396861]
+[node name="GlowGut8" type="MeshInstance3D" parent="Krasue" unique_id=498781808]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.118823044, -1.14, -0.030353079)
 material_override = SubResource("StandardMaterial3D_cd8cr")
 mesh = SubResource("SphereMesh_w8j26")
 
-[node name="GlowGut9" type="MeshInstance3D" parent="Krasue" unique_id=1743961071]
+[node name="GlowGut9" type="MeshInstance3D" parent="Krasue" unique_id=437479217]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.06444326, -1.26, 0.03629056)
 material_override = SubResource("StandardMaterial3D_cd8cr")
 mesh = SubResource("SphereMesh_wf33y")
 
-[node name="GlowGut10" type="MeshInstance3D" parent="Krasue" unique_id=1751653046]
+[node name="GlowGut10" type="MeshInstance3D" parent="Krasue" unique_id=1090511128]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.018902969, -0.3, -0.011797093)
 material_override = SubResource("StandardMaterial3D_cd8cr")
 mesh = SubResource("SphereMesh_ssppp")
 
-[node name="GlowGut11" type="MeshInstance3D" parent="Krasue" unique_id=971916853]
+[node name="GlowGut11" type="MeshInstance3D" parent="Krasue" unique_id=438014742]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.026241004, -0.42000002, -0.045923565)
 material_override = SubResource("StandardMaterial3D_cd8cr")
 mesh = SubResource("SphereMesh_jvudp")
 
-[node name="GlowGut12" type="MeshInstance3D" parent="Krasue" unique_id=424646748]
+[node name="GlowGut12" type="MeshInstance3D" parent="Krasue" unique_id=164056655]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.016550824, -0.54, -0.01316705)
 material_override = SubResource("StandardMaterial3D_cd8cr")
 mesh = SubResource("SphereMesh_7hj31")
 
-[node name="GlowGut13" type="MeshInstance3D" parent="Krasue" unique_id=137628947]
+[node name="GlowGut13" type="MeshInstance3D" parent="Krasue" unique_id=1297277806]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.07708852, -0.65999997, -0.0062090084)
 material_override = SubResource("StandardMaterial3D_cd8cr")
 mesh = SubResource("SphereMesh_svucr")
 
-[node name="GlowGut14" type="MeshInstance3D" parent="Krasue" unique_id=1351862238]
+[node name="GlowGut14" type="MeshInstance3D" parent="Krasue" unique_id=1345464166]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.109558366, -0.78, 0.007921111)
 material_override = SubResource("StandardMaterial3D_cd8cr")
 mesh = SubResource("SphereMesh_2uw03")
 
-[node name="GlowGut15" type="MeshInstance3D" parent="Krasue" unique_id=737981472]
+[node name="GlowGut15" type="MeshInstance3D" parent="Krasue" unique_id=1261005679]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.08938782, -0.9, 0.0026999786)
 material_override = SubResource("StandardMaterial3D_cd8cr")
 mesh = SubResource("SphereMesh_8e1s2")
 
-[node name="GlowGut16" type="MeshInstance3D" parent="Krasue" unique_id=799651390]
+[node name="GlowGut16" type="MeshInstance3D" parent="Krasue" unique_id=457086298]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.03184158, -1.02, 0.033152733)
 material_override = SubResource("StandardMaterial3D_cd8cr")
 mesh = SubResource("SphereMesh_anfbr")
 
-[node name="GlowGut17" type="MeshInstance3D" parent="Krasue" unique_id=1809648981]
+[node name="GlowGut17" type="MeshInstance3D" parent="Krasue" unique_id=1691925199]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.019530553, -1.14, 0.00041799992)
 material_override = SubResource("StandardMaterial3D_cd8cr")
 mesh = SubResource("SphereMesh_yahje")
 
-[node name="GlowGut18" type="MeshInstance3D" parent="Krasue" unique_id=188756052]
+[node name="GlowGut18" type="MeshInstance3D" parent="Krasue" unique_id=1573831664]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.025851145, -1.26, 0.0457885)
 material_override = SubResource("StandardMaterial3D_cd8cr")
 mesh = SubResource("SphereMesh_52axh")
 
-[node name="GlowGut19" type="MeshInstance3D" parent="Krasue" unique_id=1030547342]
+[node name="GlowGut19" type="MeshInstance3D" parent="Krasue" unique_id=328448397]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.103650816, -0.3, 0.011739023)
 material_override = SubResource("StandardMaterial3D_cd8cr")
 mesh = SubResource("SphereMesh_lo3ae")
 
-[node name="GlowGut20" type="MeshInstance3D" parent="Krasue" unique_id=521820430]
+[node name="GlowGut20" type="MeshInstance3D" parent="Krasue" unique_id=1990995757]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.056747444, -0.42000002, 0.0042243116)
 material_override = SubResource("StandardMaterial3D_cd8cr")
 mesh = SubResource("SphereMesh_x6xoo")
 
-[node name="GlowGut21" type="MeshInstance3D" parent="Krasue" unique_id=445884966]
+[node name="GlowGut21" type="MeshInstance3D" parent="Krasue" unique_id=1354941418]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.002830051, -0.54, -0.00998982)
 material_override = SubResource("StandardMaterial3D_cd8cr")
 mesh = SubResource("SphereMesh_jbpei")
 
-[node name="GlowGut22" type="MeshInstance3D" parent="Krasue" unique_id=1924071878]
+[node name="GlowGut22" type="MeshInstance3D" parent="Krasue" unique_id=521038855]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.02999463, -0.65999997, -0.011731777)
 material_override = SubResource("StandardMaterial3D_cd8cr")
 mesh = SubResource("SphereMesh_sbiqj")
 
-[node name="GlowGut23" type="MeshInstance3D" parent="Krasue" unique_id=627014462]
+[node name="GlowGut23" type="MeshInstance3D" parent="Krasue" unique_id=295764498]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0041886717, -0.78, 0.01764572)
 material_override = SubResource("StandardMaterial3D_cd8cr")
 mesh = SubResource("SphereMesh_gvpm8")
 
-[node name="GlowGut24" type="MeshInstance3D" parent="Krasue" unique_id=936844111]
+[node name="GlowGut24" type="MeshInstance3D" parent="Krasue" unique_id=1244995566]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.055058397, -0.9, -0.017558489)
 material_override = SubResource("StandardMaterial3D_cd8cr")
 mesh = SubResource("SphereMesh_wajtc")
 
-[node name="GlowGut25" type="MeshInstance3D" parent="Krasue" unique_id=906249715]
+[node name="GlowGut25" type="MeshInstance3D" parent="Krasue" unique_id=1814092972]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.10290956, -1.02, 0.04467554)
 material_override = SubResource("StandardMaterial3D_cd8cr")
 mesh = SubResource("SphereMesh_sijiy")
 
-[node name="GlowGut26" type="MeshInstance3D" parent="Krasue" unique_id=1243049813]
+[node name="GlowGut26" type="MeshInstance3D" parent="Krasue" unique_id=374919506]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.10315205, -1.14, 0.031228859)
 material_override = SubResource("StandardMaterial3D_cd8cr")
 mesh = SubResource("SphereMesh_kq3rq")
 
-[node name="GlowGut27" type="MeshInstance3D" parent="Krasue" unique_id=232188236]
+[node name="GlowGut27" type="MeshInstance3D" parent="Krasue" unique_id=1471894844]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.055602305, -1.26, -0.04750116)
 material_override = SubResource("StandardMaterial3D_cd8cr")
 mesh = SubResource("SphereMesh_lt30p")
 
-[node name="GlowGut28" type="MeshInstance3D" parent="Krasue" unique_id=1089710795]
+[node name="GlowGut28" type="MeshInstance3D" parent="Krasue" unique_id=26473828]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1298784, -0.3, 0.011534989)
 material_override = SubResource("StandardMaterial3D_cd8cr")
 mesh = SubResource("SphereMesh_a68ch")
 
-[node name="GlowGut29" type="MeshInstance3D" parent="Krasue" unique_id=1332316776]
+[node name="GlowGut29" type="MeshInstance3D" parent="Krasue" unique_id=1185150754]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.071856365, -0.42000002, 0.04223408)
 material_override = SubResource("StandardMaterial3D_cd8cr")
 mesh = SubResource("SphereMesh_u0wqr")
 
-[node name="GlowGut30" type="MeshInstance3D" parent="Krasue" unique_id=1327432093]
+[node name="GlowGut30" type="MeshInstance3D" parent="Krasue" unique_id=1738319103]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.05026847, -0.54, -0.03979952)
 material_override = SubResource("StandardMaterial3D_cd8cr")
 mesh = SubResource("SphereMesh_5t4lm")
 
-[node name="GlowGut31" type="MeshInstance3D" parent="Krasue" unique_id=444917351]
+[node name="GlowGut31" type="MeshInstance3D" parent="Krasue" unique_id=775880248]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.081452, -0.65999997, -0.017635621)
 material_override = SubResource("StandardMaterial3D_cd8cr")
 mesh = SubResource("SphereMesh_5fsa1")
 
-[node name="GlowGut32" type="MeshInstance3D" parent="Krasue" unique_id=587221881]
+[node name="GlowGut32" type="MeshInstance3D" parent="Krasue" unique_id=784941733]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.14180788, -0.78, 0.0088663995)
 material_override = SubResource("StandardMaterial3D_cd8cr")
 mesh = SubResource("SphereMesh_8ovde")
 
-[node name="GlowGut33" type="MeshInstance3D" parent="Krasue" unique_id=1164720857]
+[node name="GlowGut33" type="MeshInstance3D" parent="Krasue" unique_id=1695116007]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.18566, -0.9, -0.041347582)
 material_override = SubResource("StandardMaterial3D_cd8cr")
 mesh = SubResource("SphereMesh_ou4q3")
 
-[node name="GlowGut34" type="MeshInstance3D" parent="Krasue" unique_id=764069422]
+[node name="GlowGut34" type="MeshInstance3D" parent="Krasue" unique_id=1001808031]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.17982194, -1.02, -0.048402693)
 material_override = SubResource("StandardMaterial3D_cd8cr")
 mesh = SubResource("SphereMesh_d24l4")
 
-[node name="GlowGut35" type="MeshInstance3D" parent="Krasue" unique_id=1282113704]
+[node name="GlowGut35" type="MeshInstance3D" parent="Krasue" unique_id=1195602325]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.12871186, -1.14, -0.002279114)
 material_override = SubResource("StandardMaterial3D_cd8cr")
 mesh = SubResource("SphereMesh_h324r")
 
-[node name="GlowGut36" type="MeshInstance3D" parent="Krasue" unique_id=1225679045]
+[node name="GlowGut36" type="MeshInstance3D" parent="Krasue" unique_id=945483024]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.07100877, -1.26, -0.015305169)
 material_override = SubResource("StandardMaterial3D_cd8cr")
 mesh = SubResource("SphereMesh_la53h")
 
-[node name="GlowLight" type="OmniLight3D" parent="Krasue" unique_id=1849639792]
+[node name="GlowLight" type="OmniLight3D" parent="Krasue" unique_id=2074035219]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 light_color = Color(1, 0.15, 0.12, 1)
 light_energy = 3.0

@@ -90,7 +90,6 @@ public static partial class WorldBuilder
         Smithy(city, new Vector3(-20f, 0f, -12f));
         BuildBlocks(city);
         ScatterRoadside(city, "StreetProps", 0.9f, 110);
-        FenceRoads(city, "LaneFences", 0.4f, new Vector2(4f, 8f), 1.6f, p => Mathf.Abs(p.X) > 20f || Mathf.Abs(p.Y) > 20f);
         Puddles(city, 28, p => Mathf.Abs(p.X) < Wall - 8f && Mathf.Abs(p.Y) < Wall - 8f);
         PlaceChests(city, "wiang_mok", 5, p => Mathf.Abs(p.X) < Wall - 14f && Mathf.Abs(p.Y) < Wall - 14f);
         return city;
@@ -575,6 +574,93 @@ public static partial class WorldBuilder
         Shapes.Cylinder(chedi, new Vector3(0f, 8.6f, 0f), 0.02f, 0.3f, 4.2f, Gold, 0.4f, "Spire");
         Shapes.Solid(chedi, new Vector3(0f, 2.5f, 0f), new Vector3(6f, 5f, 6f));
 
+        // Satellite chedis at the corners of the main one.
+        foreach (var (cx, cz) in new[] { (-4.2f, -4.2f), (4.2f, -4.2f), (-4.2f, 4.2f), (4.2f, 4.2f) })
+        {
+            var sc = Shapes.Group(chedi, "SmallChedi", new Vector3(cx, 0f, cz));
+            Shapes.Box(sc, new Vector3(0f, 0.3f, 0f), new Vector3(1.2f, 0.6f, 1.2f), white, 0f, "Base");
+            Shapes.Sphere(sc, new Vector3(0f, 0.95f, 0f), 0.45f, white.Darkened(0.04f), 0f, "Bell");
+            Shapes.Cylinder(sc, new Vector3(0f, 1.75f, 0f), 0.02f, 0.12f, 1f, Gold, 0.3f, "Spire");
+        }
+
+        // หอระฆัง: bell tower in the south-west corner.
+        var tower = Shapes.Group(t, "BellTower", new Vector3(-13f, 0f, 12.5f));
+        Shapes.Box(tower, new Vector3(0f, 0.3f, 0f), new Vector3(4f, 0.6f, 4f), white.Darkened(0.05f), 0f, "Base");
+        foreach (var x in new[] { -1.5f, 1.5f })
+        foreach (var z in new[] { -1.5f, 1.5f })
+            Shapes.Box(tower, new Vector3(x, 2.4f, z), new Vector3(0.3f, 3.6f, 0.3f), white, 0f, "Column");
+        Shapes.Box(tower, new Vector3(0f, 4.3f, 0f), new Vector3(3.6f, 0.3f, 3.6f), DarkWood, 0f, "Floor");
+        Shapes.Cylinder(tower, new Vector3(0f, 3.6f, 0f), 0.35f, 0.6f, 0.9f, new Color(0.55f, 0.42f, 0.2f), 0.1f, "BronzeBell");
+        PyramidRoof(tower, new Vector3(0f, 5.4f, 0f), 2.6f, 1.8f, Tile, "Roof");
+        Shapes.Solid(tower, new Vector3(0f, 0.3f, 0f), new Vector3(4f, 0.6f, 4f));
+        foreach (var x in new[] { -1.5f, 1.5f })
+        foreach (var z in new[] { -1.5f, 1.5f })
+            Shapes.Solid(tower, new Vector3(x, 2.4f, z), new Vector3(0.3f, 3.6f, 0.3f));
+
+        // ศาลาการเปรียญ: an open sala with benches west of the hall.
+        var sala = Shapes.Group(t, "Sala", new Vector3(-12.5f, 0f, -1f));
+        Shapes.Box(sala, new Vector3(0f, 0.25f, 0f), new Vector3(7f, 0.5f, 9f), white.Darkened(0.08f), 0f, "Base");
+        Shapes.Solid(sala, new Vector3(0f, 0.25f, 0f), new Vector3(7f, 0.5f, 9f));
+        for (int i = 0; i < 4; i++)
+        foreach (var x in new[] { -3.2f, 3.2f })
+        {
+            Shapes.Cylinder(sala, new Vector3(x, 1.9f, -3.9f + i * 2.6f), 0.16f, 0.18f, 2.8f, white, 0f, "Column");
+            Shapes.Solid(sala, new Vector3(x, 1.9f, -3.9f + i * 2.6f), new Vector3(0.36f, 2.8f, 0.36f));
+        }
+        Shapes.Prism(sala, new Vector3(0f, 4.1f, 0f), new Vector3(8f, 1.8f, 10f), Tile, "RoofSala").Rotation = new Vector3(0f, Mathf.Pi * 0.5f, 0f);
+        foreach (var z in new[] { -2.5f, 0f, 2.5f })
+            Shapes.Box(sala, new Vector3(0f, 0.75f, z), new Vector3(3.5f, 0.1f, 0.6f), Wood, 0f, "Bench");
+
+        // กุฏิ: two little monks' cells along the north wall.
+        foreach (var kx in new[] { -14f, -8.5f })
+        {
+            var k = Shapes.Group(t, "Kuti", new Vector3(kx, 0f, -15.5f));
+            foreach (var x in new[] { -1.5f, 1.5f })
+            foreach (var z in new[] { -1.2f, 1.2f })
+                Shapes.Cylinder(k, new Vector3(x, 0.5f, z), 0.1f, 0.1f, 1f, DarkWood, 0f, "Stilt");
+            Shapes.Box(k, new Vector3(0f, 1.05f, 0f), new Vector3(3.4f, 0.12f, 2.8f), Wood, 0f, "Floor");
+            Shapes.Box(k, new Vector3(0f, 2.1f, 0f), new Vector3(3f, 2f, 2.4f), Wood.Lightened(0.05f), 0f, "Walls");
+            Shapes.Box(k, new Vector3(0f, 1.8f, 1.22f), new Vector3(0.8f, 1.5f, 0.04f), new Color(0.14f, 0.09f, 0.06f), 0f, "Door");
+            GableRoof(k, 3.1f, 3f, 3f, 0f, Tile.Darkened(0.1f), Wood, false);
+            Shapes.Solid(k, new Vector3(0f, 1.6f, 0f), new Vector3(3.4f, 3.2f, 2.8f));
+        }
+
+        // สิงห์คู่ guarding the gate, a big incense burner and tung flags.
+        foreach (var x in new[] { -2.2f, 2.2f })
+        {
+            var lion = Shapes.Group(t, "Singha", new Vector3(x, 0f, 17.2f), Mathf.Pi);
+            Shapes.Box(lion, new Vector3(0f, 0.4f, 0f), new Vector3(0.9f, 0.8f, 1.2f), white.Darkened(0.12f), 0f, "Plinth");
+            Shapes.Box(lion, new Vector3(0f, 1.15f, 0.15f), new Vector3(0.55f, 0.7f, 0.8f), white.Darkened(0.05f), 0f, "LionBody");
+            Shapes.Sphere(lion, new Vector3(0f, 1.75f, -0.15f), 0.32f, white, 0f, "LionHead");
+            Shapes.Sphere(lion, new Vector3(0f, 1.7f, 0f), 0.4f, Gold.Darkened(0.2f), 0f, "LionMane").Scale = new Vector3(1f, 1f, 0.6f);
+            Shapes.Solid(lion, new Vector3(0f, 0.9f, 0f), new Vector3(0.9f, 1.8f, 1.2f));
+        }
+        var burner = Shapes.Group(t, "IncenseBurner", new Vector3(2.6f, 0f, 11.5f));
+        Shapes.Cylinder(burner, new Vector3(0f, 0.45f, 0f), 0.5f, 0.35f, 0.9f, new Color(0.45f, 0.35f, 0.18f), 0f, "BronzeBurner");
+        for (int i = 0; i < 7; i++)
+            Shapes.Box(burner, new Vector3(-0.2f + (i % 4) * 0.13f, 1.1f, -0.1f + (i / 4) * 0.2f), new Vector3(0.015f, 0.4f, 0.015f), new Color(0.75f, 0.3f, 0.2f), 0f, "IncenseStick");
+        Shapes.Sphere(burner, new Vector3(0f, 1.3f, 0f), 0.05f, new Color(1f, 0.5f, 0.2f), 3f, "GlowEmber");
+        Shapes.Solid(burner, new Vector3(0f, 0.5f, 0f), new Vector3(1f, 1f, 1f));
+        foreach (var x in new[] { -6f, 6f })
+        {
+            var pole = Shapes.Group(t, "TungPole", new Vector3(x, 0f, 15.5f));
+            Shapes.Cylinder(pole, new Vector3(0f, 3f, 0f), 0.06f, 0.08f, 6f, DarkWood, 0f, "Pole");
+            for (int i = 0; i < 6; i++)
+                Shapes.Box(pole, new Vector3(0.18f, 5.3f - i * 0.45f, 0f), new Vector3(0.32f, 0.4f, 0.02f), i % 2 == 0 ? new Color(0.85f, 0.3f, 0.2f) : new Color(0.95f, 0.8f, 0.3f), 0f, "ClothTung");
+            Shapes.Solid(pole, new Vector3(0f, 1.5f, 0f), new Vector3(0.2f, 3f, 0.2f));
+        }
+
+        // A seated Buddha image under the bodhi tree, with offerings.
+        var buddha = Shapes.Group(t, "BuddhaImage", new Vector3(13.5f, 0f, 8f), -Mathf.Pi * 0.5f);
+        Shapes.Box(buddha, new Vector3(0f, 0.5f, 0f), new Vector3(1.8f, 1f, 1.4f), white.Darkened(0.1f), 0f, "Plinth");
+        Shapes.Box(buddha, new Vector3(0f, 1.25f, 0f), new Vector3(1.3f, 0.5f, 1f), Gold, 0.15f, "GildedLap");
+        Shapes.Box(buddha, new Vector3(0f, 1.85f, 0.1f), new Vector3(0.75f, 0.8f, 0.5f), Gold, 0.15f, "GildedBody");
+        Shapes.Sphere(buddha, new Vector3(0f, 2.45f, 0.1f), 0.26f, Gold, 0.15f, "GildedHead");
+        Shapes.Cylinder(buddha, new Vector3(0f, 2.8f, 0.1f), 0.01f, 0.1f, 0.35f, Gold, 0.3f, "Spire");
+        foreach (var x in new[] { -0.6f, 0.6f })
+            Shapes.Sphere(buddha, new Vector3(x, 1.05f, -0.75f), 0.05f, new Color(1f, 0.7f, 0.3f), 4f, "GlowCandle");
+        Shapes.Solid(buddha, new Vector3(0f, 1.2f, 0f), new Vector3(1.8f, 2.4f, 1.4f));
+
         Banyan(t, "Bodhi", new Vector3(10f, 0f, 9f), 1.1f, true);
         LanternPost(t, "TempleLantern1", new Vector3(-2.6f, 0f, 14f), 2.6f, true, new Vector3(0f, 0f, 14f));
         LanternPost(t, "TempleLantern2", new Vector3(2.6f, 0f, 14f), 2.6f, false, new Vector3(0f, 0f, 14f));
@@ -851,8 +937,8 @@ public static partial class WorldBuilder
         BuildPaddies(world);
         BuildFieldTrees(world);
         BuildThickets(world, 26);
+        Canals(world, 6);
         ScatterRoadside(world, "FieldProps", 0.8f, 45, p => p.Y > ThungNaShoreZ + 10f);
-        FenceRoads(world, "FieldFences", 0.4f, new Vector2(5f, 10f), 2.1f, p => p.Y > ThungNaShoreZ + 12f && Mathf.Abs(p.X) < Half - 8f);
         Puddles(world, 22, p => p.Y > ThungNaShoreZ + 12f);
         PlaceChests(world, "thung_na", 5, p => p.Y > ThungNaShoreZ + 18f);
         BuildFireflies(world, Half);

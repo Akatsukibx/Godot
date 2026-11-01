@@ -186,6 +186,15 @@ public static partial class WorldBuilder
         foreach (var route in BuengWalks)
         {
             var pts = route.Length == 2 ? route.ToList() : Meander(route, 7f, 6f);
+            // Over deep channels the walk rises into an arch (high enough for a boat to pass under),
+            // easing back down to the islands on either side.
+            var lift = pts.Select(p => BuengHeight(p.X, p.Z) < -1.0f ? 1.6f : 0f).ToArray();
+            lift[0] = lift[^1] = 0f;
+            for (int pass = 0; pass < 3; pass++)
+                for (int j = 1; j < lift.Length - 1; j++)
+                    lift[j] = Mathf.Min(lift[j], (lift[j - 1] + lift[j] + lift[j + 1]) / 3f + 0.05f);
+            for (int j = 0; j < pts.Count; j++)
+                pts[j] = pts[j] with { Y = lift[j] };
             var walk = Shapes.Group(root, $"Walk{k++}");
             DeckRibbon(walk, pts, 2.6f, Wood.Darkened(_rng.RandfRange(0f, 0.1f)));
             for (int i = 0; i < pts.Count - 1; i++)
@@ -199,7 +208,7 @@ public static partial class WorldBuilder
                 Shapes.MapTag(Shapes.Group(walk, "Segment", new Vector3(mid.X, 0f, mid.Z), Mathf.Atan2(d.X, d.Z)), "map_deck", new Vector2(2.2f, len));
                 var right = new Vector3(d.Z, 0f, -d.X) / len;
                 float bed = BuengHeight(a.X, a.Z);
-                float top = DeckTop - 0.16f;
+                float top = DeckTop + a.Y - 0.16f;
                 if (bed < top - 0.1f)
                     foreach (var side in new[] { -1f, 1f })
                     {
@@ -207,10 +216,19 @@ public static partial class WorldBuilder
                         Shapes.Cylinder(walk, new Vector3(p.X, (top + bed - 0.3f) * 0.5f, p.Z), 0.09f, 0.1f, top - bed + 0.3f, DarkWood, 0f, "Piling");
                     }
                 AddRoad(a, b, 1.1f);
+                if (a.Y > 0.25f || b.Y > 0.25f)
+                    foreach (var rs in new[] { -1.15f, 1.15f })
+                    {
+                        var ra = a + right * rs + Vector3.Up * (DeckTop + 0.95f);
+                        var rb = b + right * rs + Vector3.Up * (DeckTop + 0.95f);
+                        var rail = Shapes.Box(walk, (ra + rb) * 0.5f, new Vector3(0.07f, 0.07f, (rb - ra).Length() + 0.1f), DarkWood, 0f, "Rail");
+                        rail.Transform = new Transform3D(Basis.LookingAt(rb - ra, Vector3.Up), (ra + rb) * 0.5f);
+                        Shapes.Box(walk, a + right * rs + Vector3.Up * (DeckTop + 0.5f), new Vector3(0.08f, 0.95f, 0.08f), DarkWood, 0f, "RailPost");
+                    }
                 if (i % 5 == 2)
                 {
                     float side = lamp++ % 2 == 0 ? 1.25f : -1.25f;
-                    LanternPost(walk, $"WalkLantern{lamp}", new Vector3(mid.X, DeckTop, mid.Z) + right * side, 2.4f, lamp % 3 == 0, new Vector3(mid.X, DeckTop, mid.Z));
+                    LanternPost(walk, $"WalkLantern{lamp}", new Vector3(mid.X, DeckTop + mid.Y, mid.Z) + right * side, 2.4f, lamp % 3 == 0, new Vector3(mid.X, DeckTop + mid.Y, mid.Z));
                 }
             }
         }
@@ -231,7 +249,7 @@ public static partial class WorldBuilder
             var nIn = new Vector3(dIn.Z, 0f, -dIn.X);
             var miter = (nIn + new Vector3(dOut.Z, 0f, -dOut.X)).Normalized();
             float scale = 1f / Mathf.Max(0.5f, miter.Dot(nIn)); // keep the width constant through bends
-            var p = new Vector3(pts[i].X, DeckTop, pts[i].Z);
+            var p = new Vector3(pts[i].X, DeckTop + pts[i].Y, pts[i].Z);
             right.Add(p + miter * width * 0.5f * scale);
             left.Add(p - miter * width * 0.5f * scale);
         }
