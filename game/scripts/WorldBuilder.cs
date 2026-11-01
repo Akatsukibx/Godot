@@ -1099,7 +1099,7 @@ void fragment() {
         Shapes.MapTag(Shapes.Box(v, new Vector3(0f, 0.02f, 0f), new Vector3(22f, 0.04f, 22f), Dirt, 0f, "Plaza"), "map_road", new Vector2(22f, 22f));
         Shapes.MapTag(Shapes.Box(v, new Vector3(0f, 0.025f, (ThungNaShoreZ + 4f - 11f) * 0.5f), new Vector3(2.8f, 0.04f, -(ThungNaShoreZ + 4f) - 11f), Dirt, 0f, "PathNorth"), "map_road", new Vector2(2.8f, -(ThungNaShoreZ + 4f) - 11f));
         AddRoad(new Vector3(0f, 0f, ThungNaShoreZ + 4f), new Vector3(0f, 0f, -11f), 1.4f);
-        Occupy(Vector3.Zero, 14f); // the village core keeps its layout
+        Occupy(Vector3.Zero, 18f); // the village plaza and its core keep their layout
         SignPost(v, new Vector3(13.5f, 0f, 13.5f), ("เวียงหมอก", new Vector3(0f, 0f, 1f)), ("หมู่บ้านกลางน้ำ · บึงบัวสาย", new Vector3(0f, 0f, -1f)),
             ("หมู่บ้านตายาย", new Vector3(-1f, 0f, 0.3f)), ("หมู่บ้านตะวันออก", new Vector3(1f, 0f, 0.3f)));
 

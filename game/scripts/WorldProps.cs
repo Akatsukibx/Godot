@@ -225,7 +225,7 @@ public static partial class WorldBuilder
 			var pos = new Vector3(at.X, 0f, at.Y);
 			if (allowed != null && !allowed(at))
 				continue;
-			float yaw = Mathf.Atan2(side.X, side.Y) + Mathf.Pi; // facing the road
+			float yaw = Mathf.Atan2(side.X, side.Y);
 			if (_rng.Randf() < 0.28f)
 			{
 				// A stall needs more room and some space between neighbours.
@@ -344,7 +344,7 @@ public static partial class WorldBuilder
 	static void Puddles(Node3D parent, int count, System.Func<Vector2, bool> allowed = null)
 	{
 		var root = Shapes.Group(parent, "Puddles");
-		var mat = WaterMaterial();
+		var mat = new StandardMaterial3D { AlbedoColor = new Color(0.1f, 0.15f, 0.2f, 0.72f), Transparency = BaseMaterial3D.TransparencyEnum.Alpha, Roughness = 0.04f, Metallic = 0.35f };
 		for (int i = 0; i < count * 8 && count > 0; i++)
 		{
 			float x = _rng.RandfRange(-Half + 10f, Half - 10f), z = _rng.RandfRange(-Half + 10f, Half - 10f);
@@ -352,7 +352,7 @@ public static partial class WorldBuilder
 			if (allowed != null && !allowed(new Vector2(x, z)))
 				continue;
 			// Puddles gather at the edges of roads and in yards, never inside a building or on a pier.
-			if (Blocked(pos, 2.5f) || DistToRoads(pos) > 5f)
+			if (Blocked(pos, 2.5f) || DistToRoads(pos) > 5f || DistToRoads(pos) < 1.6f)
 				continue;
 			float rx = _rng.RandfRange(0.9f, 2.2f), rz = _rng.RandfRange(0.7f, 1.6f);
 			var mi = Shapes.Child(root, new MeshInstance3D
@@ -364,7 +364,6 @@ public static partial class WorldBuilder
 				Scale = new Vector3(rx, 1f, rz),
 				Rotation = new Vector3(0f, _rng.Randf() * Mathf.Tau, 0f),
 			}, "PuddleWater");
-			mi.AddToGroup("water_surface", true);
 			Occupy(pos, 1.5f);
 			count--;
 			i += 8;
