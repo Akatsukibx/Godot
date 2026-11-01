@@ -177,6 +177,52 @@
     "releaseText": "บ้านอยู่ทางนั้น... ขอบใจที่ชี้ทางให้"
   },
 
+  // ---------- โรงพยาบาลร้าง (Lv 35–45): ผีพยาบาล, วิญญาณคนไข้, ผีแม่ลูกอ่อน ----------
+  {
+    "id": "phi_phayaban", "name": "ผีพยาบาล", "behavior": "chaser", "color": "#d8dcd4",
+    "maxHp": 190, "speed": 5.2, "damage": 28, "attackRange": 1.9, "attackCooldown": 1.0, "aggroRange": 18, "exp": 60,
+    "activeAtDay": true, "despawnAtDawn": false, "spawnWeightDay": 3, "spawnWeightNight": 3,
+    "weakness": { "blessed": 1.6, "moon": 1.4, "fire": 1.0, "rice": 0.9 },
+    "drops": [
+      { "item": "phaphan_sap", "chance": 0.3 },
+      { "item": "ya_hom_yai", "chance": 0.12 },
+      { "item": "kunjae_hong_sop", "chance": 0.05 },
+      { "item": "phlueak_winyan", "chance": 0.06, "minLevel": 38 },
+      { "item": "set_tra_phanuek", "chance": 0.02, "minLevel": 40 }
+    ],
+    "story": "พยาบาลเวรดึกคืนที่ไฟไหม้ตึก ยังเข็นรถยาไปตามทางเดินทุกคืน หน้ากากผ้าปิดปากชุ่มเลือด ใครเดินผ่านจะถูกจับฉีดยาที่ไม่มีใครสั่ง",
+    "releaseText": "เวรของฉัน... หมดแล้วใช่ไหมคะ"
+  },
+  {
+    "id": "winyan_khon_khai", "name": "วิญญาณคนไข้", "behavior": "brute", "color": "#9fb0b4",
+    "maxHp": 260, "speed": 3.2, "damage": 31, "attackRange": 2.1, "attackCooldown": 1.7, "aggroRange": 14, "exp": 66,
+    "activeAtDay": true, "despawnAtDawn": false, "spawnWeightDay": 3, "spawnWeightNight": 2,
+    "weakness": { "fire": 1.5, "blessed": 1.3, "rice": 1.1, "moon": 0.9 },
+    "drops": [
+      { "item": "pai_khomue", "chance": 0.45 },
+      { "item": "sai_sin_khat", "chance": 0.2 },
+      { "item": "lek_nam_phi", "chance": 0.15 },
+      { "item": "kunjae_bandai_nifai", "chance": 0.02 },
+      { "item": "set_tra_phanuek", "chance": 0.015, "minLevel": 40 }
+    ],
+    "story": "คนไข้ที่ถูกทิ้งไว้บนเตียงตอนโรงพยาบาลปิด ยังลากเสาน้ำเกลือเดินหาหมอที่ไม่มีวันมา ผ้าพันแผลหลุดลุ่ย ป้ายข้อมือยังมีชื่ออยู่",
+    "releaseText": "หมอมาแล้ว... ผมกลับบ้านได้แล้วใช่ไหม"
+  },
+  {
+    "id": "phi_mae_luk_on", "name": "ผีแม่ลูกอ่อน", "behavior": "chaser", "color": "#c8b0b8",
+    "maxHp": 220, "speed": 4.6, "damage": 34, "attackRange": 1.9, "attackCooldown": 1.2, "aggroRange": 20, "exp": 72,
+    "activeAtDay": false, "despawnAtDawn": true, "spawnWeightDay": 0.4, "spawnWeightNight": 3,
+    "weakness": { "rice": 1.6, "blessed": 1.4, "moon": 1.2, "fire": 0.8 },
+    "drops": [
+      { "item": "phaphan_sap", "chance": 0.25 },
+      { "item": "khi_phueng", "chance": 0.15 },
+      { "item": "phlueak_winyan", "chance": 0.08, "minLevel": 38 },
+      { "item": "set_tra_phanuek", "chance": 0.02, "minLevel": 40 },
+      { "item": "ya_hom_yai", "chance": 0.08 }
+    ],
+    "story": "แม่ที่ตายพร้อมลูกในห้องคลอดคืนเดียวกัน ยังอุ้มห่อผ้าที่ว่างเปล่าเดินร้องเพลงกล่อม ได้ยินเสียงเด็กร้องที่ไหนจะตามไปทันที",
+    "releaseText": "ลูกแม่... หลับแล้วนะ"
+  },
   // ---------- บึงบัวสาย (Lv 15–25): ผีน้ำ ไม่ซ้ำกับโซนอื่น ----------
   {
     "id": "phi_phrai", "name": "ผีพราย", "behavior": "chaser", "aquatic": true, "color": "#7fd6c0",
@@ -297,5 +343,20 @@
     ],
     "story": "เมียผู้ใหญ่บ้านที่รับวิชาจากชายถือโคมขาว หวังให้หมู่บ้านพ้นโรคระบาด แต่ของที่เลี้ยงไว้กินคนทั้งหมู่บ้านทีละเรือน จนเหลือแต่เรือนของนางเอง",
     "releaseText": "ฉันแค่อยากให้ทุกคนหายป่วย... โคมขาวนั่นโกหก"
+  },
+  {
+    "id": "boss_mae_sue", "name": "แม่ซื้อห้องคลอด", "behavior": "chaser", "boss": true, "scale": 2.2, "color": "#e8dcd0",
+    "maxHp": 3400, "speed": 4.4, "damage": 52, "attackRange": 3.3, "attackCooldown": 1.8, "aggroRange": 24, "exp": 2200,
+    "activeAtDay": false, "despawnAtDawn": false, "spawnWeightDay": 0, "spawnWeightNight": 0,
+    "weakness": { "blessed": 1.6, "rice": 1.5, "moon": 1.2, "fire": 0.8 },
+    "drops": [
+      { "item": "soi_mae_sue", "chance": 0.35 },
+      { "item": "set_tra_phanuek", "chance": 0.6 },
+      { "item": "phlueak_winyan", "chance": 0.7 },
+      { "item": "phaphan_sap", "chance": 1 },
+      { "item": "takrut_phai_tan", "chance": 0.1 }
+    ],
+    "story": "แม่ซื้อผู้เฝ้าเด็กแรกเกิดในห้องคลอดมาตั้งแต่โรงพยาบาลเปิด คืนที่สมาคมโคมขาวมา นางถูกผูกด้วยด้ายดำให้เฝ้าเศษตราผนึกแทนเด็ก ๆ ที่นางรัก ตั้งแต่นั้นนางก็ไม่ยอมให้ใครเข้าหอผู้ป่วยหลังคลอดอีก",
+    "releaseText": "เด็ก ๆ ปลอดภัยแล้ว... ฉันหลับได้แล้ว"
   }
 ]

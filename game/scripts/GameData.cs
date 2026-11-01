@@ -253,6 +253,7 @@ public class BossDef
 {
     public string Ghost { get; set; }
     public float X { get; set; }
+    public float Y { get; set; } // floor height for a lair upstairs (0 = ground)
     public float Z { get; set; }
     public float Respawn { get; set; } = 600f;
     public string Lair { get; set; } = "";
@@ -276,6 +277,7 @@ public class SpawnGroupDef
     public string Name { get; set; } = "";
     public List<string> Ghosts { get; set; } = new();
     public float X { get; set; }
+    public float Y { get; set; } // floor height for a group upstairs (0 = ground)
     public float Z { get; set; }
     public float Radius { get; set; } = 14f;
     public int Count { get; set; } = 3;
@@ -492,8 +494,9 @@ public static class GameData
     public static ZoneDef ZoneAt(Vector3 p) => Zones.FirstOrDefault(z => z.Contains(p));
     public static Vector3 ToV3(float[] a) => a == null ? Vector3.Zero : new Vector3(a[0], a[1], a[2]);
 
+    // Capped so very high levels cannot overflow an int (that froze the game in the level-up loop).
     public static int ExpToNext(int level) =>
-        Mathf.RoundToInt(Config.ExpBase * Mathf.Pow(Config.ExpGrowth, level - 1));
+        (int)System.Math.Min(500_000_000.0, System.Math.Round(Config.ExpBase * System.Math.Pow(Config.ExpGrowth, level - 1)));
 
     static T Read<T>(string path)
     {

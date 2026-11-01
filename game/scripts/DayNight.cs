@@ -121,6 +121,7 @@ void sky() {
     float SunProgress() => (Hour - Cfg.DayStartHour) / (Cfg.NightStartHour - Cfg.DayStartHour);
 
     float _haunt;
+    bool _hauntCold;
 
     void Apply()
     {
@@ -145,17 +146,22 @@ void sky() {
         _env.FogDensity = Mathf.Lerp(0.012f, 0.004f, k) + Overcast * 0.012f;
 
         // ป่าไผ่ทึบ has its own mood: pale, green-grey moonlight and a heavy greenish haze by night,
-        // a dim overcast murk by day. It fades in and out as you cross the zone edge.
-        float target = Game.Main?.CurrentZone?.Id == "pa_phai" ? 1f : 0f;
+        // a dim overcast murk by day. โรงพยาบาลร้าง is the same but cold grey-blue, like old fluorescent
+        // light. The mood fades in and out as you cross the zone edge.
+        string zid = Game.Main?.CurrentZone?.Id;
+        float target = zid is "pa_phai" or "rong_phayaban" ? 1f : 0f;
+        if (target > 0f)
+            _hauntCold = zid == "rong_phayaban";
         _haunt = Mathf.MoveToward(_haunt, target, 0.015f);
         if (_haunt > 0f)
         {
             float h = _haunt;
-            _sun.LightColor = _sun.LightColor.Lerp(new Color(0.72f, 0.82f, 0.78f).Lerp(new Color(0.85f, 0.88f, 0.8f), k), h);
+            bool c = _hauntCold;
+            _sun.LightColor = _sun.LightColor.Lerp(c ? new Color(0.7f, 0.76f, 0.86f).Lerp(new Color(0.84f, 0.86f, 0.88f), k) : new Color(0.72f, 0.82f, 0.78f).Lerp(new Color(0.85f, 0.88f, 0.8f), k), h);
             _sun.LightEnergy = Mathf.Lerp(_sun.LightEnergy, Mathf.Lerp(0.7f, 0.8f, k), h);
-            _env.AmbientLightColor = _env.AmbientLightColor.Lerp(new Color(0.34f, 0.42f, 0.38f).Lerp(new Color(0.52f, 0.58f, 0.52f), k), h);
-            _env.FogLightColor = _env.FogLightColor.Lerp(new Color(0.2f, 0.26f, 0.23f).Lerp(new Color(0.5f, 0.56f, 0.5f), k), h);
-            _env.FogDensity += 0.012f * h;
+            _env.AmbientLightColor = _env.AmbientLightColor.Lerp(c ? new Color(0.34f, 0.38f, 0.44f).Lerp(new Color(0.55f, 0.57f, 0.6f), k) : new Color(0.34f, 0.42f, 0.38f).Lerp(new Color(0.52f, 0.58f, 0.52f), k), h);
+            _env.FogLightColor = _env.FogLightColor.Lerp(c ? new Color(0.2f, 0.22f, 0.27f).Lerp(new Color(0.52f, 0.54f, 0.56f), k) : new Color(0.2f, 0.26f, 0.23f).Lerp(new Color(0.5f, 0.56f, 0.5f), k), h);
+            _env.FogDensity += (c ? 0.008f : 0.012f) * h;
         }
 
         _sky.SetShaderParameter("top_color", new Color(0.015f, 0.025f, 0.08f).Lerp(new Color(0.3f, 0.5f, 0.82f), k));

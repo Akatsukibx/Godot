@@ -39,6 +39,7 @@ public static partial class WorldBuilder
         "wiang_mok" => BuildWiangMok(),
         "bueng_bua" => BuildBuengBua(),
         "pa_phai" => BuildPaPhai(),
+        "rong_phayaban" => BuildHospital(),
         _ => BuildThungNa(),
     };
 

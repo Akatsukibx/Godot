@@ -24,6 +24,8 @@ public static partial class WorldBuilder
         new Vector3[] { new(0f, 0f, 0f), new(14f, 0f, 40f), new(30f, 0f, 80f), new(44f, 0f, 112f) },
     };
 
+    static readonly Vector3[] PaPhaiSouth = { new(44f, 0f, 112f), new(52f, 0f, 140f), new(42f, 0f, 166f), new(40f, 0f, Half) };
+
     public static Node3D BuildPaPhai()
     {
         _rng = new RandomNumberGenerator { Seed = 25351 };
@@ -31,6 +33,10 @@ public static partial class WorldBuilder
         var world = new Node3D { Name = "Zone_PaPhai" };
         PaPhaiGround(world);
         PaPhaiTracksBuild(world);
+        // The track south to the hospital is reserved now but drawn last with its own dice, so adding it
+        // did not reshuffle the village.
+        for (int i = 0; i < PaPhaiSouth.Length - 1; i++)
+            AddRoad(PaPhaiSouth[i], PaPhaiSouth[i + 1], 3f);
         PaPhaiCamp(world);
         PaPhaiVillage(world);
         PaPhaiHeadmanHouse(world);
@@ -40,6 +46,16 @@ public static partial class WorldBuilder
         Puddles(world, 45);
         PaPhaiPools(world);
         PlaceChests(world, "pa_phai", 5, p => true);
+        {
+            var keep = _rng;
+            _rng = new RandomNumberGenerator { Seed = 25352 };
+            var south = Shapes.Group(world, "SouthTrack");
+            DrawRoad(south, "MudTrackSouth", Meander(PaPhaiSouth, 3f, 5f), 3.4f, Mud.Lightened(0.06f));
+            foreach (var s in south.FindChildren("Strip*", "MeshInstance3D", true, false))
+                s.Name = "MudStrip";
+            SignPost(world, new Vector3(56f, 0f, 134f), ("ป่าช้าเก่า", new Vector3(0f, 0f, -1f)), ("โรงพยาบาลร้าง", new Vector3(0f, 0f, 1f)));
+            _rng = keep;
+        }
         PaPhaiMist(world);
         return world;
     }

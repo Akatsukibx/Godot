@@ -182,7 +182,9 @@ void fragment() {
             || !night && zone != null && !zone.AlleyOnly && player.GlobalPosition.DistanceTo(zone.Center) < Cfg.SafeZoneRadius + 4f;
         float leash = Leash > 0f ? Leash : Def.Boss ? 40f : zone?.AlleyOnly == true ? 12f : 45f;
         bool tooFar = player.GlobalPosition.DistanceTo(Home) > leash;
-        bool chasing = !playerSafe && !tooFar && (dist < Def.AggroRange * (night ? 1.3f : 1f) || _awake > 0f);
+        // A player on another storey is out of reach, however close they are on the map.
+        bool otherFloor = Mathf.Abs(player.GlobalPosition.Y - GlobalPosition.Y) > 3.5f;
+        bool chasing = !playerSafe && !tooFar && !otherFloor && (dist < Def.AggroRange * (night ? 1.3f : 1f) || _awake > 0f);
         bool frozen = Def.Behavior == "statue" && dist < 30f && player.LookDir.Dot(-dir) > 0.35f;
         bool enraged = Def.Boss && Hp < MaxHp * 0.5f;
         if (enraged && !_enraged)
@@ -200,7 +202,7 @@ void fragment() {
             // Boss charge: a straight rush that hurts on contact.
             _chargeTimer -= dt;
             move = _chargeDir * Def.Speed * 3.2f;
-            if (dist < 1.8f * Def.Scale && _attackCd <= 0f)
+            if (dist < 1.8f * Def.Scale && _attackCd <= 0f && !otherFloor)
             {
                 player.TakeDamage(_damage * 0.8f, Def.Name);
                 _attackCd = 0.8f;
@@ -216,10 +218,10 @@ void fragment() {
                     // Ground slam around the boss.
                     float radius = Def.AttackRange + 1.5f;
                     Fx.Ring(GetParent(), GlobalPosition, radius, new Color(1f, 0.25f, 0.2f), 0.4f);
-                    if (dist <= radius)
+                    if (dist <= radius && !otherFloor)
                         player.TakeDamage(_damage * (night ? Cfg.NightDamageMult : 1f), Def.Name);
                 }
-                else if (dist <= Def.AttackRange + 0.5f)
+                else if (dist <= Def.AttackRange + 0.5f && !otherFloor)
                     player.TakeDamage(_damage * (night ? Cfg.NightDamageMult : 1f), Def.Name);
                 _attackCd = Def.AttackCooldown * (enraged ? 0.65f : 1f);
             }
@@ -279,7 +281,7 @@ void fragment() {
         else if (Def.Flying)
         {
             // Hover about a metre above whatever is below: ground, a pier or the water surface.
-            float below = Game.Main.GroundAt(GlobalPosition + Vector3.Up * 1.5f);
+            float below = Game.Main.GroundAt(GlobalPosition, 1.5f);
             if (surface is float sf && sf > below)
                 below = sf;
             vy = Mathf.Clamp((below + 1f + Mathf.Sin(_time * 2.2f) * 0.15f - GlobalPosition.Y) * 4f, -6f, 6f);

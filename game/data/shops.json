@@ -7,5 +7,6 @@
   { "id": "field_kitchen", "name": "ครัวป้าบัวคำ", "items": ["ya_hom", "ya_hom_yai"] },
   { "id": "floating_market", "name": "แพลอยแม่จันทร์เพ็ญ", "items": ["ya_hom", "fang_sap", "khao_san_sek", "sai_sin_khat", "lek_nam_phi", "lo_sai_sin", "sai_sin_suea", "sai_sin_kang"] },
   { "id": "herbalist", "name": "ร้านสมุนไพรป้าแย้ม", "items": ["ya_hom", "ya_hom_yai", "sai_bua", "khi_phueng", "soi_prakham"] },
-  { "id": "hunter_camp", "name": "ค่ายพรานเขียด", "items": ["ya_hom", "ya_hom_yai", "khao_san_sek", "khi_phueng", "mai_phai_sap", "lo_sai_sin", "sai_sin_suea", "sai_sin_kang"] }
+  { "id": "hunter_camp", "name": "ค่ายพรานเขียด", "items": ["ya_hom", "ya_hom_yai", "khao_san_sek", "khi_phueng", "mai_phai_sap", "lo_sai_sin", "sai_sin_suea", "sai_sin_kang"] },
+  { "id": "nurse_post", "name": "ป้อมยามป้าศรีนวล", "items": ["ya_hom", "ya_hom_yai", "yan_kan_taek", "khao_san_sek", "khi_phueng", "phaphan_sap", "sai_sin_suea", "sai_sin_kang"] }
 ]

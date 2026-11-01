@@ -31,7 +31,8 @@
 	"rainChance": 0.3, "worldX": 1, "worldY": 0,
 	"exits": [
 	  { "to": "wiang_mok", "side": "south", "label": "ทางลงเวียงหมอก" },
-	  { "to": "bueng_bua", "side": "north", "label": "ท่าน้ำ" }
+	  { "to": "bueng_bua", "side": "north", "label": "ท่าน้ำ" },
+	  { "to": "rong_phayaban", "side": "east", "label": "ถนนร้างสู่โรงพยาบาล" }
 	]
   },
   {
@@ -66,9 +67,26 @@
 	],
 	"exits": [ { "to": "bueng_bua", "side": "west", "label": "สะพานไม้สู่บึงบัวสาย" }, { "to": "rong_phayaban", "side": "south", "label": "ทางลงโรงพยาบาลร้าง" } ]
   },
-  { "id": "rong_phayaban", "name": "โรงพยาบาลร้าง", "open": false, "levelText": "35–45", "worldX": 2, "worldY": 0,
-	"enemies": "ผีพยาบาล, วิญญาณคนไข้, ผีแม่ลูกอ่อน",
-	"exits": [ { "to": "wat_doi", "side": "east" } ] },
+  {
+	"id": "rong_phayaban", "name": "โรงพยาบาลร้าง", "subtitle": "บันไดกลางถล่มแล้ว · ทางขึ้นมีแต่ทางที่คนตายเคยใช้", "open": true,
+	"scene": "rong_phayaban", "centerX": 372, "centerZ": -372, "sizeX": 372, "sizeZ": 372, "entrance": "north",
+	"levelMin": 35, "levelMax": 45, "levelText": "35–45", "worldX": 2, "worldY": 0,
+	"ghosts": [ "phi_phayaban", "winyan_khon_khai", "phi_mae_luk_on" ], "enemies": "ผีพยาบาล, วิญญาณคนไข้, ผีแม่ลูกอ่อน",
+	"alleyOnly": false, "maxGhostsDay": 6, "maxGhostsNight": 10, "rainChance": 0.4,
+	"boss": { "ghost": "boss_mae_sue", "x": -28, "y": 14, "z": 20, "respawn": 1500, "lair": "หอผู้ป่วยหลังคลอด ชั้นสาม",
+	  "summon": { "offering": { "phaphan_sap": 6, "phlueak_winyan": 1 }, "minLevel": 40, "time": "night", "text": "พันผ้าพันแผลสาปหกผืนรอบแท่น วางผลึกวิญญาณไว้กลางวง แล้วฮัมเพลงกล่อมเด็ก... นางจะมาดูว่าใครมาเฝ้าแทน" } },
+	"spawnGroups": [
+	  { "id": "rp_forecourt", "name": "ลานหน้าตึก", "ghosts": [ "winyan_khon_khai" ], "x": 0, "z": -14, "radius": 14, "count": 3, "respawn": 60, "leash": 30 },
+	  { "id": "rp_er", "name": "ทางเดินห้องฉุกเฉิน", "ghosts": [ "phi_phayaban" ], "x": -28, "y": 0, "z": 20, "radius": 2, "count": 3, "respawn": 60, "leash": 26 },
+	  { "id": "rp_east_wing", "name": "ทางเดินปีกตะวันออก", "ghosts": [ "phi_phayaban", "winyan_khon_khai" ], "x": 26, "y": 0, "z": 20, "radius": 2, "count": 3, "respawn": 70, "leash": 26 },
+	  { "id": "rp_morgue", "name": "ห้องเก็บศพ", "ghosts": [ "winyan_khon_khai" ], "x": -28, "y": 0, "z": 26, "radius": 2.5, "count": 2, "respawn": 90, "leash": 14 },
+	  { "id": "rp_wards", "name": "หอผู้ป่วยชั้นสอง", "ghosts": [ "winyan_khon_khai", "phi_phayaban" ], "x": -28, "y": 7, "z": 20, "radius": 2, "count": 4, "respawn": 60, "leash": 26 },
+	  { "id": "rp_icu", "name": "ไอซียู", "ghosts": [ "phi_phayaban" ], "x": 24, "y": 7, "z": 20, "radius": 2, "count": 3, "respawn": 70, "leash": 24, "time": "night" },
+	  { "id": "rp_nursery", "name": "ห้องเด็กอ่อน", "ghosts": [ "phi_mae_luk_on" ], "x": 18, "y": 14, "z": 20, "radius": 2, "count": 3, "respawn": 80, "leash": 24, "time": "night" },
+	  { "id": "rp_backyard", "name": "ลานตากผ้าหลังตึก", "ghosts": [ "phi_mae_luk_on" ], "x": -10, "z": 52, "radius": 10, "count": 3, "respawn": 80, "leash": 30, "time": "night" }
+	],
+	"exits": [ { "to": "pa_phai", "side": "north", "label": "ทางขึ้นป่าไผ่ทึบ" }, { "to": "thung_na", "side": "west", "label": "ถนนร้างสู่ทุ่งนา" }, { "to": "wat_doi", "side": "east" } ]
+  },
   { "id": "wat_doi", "name": "วัดร้างบนดอย", "open": false, "levelText": "45–58", "worldX": 3, "worldY": 0,
 	"enemies": "เปรต, อสุรกาย, ผีเฝ้าทรัพย์",
 	"exits": [ { "to": "muang_kao", "side": "south" } ] },

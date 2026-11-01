@@ -133,6 +133,17 @@ public static class Icons
             "<rect x='26' y='6' width='12' height='52' rx='4' fill='#6a7a3a' stroke='#2a3416' stroke-width='2'/>" +
             "<path d='M26 20h12M26 36h12M26 50h12' stroke='#2a3416' stroke-width='3'/>" +
             "<path d='M38 16c8-6 14-6 18-4-6 4-12 6-18 6z' fill='#4a6a2a'/>"),
+        ["key"] = Svg(
+            "<circle cx='20' cy='22' r='12' fill='none' stroke='#c8a24a' stroke-width='6'/>" +
+            "<path d='M29 30l22 22M43 44l6-6M49 50l5-5' stroke='#c8a24a' stroke-width='6' stroke-linecap='round'/>" +
+            "<rect x='24' y='38' width='14' height='9' rx='2' fill='#8a2a2a' transform='rotate(45 31 42)'/>"),
+        ["wristband"] = Svg(
+            "<ellipse cx='32' cy='32' rx='22' ry='12' fill='none' stroke='#e8e4d8' stroke-width='8'/>" +
+            "<rect x='22' y='38' width='20' height='10' rx='2' fill='#fff' stroke='#7a7a7a'/>" +
+            "<path d='M25 43h14' stroke='#3a3a8a' stroke-width='2'/><circle cx='46' cy='26' r='4' fill='#8a1a1a'/>"),
+        ["bandage"] = Svg(
+            "<rect x='12' y='22' width='40' height='20' rx='10' fill='#e6e0cc' stroke='#7a7260' stroke-width='2' transform='rotate(-30 32 32)'/>" +
+            "<path d='M22 38l20-12' stroke='#b8b09a' stroke-width='3'/><circle cx='36' cy='34' r='5' fill='#7a1414' opacity='0.8'/>"),
         ["box"] = Svg(
             "<path d='M10 24l22-10 22 10v26l-22 10-22-10z' fill='#8a3a5a' stroke='#3a1428' stroke-width='2'/>" +
             "<path d='M10 24l22 10 22-10M32 34v26' fill='none' stroke='#3a1428' stroke-width='2'/>" +

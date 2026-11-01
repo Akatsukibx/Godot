@@ -241,7 +241,7 @@ public partial class Main : Node3D
     //   --hour=<h>             set the clock (e.g. 21.5)
     //   --graphics=<0|1|2>     graphics preset for this run
     //   --rain=<0|1|2>         rain mode (random / on / off)
-    //   --pos=<x>,<z>          place the player (world coordinates)
+    //   --pos=<x>,<z>[,<y>]    place the player (world coordinates; y for upper floors)
     //   --yaw=<deg> --pitch=<deg>   aim the camera
     //   --level=<n>            set the player's level
     //   --give=<id>:<n>,...    add items
@@ -287,7 +287,7 @@ public partial class Main : Node3D
         if (Player != null && args.TryGetValue("pos", out var pos))
         {
             var xz = pos.Split(',');
-            Player.GlobalPosition = new Vector3(F(xz[0]), 0.3f, F(xz[1]));
+            Player.GlobalPosition = new Vector3(F(xz[0]), xz.Length > 2 ? F(xz[2]) : 0.3f, F(xz[1]));
             _camPivot.GlobalPosition = Player.GlobalPosition;
         }
         // --spawn=id,id…: call those ghosts in a row in front of the player (model checks).
@@ -316,8 +316,7 @@ public partial class Main : Node3D
                 boat.DevRow = string.IsNullOrEmpty(rowFor) ? 0f : F(rowFor);
             };
         if (Player != null && args.TryGetValue("level", out var lv))
-            for (int i = 1; i < int.Parse(lv); i++)
-                Player.GainExp(GameData.ExpToNext(Player.Level));
+            Player.DevSetLevel(int.Parse(lv));
         if (Player != null && args.TryGetValue("give", out var give))
             foreach (var pair in give.Split(','))
             {
@@ -645,6 +644,21 @@ public partial class Main : Node3D
                 text = $"[{Settings.BindingText("interact")}] เปิดหีบลึกลับ";
             }
         }
+        foreach (var door in GetTree().GetNodesInGroup("locked_door").OfType<Node3D>())
+        {
+            if (!door.IsVisibleInTree() || Player.OpenedChests.Contains("door:" + (string)door.GetMeta("door_id")))
+                continue;
+            float d = door.GlobalPosition.DistanceTo(Player.GlobalPosition);
+            if (d < 3.2f && d < best)
+            {
+                best = d;
+                _interactTarget = door;
+                string key = (string)door.GetMeta("key");
+                text = Player.ItemCount(key) > 0
+                    ? $"[{Settings.BindingText("interact")}] ไข{door.GetMeta("door_name")}ด้วย{GameData.ItemName(key)}"
+                    : $"{door.GetMeta("door_name")} (ล็อก · ต้องใช้{GameData.ItemName(key)})";
+            }
+        }
         foreach (var (zoneId, altar) in _altars)
         {
             float d = altar.GlobalPosition.DistanceTo(Player.GlobalPosition);
@@ -697,6 +711,8 @@ public partial class Main : Node3D
             ShowAltarMenu(GameData.Zone((string)target.GetMeta("zone_id")));
         else if (target.IsInGroup("chest"))
             OpenChest(target);
+        else if (target.IsInGroup("locked_door"))
+            UnlockDoor(target);
         else if (target.IsInGroup("bus_stop"))
             ShowBusMenu((string)target.GetMeta("stop_id"));
         else
@@ -710,6 +726,7 @@ public partial class Main : Node3D
         ["thung_na"] = new[] { "khao_san_sek", "namkhang_ratri", "lek_nam_phi", "fang_sap", "ya_hom_yai", "takrut" },
         ["bueng_bua"] = new[] { "phlueak_winyan", "bai_tani", "sai_bua", "set_tra_phanuek", "ya_hom_yai", "waen_phirot" },
         ["pa_phai"] = new[] { "phlueak_winyan", "mak_phlu", "mai_phai_sap", "set_tra_phanuek", "ya_hom_yai", "khrueang_rang_khao" },
+        ["rong_phayaban"] = new[] { "phlueak_winyan", "phaphan_sap", "pai_khomue", "set_tra_phanuek", "ya_hom_yai", "takrut_phai_tan" },
     };
 
     void OpenChest(Node3D chest)
@@ -717,6 +734,18 @@ public partial class Main : Node3D
         string id = (string)chest.GetMeta("chest_id");
         if (!Player.OpenedChests.Add(id))
             return;
+        // A chest set out by hand holds one particular thing (a key, a letter) instead of random loot.
+        if (chest.HasMeta("loot"))
+        {
+            string item = (string)chest.GetMeta("loot");
+            Player.AddItem(item, 1);
+            ApplyChestOpen(chest);
+            Audio.Play("levelup", -4f, 0f);
+            Fx.Ring(this, chest.GlobalPosition, 2.5f, new Color(1f, 0.85f, 0.4f), 0.8f);
+            Game.Toast($"พบ{GameData.ItemName(item)}", "quest", 4f);
+            SaveNow();
+            return;
+        }
         string zone = id[..id.LastIndexOf('_')];
         var zoneDef = GameData.Zone(zone);
         int mid = zoneDef == null ? 5 : (zoneDef.LevelMin + zoneDef.LevelMax) / 2;
@@ -752,6 +781,36 @@ public partial class Main : Node3D
         foreach (var chest in GetTree().GetNodesInGroup("chest").OfType<Node3D>())
             if (Player.OpenedChests.Contains((string)chest.GetMeta("chest_id")))
                 ApplyChestOpen(chest);
+        foreach (var door in GetTree().GetNodesInGroup("locked_door").OfType<Node3D>())
+            SetDoorOpen(door, Player.OpenedChests.Contains("door:" + (string)door.GetMeta("door_id")));
+    }
+
+    // Locked doors (group locked_door): the key item stays in the bag, the door stays open (saved).
+    void UnlockDoor(Node3D door)
+    {
+        string key = (string)door.GetMeta("key");
+        if (Player.ItemCount(key) <= 0)
+        {
+            Game.Toast($"{door.GetMeta("door_name")}ล็อกอยู่ ต้องใช้{GameData.ItemName(key)}");
+            Audio.Play("hit", -8f, 0f);
+            return;
+        }
+        Player.OpenedChests.Add("door:" + (string)door.GetMeta("door_id"));
+        SetDoorOpen(door, true);
+        Audio.Play("levelup", -6f, 0f);
+        Game.Toast($"ไข{door.GetMeta("door_name")}แล้ว");
+        SaveNow();
+    }
+
+    static void SetDoorOpen(Node3D door, bool open)
+    {
+        foreach (var n in door.GetChildren())
+        {
+            if (n is Node3D panel && panel.Name.ToString().StartsWith("DoorPanel"))
+                panel.Visible = !open;
+            if (n is CollisionObject3D body)
+                body.CollisionLayer = open ? 0u : Layers.World;
+        }
     }
 
     void BindShrine(Node3D shrine)
@@ -826,6 +885,13 @@ public partial class Main : Node3D
         yield return ("ป่าไผ่ทึบ: ศาลเจ้าพ่อไผ่", phai + new Vector3(-30f, 0.3f, -104f));
         yield return ("ป่าไผ่ทึบ: ป่าช้าเก่า", phai + new Vector3(40f, 0.3f, 108f));
         yield return ("บึงบัวสาย: สะพานไปป่าไผ่", bueng + new Vector3(150f, 1f, 30f));
+        yield return ("ป่าไผ่ทึบ: ทางลงโรงพยาบาล", phai + new Vector3(42f, 0.3f, 160f));
+        var hosp = new Vector3(372f, 0f, -372f);
+        yield return ("โรงพยาบาลร้าง: ป้อมยาม (ทางเข้า)", hosp + new Vector3(46f, 0.3f, -116f));
+        yield return ("โรงพยาบาลร้าง: ลานหน้าตึก", hosp + new Vector3(0f, 0.3f, -20f));
+        yield return ("โรงพยาบาลร้าง: บันไดหนีไฟฝั่งตะวันตก", hosp + new Vector3(-48f, 0.3f, 4f));
+        yield return ("โรงพยาบาลร้าง: ห้องพระชั้นสอง", hosp + new Vector3(14f, 7.3f, 28f));
+        yield return ("โรงพยาบาลร้าง: หอผู้ป่วยหลังคลอด ชั้นสาม", hosp + new Vector3(-24f, 14.3f, 24f));
     }
 
     // Admin warp for testing (Settings > ทดสอบ, or clicking the map while admin mode is on).
@@ -986,6 +1052,16 @@ public partial class Main : Node3D
         foreach (var ff in _fireflies)
             if (ff.Emitting != flies)
                 ff.Emitting = flies;
+        // Failing tube lights (group flicker) stutter on and off, each to its own beat.
+        _flicker ??= GetTree().GetNodesInGroup("flicker").OfType<Light3D>().ToList();
+        float clock = Time.GetTicksMsec() / 1000f;
+        foreach (var l in _flicker)
+            if (l.IsVisibleInTree())
+            {
+                float seed = l.GetInstanceId() % 997;
+                float n = Mathf.Sin(clock * 13f + seed) * Mathf.Sin(clock * 7.3f + seed * 1.7f);
+                l.LightEnergy = (float)l.GetMeta("energy", 1f) * (n > 0.55f ? 0.12f : 1f);
+            }
         if (Player == null)
             return;
 
@@ -1008,6 +1084,7 @@ public partial class Main : Node3D
     const float StreamRange = 150f;
     readonly List<(ZoneDef zone, Node3D node)> _streamed = new();
     List<GpuParticles3D> _fireflies;
+    List<Light3D> _flicker;
     float _streamTick;
     Vector3 _streamAt;
 
@@ -1167,9 +1244,11 @@ public partial class Main : Node3D
     }
 
     // Height of the ground (or a pier) under a point.
-    public float GroundAt(Vector3 p)
+    // Height of the floor under p, looking from `above` metres over it (keep it under the next storey
+    // when p is inside a building).
+    public float GroundAt(Vector3 p, float above = 6f)
     {
-        var query = PhysicsRayQueryParameters3D.Create(new Vector3(p.X, p.Y + 6f, p.Z), new Vector3(p.X, p.Y - 8f, p.Z), Layers.World);
+        var query = PhysicsRayQueryParameters3D.Create(new Vector3(p.X, p.Y + above, p.Z), new Vector3(p.X, p.Y - 8f, p.Z), Layers.World);
         var hit = GetWorld3D().DirectSpaceState.IntersectRay(query);
         return hit.Count > 0 ? ((Vector3)hit["position"]).Y : p.Y;
     }

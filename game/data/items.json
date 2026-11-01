@@ -67,5 +67,11 @@
   { "id": "klong_sum_thong", "name": "กล่องสุ่มทองคำ", "icon": "box_gold", "rarity": 3, "price": 900, "use": "box", "description": "กล่องปิดทองลงอักขระ เปิดแล้วได้ของหายากขึ้นไปหนึ่งชิ้น", "box": ["sai_sin_hua", "sai_sin_suea", "sai_sin_kang", "sai_sin_thao", "lo_sai_sin", "waen_phirot", "takrut", "khrueang_rang_khao", "namkhang_ratri", "phlueak_winyan", "khao_rueang", "yan_maha_ut", "dab_saksit", "mit_ngao_chan"] },
   { "id": "mak_phlu", "name": "หมากพลูแห้ง", "icon": "betel", "rarity": 2, "description": "หมากพลูที่ปอบเคี้ยวทิ้งไว้ ยังแดงอยู่ ใช้เซ่นเรียกปอบเจ้าเรือน" },
   { "id": "mai_phai_sap", "name": "ไม้ไผ่สาป", "icon": "bamboo", "rarity": 1, "description": "ปล้องไผ่ดำจากดงไผ่ทึบ มีรอยเล็บข่วนอยู่ข้างใน" },
-  { "id": "takrut_phai_tan", "name": "ตะกรุดไผ่ตัน", "icon": "takrut", "rarity": 4, "description": "ตะกรุดม้วนในปล้องไผ่ตันจากเรือนผู้ใหญ่บ้าน คนในหมู่บ้านเชื่อว่ากันปอบได้", "equip": "charm", "hp": 110, "attack": 10, "stamina": 25 }
+  { "id": "takrut_phai_tan", "name": "ตะกรุดไผ่ตัน", "icon": "takrut", "rarity": 4, "description": "ตะกรุดม้วนในปล้องไผ่ตันจากเรือนผู้ใหญ่บ้าน คนในหมู่บ้านเชื่อว่ากันปอบได้", "equip": "charm", "hp": 110, "attack": 10, "stamina": 25 },
+  // ---------- โรงพยาบาลร้าง ----------
+  { "id": "kunjae_hong_sop", "name": "กุญแจห้องเก็บศพ", "icon": "key", "rarity": 3, "description": "กุญแจทองเหลืองพวงเล็ก ป้ายเขียนว่า ห้องเก็บศพ ชั้นล่าง ไขประตูห้องเก็บศพในโรงพยาบาลร้าง (ไม่หายเมื่อใช้)" },
+  { "id": "kunjae_bandai_nifai", "name": "กุญแจบันไดหนีไฟ", "icon": "key", "rarity": 3, "description": "กุญแจสนิมเขรอะที่ซ่อนอยู่ในห้องเก็บศพ ไขประตูบันไดหนีไฟชั้นสอง ทางเดียวที่ขึ้นไปหอผู้ป่วยหลังคลอดได้ (ไม่หายเมื่อใช้)" },
+  { "id": "pai_khomue", "name": "ป้ายข้อมือผู้ป่วย", "icon": "wristband", "rarity": 1, "description": "ป้ายพลาสติกซีดจางที่ยังติดข้อมือวิญญาณคนไข้ บางแผ่นยังอ่านชื่อออก" },
+  { "id": "phaphan_sap", "name": "ผ้าพันแผลสาป", "icon": "bandage", "rarity": 2, "description": "ผ้าพันแผลเปื้อนเลือดที่ไม่เคยแห้ง ผีพยาบาลยังพันมันให้ใครสักคนอยู่ ใช้เซ่นเรียกแม่ซื้อห้องคลอด" },
+  { "id": "soi_mae_sue", "name": "สร้อยแม่ซื้อ", "icon": "necklace", "rarity": 4, "description": "สร้อยลูกปัดผูกด้ายแดงที่แม่ซื้อห้องคลอดเคยคล้องให้เด็กแรกเกิดทุกคน ยังอุ่นอยู่", "equip": "charm", "hp": 150, "attack": 13, "stamina": 30 }
 ]

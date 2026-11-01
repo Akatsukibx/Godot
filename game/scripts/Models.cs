@@ -255,6 +255,10 @@ public static class Models
 			case "phi_pop":
 			case "boss_pop_chao_ruean": BuildPop(root, def); break;
 			case "chao_ban_thuk_sing": BuildPossessed(root, def); break;
+			case "phi_phayaban": BuildNurse(root, def); break;
+			case "winyan_khon_khai": BuildPatient(root, def); break;
+			case "phi_mae_luk_on": BuildMother(root, def); break;
+			case "boss_mae_sue": BuildMaeSue(root, def); break;
 			case "phi_dek_liang_khwai": BuildHerderChild(root, def); break;
 			case "chorakhe_winyan": BuildSpiritCroc(root, def); break;
 			case "krasue":
@@ -340,6 +344,140 @@ public static class Models
 			Shapes.Box(v, new Vector3(0f, 1.2f, 0.05f), new Vector3(0.64f, 0.03f, 0.42f), new Color(0.9f, 0.7f, 0.25f), 0.3f, "ClothShawlTrim").Rotation = torso.Rotation;
 		}
 		Shapes.Light(v, new Vector3(0f, 1.4f, -0.7f), new Color(0.8f, 1f, 0.4f), 0.7f, 4f, "GlowLight");
+	}
+
+	// Long black hair hanging over the face, shared by the hospital ghosts.
+	static void FaceHair(Node3D v, float y, float z, float width, float len)
+	{
+		var hair = new Color(0.04f, 0.04f, 0.05f, 0.95f);
+		Shapes.Sphere(v, new Vector3(0f, y + 0.08f, z + 0.03f), width * 0.55f, hair, 0f, "Hair");
+		for (int i = 0; i < 7; i++)
+		{
+			float x = -width * 0.5f + i * width / 6f;
+			var strand = Shapes.Box(v, new Vector3(x, y - len * 0.45f, z - width * 0.42f + Mathf.Abs(i - 3) * 0.02f), new Vector3(width / 6f, len, 0.04f), hair, 0f, "Hair");
+			strand.Rotation = new Vector3(0.08f, 0f, (i - 3) * 0.03f);
+		}
+	}
+
+	// ผีพยาบาล: a night-shift nurse in a stained white uniform and folded cap, hair over her face and a
+	// bloody mask; one hand holds a long syringe. She glides more than walks.
+	static void BuildNurse(Node3D v, GhostDef def)
+	{
+		var white = new Color(0.86f, 0.86f, 0.82f, 0.94f);
+		var skin = new Color(0.72f, 0.74f, 0.72f, 0.9f);
+		var blood = new Color(0.45f, 0.05f, 0.05f);
+		Shapes.Cylinder(v, new Vector3(0f, 0.55f, 0f), 0.24f, 0.36f, 1.1f, white, 0f, "ClothDress");
+		Shapes.Box(v, new Vector3(0.08f, 0.4f, -0.3f), new Vector3(0.25f, 0.5f, 0.02f), blood, 0f, "ClothStain");
+		foreach (var x in new[] { -0.09f, 0.09f })
+			Shapes.Capsule(v, new Vector3(x, 0.1f, 0f), 0.05f, 0.35f, skin, 0f, "Leg");
+		Shapes.Box(v, new Vector3(0f, 1.32f, 0f), new Vector3(0.42f, 0.5f, 0.26f), white, 0f, "ClothDress");
+		Shapes.Box(v, new Vector3(0f, 1.1f, 0f), new Vector3(0.44f, 0.06f, 0.28f), new Color(0.3f, 0.32f, 0.4f), 0f, "ClothBelt");
+		Shapes.Sphere(v, new Vector3(0f, 1.78f, 0f), 0.19f, skin, 0f, "Head");
+		FaceHair(v, 1.8f, 0f, 0.36f, 0.62f);
+		Shapes.Box(v, new Vector3(0f, 1.71f, -0.17f), new Vector3(0.2f, 0.12f, 0.04f), new Color(0.75f, 0.55f, 0.5f), 0f, "ClothMask");
+		Shapes.Box(v, new Vector3(0.04f, 1.68f, -0.19f), new Vector3(0.08f, 0.08f, 0.02f), blood, 0f, "ClothMaskBlood");
+		var cap = Shapes.Box(v, new Vector3(0f, 2.0f, 0.02f), new Vector3(0.3f, 0.1f, 0.18f), white, 0f, "ClothCap");
+		cap.Rotation = new Vector3(-0.3f, 0f, 0f);
+		Shapes.Box(v, new Vector3(0f, 2.0f, -0.07f), new Vector3(0.06f, 0.06f, 0.01f), new Color(0.8f, 0.1f, 0.1f), 0f, "ClothCross");
+		Shapes.Sphere(v, new Vector3(-0.08f, 1.8f, -0.2f), 0.025f, new Color(0.85f, 0.95f, 1f), 4f, "GlowEyeL");
+		Shapes.Capsule(v, new Vector3(-0.3f, 1.2f, 0f), 0.05f, 0.75f, skin, 0f, "Arm").Rotation = new Vector3(0.1f, 0f, 0.12f);
+		Shapes.Capsule(v, new Vector3(0.3f, 1.3f, -0.25f), 0.05f, 0.75f, skin, 0f, "Arm").Rotation = new Vector3(1.2f, 0f, -0.15f);
+		// The syringe.
+		Shapes.Cylinder(v, new Vector3(0.32f, 1.42f, -0.62f), 0.04f, 0.04f, 0.3f, new Color(0.8f, 0.9f, 0.9f, 0.6f), 0f, "GlassSyringe").Rotation = new Vector3(Mathf.Pi * 0.5f, 0f, 0f);
+		Shapes.Cylinder(v, new Vector3(0.32f, 1.42f, -0.82f), 0.006f, 0.006f, 0.14f, new Color(0.8f, 0.82f, 0.85f), 0.3f, "MetalNeedle").Rotation = new Vector3(Mathf.Pi * 0.5f, 0f, 0f);
+		Shapes.Light(v, new Vector3(0f, 1.6f, -0.6f), new Color(0.7f, 0.85f, 1f), 0.5f, 3.5f, "GlowLight");
+	}
+
+	// วิญญาณคนไข้: a patient in a washed-out gown, head bandaged, hunched over the drip stand he drags
+	// behind him; the wristband still on.
+	static void BuildPatient(Node3D v, GhostDef def)
+	{
+		var gown = new Color(0.55f, 0.66f, 0.7f, 0.92f);
+		var skin = new Color(0.62f, 0.64f, 0.62f, 0.9f);
+		var bandage = new Color(0.82f, 0.8f, 0.72f);
+		foreach (var x in new[] { -0.12f, 0.12f })
+			Shapes.Capsule(v, new Vector3(x, 0.42f, 0f), 0.07f, 0.85f, skin, 0f, "Leg");
+		var body = Shapes.Box(v, new Vector3(0f, 1.15f, -0.08f), new Vector3(0.52f, 0.85f, 0.32f), gown, 0f, "ClothGown");
+		body.Rotation = new Vector3(-0.3f, 0f, 0f);
+		Shapes.Box(v, new Vector3(0f, 0.85f, 0.05f), new Vector3(0.54f, 0.4f, 0.3f), gown.Darkened(0.1f), 0f, "ClothGown");
+		var head = Shapes.Sphere(v, new Vector3(0f, 1.62f, -0.32f), 0.2f, skin, 0f, "Head");
+		for (int i = 0; i < 3; i++)
+			Shapes.Cylinder(v, new Vector3(0f, 1.58f + i * 0.08f, -0.32f), 0.21f, 0.21f, 0.06f, bandage, 0f, "ClothBandage").Rotation = new Vector3(0.2f * (i - 1), 0f, 0.15f * i);
+		Shapes.Box(v, new Vector3(-0.07f, 1.62f, -0.52f), new Vector3(0.05f, 0.05f, 0.02f), new Color(0.02f, 0.02f, 0.02f), 0f, "EyeHollow");
+		Shapes.Sphere(v, new Vector3(0.07f, 1.62f, -0.52f), 0.025f, new Color(0.8f, 0.9f, 1f), 4f, "GlowEyeR");
+		Shapes.Box(v, new Vector3(0f, 1.48f, -0.5f), new Vector3(0.12f, 0.05f, 0.02f), new Color(0.15f, 0.05f, 0.05f), 0f, "Mouth");
+		// Arms: one dangling, one gripping the drip stand.
+		Shapes.Capsule(v, new Vector3(-0.32f, 1.0f, -0.25f), 0.06f, 0.85f, skin, 0f, "Arm").Rotation = new Vector3(0.3f, 0f, 0.1f);
+		Shapes.Capsule(v, new Vector3(0.34f, 1.2f, -0.2f), 0.06f, 0.75f, skin, 0f, "Arm").Rotation = new Vector3(0.5f, 0f, -0.3f);
+		Shapes.Cylinder(v, new Vector3(-0.31f, 0.65f, -0.3f), 0.075f, 0.075f, 0.05f, new Color(0.95f, 0.95f, 0.95f), 0f, "ClothWristband");
+		Shapes.Cylinder(v, new Vector3(0.5f, 1.1f, -0.35f), 0.02f, 0.02f, 2.2f, new Color(0.7f, 0.72f, 0.75f), 0f, "MetalPole").Rotation = new Vector3(-0.15f, 0f, 0f);
+		Shapes.Box(v, new Vector3(0.5f, 2.15f, -0.2f), new Vector3(0.16f, 0.24f, 0.05f), new Color(0.8f, 0.6f, 0.55f, 0.6f), 0f, "GlassBag");
+		foreach (var a in new[] { 0f, 2.1f, 4.2f })
+			Shapes.Box(v, new Vector3(0.5f + Mathf.Cos(a) * 0.2f, 0.05f, -0.5f + Mathf.Sin(a) * 0.2f), new Vector3(0.22f, 0.03f, 0.04f), new Color(0.5f, 0.5f, 0.52f), 0f, "MetalFoot").Rotation = new Vector3(0f, a, 0f);
+		Shapes.Light(v, new Vector3(0f, 1.5f, -0.7f), new Color(0.7f, 0.85f, 1f), 0.4f, 3f, "GlowLight");
+	}
+
+	// ผีแม่ลูกอ่อน: a young mother in a long nightgown stained red at the hem, rocking a swaddled bundle
+	// that is empty inside but for a faint glow.
+	static void BuildMother(Node3D v, GhostDef def)
+	{
+		var gown = new Color(0.82f, 0.78f, 0.76f, 0.9f);
+		var skin = new Color(0.74f, 0.7f, 0.7f, 0.88f);
+		Shapes.Cylinder(v, new Vector3(0f, 0.65f, 0f), 0.22f, 0.42f, 1.3f, gown, 0f, "ClothNightgown");
+		Shapes.Cylinder(v, new Vector3(0f, 0.12f, 0f), 0.42f, 0.44f, 0.24f, new Color(0.5f, 0.06f, 0.06f, 0.9f), 0f, "ClothHemBlood");
+		Shapes.Box(v, new Vector3(0f, 1.45f, 0f), new Vector3(0.4f, 0.45f, 0.24f), gown, 0f, "ClothNightgown");
+		Shapes.Sphere(v, new Vector3(0f, 1.86f, 0.02f), 0.18f, skin, 0f, "Head");
+		FaceHair(v, 1.88f, 0.02f, 0.38f, 0.9f);
+		Shapes.Sphere(v, new Vector3(0.08f, 1.86f, -0.18f), 0.025f, new Color(1f, 0.85f, 0.9f), 4f, "GlowEyeR");
+		// Arms cradling the bundle.
+		foreach (var s in new[] { -1f, 1f })
+			Shapes.Capsule(v, new Vector3(s * 0.2f, 1.38f, -0.28f), 0.05f, 0.55f, skin, 0f, "Arm").Rotation = new Vector3(1.2f, 0f, -s * 0.9f);
+		var bundle = Shapes.Capsule(v, new Vector3(0f, 1.38f, -0.38f), 0.16f, 0.5f, new Color(0.9f, 0.86f, 0.78f), 0f, "ClothSwaddle");
+		bundle.Rotation = new Vector3(0f, 0f, Mathf.Pi * 0.5f);
+		Shapes.Sphere(v, new Vector3(-0.17f, 1.4f, -0.42f), 0.07f, new Color(0.6f, 0.8f, 1f), 3f, "GlowInBundle");
+		Shapes.Light(v, new Vector3(0f, 1.4f, -0.7f), new Color(1f, 0.75f, 0.8f), 0.6f, 3.5f, "GlowLight");
+	}
+
+	// แม่ซื้อห้องคลอด: the guardian spirit of newborns in old court dress (sabai, gold collar and a tall
+	// chada crown), her face pale as plaster, bound with black thread; tiny swaddled souls circle her.
+	static void BuildMaeSue(Node3D v, GhostDef def)
+	{
+		var skin = new Color(0.86f, 0.84f, 0.8f, 0.95f);
+		var silk = new Color(0.55f, 0.12f, 0.16f);
+		var gold = new Color(0.85f, 0.68f, 0.25f);
+		var thread = new Color(0.03f, 0.03f, 0.03f);
+		Shapes.Cylinder(v, new Vector3(0f, 0.6f, 0f), 0.26f, 0.38f, 1.2f, silk, 0f, "ClothPhaNung");
+		Shapes.Cylinder(v, new Vector3(0f, 1.02f, 0f), 0.27f, 0.27f, 0.08f, gold, 0.2f, "Ring");
+		Shapes.Box(v, new Vector3(0f, 1.42f, 0f), new Vector3(0.42f, 0.55f, 0.26f), skin, 0f, "Torso");
+		var sabai = Shapes.Box(v, new Vector3(0.05f, 1.45f, 0f), new Vector3(0.5f, 0.22f, 0.3f), new Color(0.75f, 0.55f, 0.2f), 0f, "ClothSabai");
+		sabai.Rotation = new Vector3(0f, 0f, 0.55f);
+		Shapes.Cylinder(v, new Vector3(0f, 1.66f, 0f), 0.24f, 0.28f, 0.06f, gold, 0.25f, "Ring");
+		Shapes.Sphere(v, new Vector3(0f, 1.9f, 0f), 0.17f, skin, 0f, "Head");
+		Shapes.Cylinder(v, new Vector3(0f, 2.22f, 0f), 0.02f, 0.13f, 0.5f, gold, 0.3f, "Spire");
+		Shapes.Cylinder(v, new Vector3(0f, 2.02f, 0f), 0.15f, 0.17f, 0.08f, gold, 0.3f, "Ring");
+		foreach (var x in new[] { -0.06f, 0.06f })
+			Shapes.Sphere(v, new Vector3(x, 1.92f, -0.15f), 0.022f, new Color(0.1f, 0.02f, 0.02f), 0f, "EyeBlack");
+		Shapes.Box(v, new Vector3(0f, 1.82f, -0.16f), new Vector3(0.06f, 0.025f, 0.02f), new Color(0.55f, 0.05f, 0.08f), 0f, "Mouth");
+		// Arms: one cradles a bundle, one reaches out with long nails.
+		Shapes.Capsule(v, new Vector3(-0.28f, 1.35f, -0.22f), 0.05f, 0.6f, skin, 0f, "Arm").Rotation = new Vector3(1.1f, 0f, 0.7f);
+		Shapes.Capsule(v, new Vector3(-0.08f, 1.32f, -0.34f), 0.13f, 0.4f, new Color(0.9f, 0.86f, 0.78f), 0f, "ClothSwaddle").Rotation = new Vector3(0f, 0f, Mathf.Pi * 0.5f);
+		Shapes.Capsule(v, new Vector3(0.32f, 1.5f, -0.35f), 0.05f, 0.75f, skin, 0f, "Arm").Rotation = new Vector3(1.4f, 0f, -0.2f);
+		for (int f = 0; f < 4; f++)
+			Shapes.Box(v, new Vector3(0.29f + f * 0.025f, 1.55f, -0.78f), new Vector3(0.012f, 0.012f, 0.16f), gold, 0.2f, "Claw");
+		// Black thread wound round her, trailing off.
+		for (int i = 0; i < 6; i++)
+			Shapes.Cylinder(v, new Vector3(0f, 0.5f + i * 0.25f, 0f), 0.4f - i * 0.02f, 0.4f - i * 0.02f, 0.015f, thread, 0f, "String").Rotation = new Vector3(0.25f * (i % 2 == 0 ? 1f : -1f), 0f, 0.2f);
+		for (int i = 0; i < 4; i++)
+			Shapes.Box(v, new Vector3(Mathf.Cos(i * 1.6f) * 0.5f, 0.9f + i * 0.2f, Mathf.Sin(i * 1.6f) * 0.5f), new Vector3(0.01f, 0.9f, 0.01f), thread, 0f, "String").Rotation = new Vector3(0.4f, 0f, i * 0.7f);
+		// Little swaddled souls circling at her shoulders.
+		for (int i = 0; i < 4; i++)
+		{
+			float a = i / 4f * Mathf.Tau;
+			var p = new Vector3(Mathf.Cos(a) * 0.7f, 1.7f + (i % 2) * 0.25f, Mathf.Sin(a) * 0.7f);
+			Shapes.Capsule(v, p, 0.07f, 0.24f, new Color(0.92f, 0.9f, 0.86f, 0.75f), 0f, "ClothSwaddle").Rotation = new Vector3(0f, a, Mathf.Pi * 0.5f);
+			Shapes.Sphere(v, p + new Vector3(0f, 0.02f, 0f), 0.04f, new Color(0.65f, 0.85f, 1f), 3f, "GlowSoul");
+		}
+		Shapes.Light(v, new Vector3(0f, 1.8f, -0.7f), new Color(1f, 0.6f, 0.65f), 0.9f, 5f, "GlowLight");
 	}
 
 	// ชาวบ้านถูกสิง: a villager in a farmer's shirt and loincloth, head lolling to one side, a sickle

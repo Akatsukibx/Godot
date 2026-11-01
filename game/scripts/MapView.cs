@@ -138,6 +138,13 @@ public partial class MapView : Control
             Text(ToMap(Local(122f, -96f)), "เรือนผู้ใหญ่บ้าน", 15, new Color(1f, 0.6f, 0.55f));
             Text(ToMap(Local(48f, 146f)), "ป่าช้าเก่า", 15, new Color(0.8f, 0.75f, 0.85f));
         }
+        else if (zone.Id == "rong_phayaban")
+        {
+            Text(ToMap(Local(48f, -104f)), "ป้อมยาม", 15, new Color(0.85f, 0.95f, 0.7f));
+            Text(ToMap(Local(0f, 2f)), "โรงพยาบาลร้าง", 15, new Color(0.95f, 0.85f, 0.8f));
+            Text(ToMap(Local(0f, -40f)), "ประตูหน้า", 13, new Color(0.85f, 0.8f, 0.75f));
+            Text(ToMap(Local(-10f, 66f)), "ลานหลังตึก", 13, new Color(0.8f, 0.75f, 0.85f));
+        }
         else if (zone.AlleyOnly)
             Text(ToMap(Local(-40f, 70f)), "ซอยมืด (มีผี)", 15, new Color(0.8f, 0.7f, 1f));
 

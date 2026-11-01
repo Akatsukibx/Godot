@@ -709,18 +709,37 @@ public partial class Player : CharacterBody3D
     public void GainExp(int amount)
     {
         Exp += amount;
+        int gained = 0;
         while (Exp >= GameData.ExpToNext(Level))
         {
             Exp -= GameData.ExpToNext(Level);
             Level++;
             StatPoints += Cfg.StatPointsPerLevel;
+            gained++;
+        }
+        // Several levels at once (a big quest reward) celebrate once, not once per level.
+        if (gained > 0)
+        {
             Hp = MaxHp;
             Stamina = MaxStamina;
             Audio.Play("levelup", 0f, 0f);
-            Game.Toast($"เลเวลอัป! ได้แต้มสถานะ +{Cfg.StatPointsPerLevel} (กด {Settings.BindingText("inventory")} เปิดกระเป๋า)");
+            Game.Toast($"เลเวลอัป! ได้แต้มสถานะ +{Cfg.StatPointsPerLevel * gained} (กด {Settings.BindingText("inventory")} เปิดกระเป๋า)");
             Game.Main.Hud.Banner($"เลเวล {Level}", UiTheme.Gold);
             Fx.Ring(GetParent(), GlobalPosition, 4f, new Color(1f, 0.85f, 0.4f), 0.6f);
         }
+        Quests.Refresh(this);
+    }
+
+    // --level: jump straight to a level with the stat points it would have earned.
+    public void DevSetLevel(int level)
+    {
+        if (level <= Level)
+            return;
+        StatPoints += (level - Level) * Cfg.StatPointsPerLevel;
+        Level = level;
+        Exp = 0;
+        Hp = MaxHp;
+        Stamina = MaxStamina;
         Quests.Refresh(this);
     }
 

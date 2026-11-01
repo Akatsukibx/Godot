@@ -18,7 +18,7 @@ public partial class Main
         public ZoneDef Zone;
         public int LastAlive;
         public double NextAt;
-        public Vector3 Center => Zone.Center + new Vector3(Def.X, 0f, Def.Z);
+        public Vector3 Center => Zone.Center + new Vector3(Def.X, Def.Y, Def.Z);
     }
 
     readonly List<GroupState> _groups = new();
@@ -72,11 +72,11 @@ public partial class Main
 
     Node3D BuildAltar(ZoneDef zone)
     {
-        var lair = zone.Center + new Vector3(zone.Boss.X, 0f, zone.Boss.Z);
+        var lair = zone.Center + new Vector3(zone.Boss.X, zone.Boss.Y, zone.Boss.Z);
         var spot = lair + new Vector3(0f, 0f, 7f);
         var altar = new Node3D { Name = $"BossAltar_{zone.Id}" };
         AddChild(altar);
-        altar.GlobalPosition = spot with { Y = GroundAt(spot + Vector3.Up * 2f) };
+        altar.GlobalPosition = spot with { Y = GroundAt(spot, 4f) };
         var stone = new Color(0.42f, 0.4f, 0.37f);
         Shapes.Box(altar, new Vector3(0f, 0.3f, 0f), new Vector3(1.8f, 0.6f, 1.1f), stone, 0f, "StoneAltar");
         Shapes.Box(altar, new Vector3(0f, 0.66f, 0f), new Vector3(1.4f, 0.12f, 0.8f), stone.Lightened(0.15f), 0f, "StoneSlab");
@@ -144,8 +144,8 @@ public partial class Main
         if (payOffering)
             foreach (var (id, n) in (zone.Boss.Summon ?? new SummonDef()).Offering)
                 Player.RemoveItem(id, n);
-        var lair = zone.Center + new Vector3(zone.Boss.X, 0f, zone.Boss.Z);
-        var boss = SpawnGhost(zone, def, lair with { Y = GroundAt(lair + Vector3.Up * 3f) });
+        var lair = zone.Center + new Vector3(zone.Boss.X, zone.Boss.Y, zone.Boss.Z);
+        var boss = SpawnGhost(zone, def, lair with { Y = GroundAt(lair, 4f) });
         if (boss == null)
             return;
         _bossRespawnAt[zone.Id] = -1;
@@ -161,7 +161,7 @@ public partial class Main
     {
         var zone = CurrentZone ?? GameData.Zone("wiang_mok");
         var at = Player.GlobalPosition + Player.Facing * 6f;
-        var g = SpawnGhost(zone, def, at with { Y = GroundAt(at + Vector3.Up * 3f) });
+        var g = SpawnGhost(zone, def, at with { Y = GroundAt(at, 2f) });
         g?.WakeUp();
         Game.Toast(g != null ? $"เรียก{def.Name}แล้ว (แอดมิน)" : "เรียกไม่ได้ตรงนี้");
     }

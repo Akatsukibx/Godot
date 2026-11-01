@@ -175,7 +175,8 @@ public static class Textures
     static Kind? KindOf(string name, Color c)
     {
         if (name.StartsWith("Glow") || name.StartsWith("@") || Has(name, "Seam", "Window", "Eye", "Ink", "Yan", "Talisman",
-                "Cloth", "Dress", "Lotus", "Water", "Candle", "Garland", "Sash", "Mouth", "Flame", "Rope", "String"))
+                "Cloth", "Dress", "Lotus", "Water", "Candle", "Garland", "Sash", "Mouth", "Flame", "Rope", "String",
+                "Metal", "Glass", "Paper", "Sign", "Crack", "Paint"))
             return null;
         if (name is "Terrain" or "Grass" || name.StartsWith("GroundStrip"))
             return Kind.Grass;
