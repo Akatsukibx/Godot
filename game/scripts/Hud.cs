@@ -95,7 +95,7 @@ public partial class Hud : CanvasLayer
 		BuildMenuIcons();
 		BuildBanner();
 		BuildBag(AddWindow("bag", "กระเป๋า", "inventory", RefreshBag));
-		BuildStats(AddWindow("stats", "สมุดภูตผี", "inventory", RefreshStats));
+		BuildStats(AddWindow("stats", "อัปสถานะ · สมุดภูตผี", "inventory", RefreshStats));
 		BuildQuests(AddWindow("quests", "เควส", "quests", RefreshQuests));
 		BuildMap(AddWindow("map", "แผนที่", "map", null));
 		BuildCraft(AddWindow("craft", "คราฟต์", "craft", RefreshCraft));

@@ -122,6 +122,7 @@ public partial class Hud
     // The character sheet on the left of the bag: level, EXP, health, stamina, the four stats with their
     // + buttons, derived numbers and a button to the spirit codex.
     Label _bsLevel, _bsPoints, _bsDerived;
+    Button _bsUpgrade;
     ProgressBar _bsExp, _bsHp, _bsSt;
     Label _bsHpText, _bsStText;
     readonly List<(Label value, Button plus)> _bsRows = new();
@@ -146,19 +147,12 @@ public partial class Hud
         {
             var (name, desc) = Player.StatInfo[i];
             int stat = i;
-            var controls = new HBoxContainer();
-            controls.AddThemeConstantOverride("separation", 6);
             var value = UiTheme.Label("0", 18, Colors.White);
-            value.CustomMinimumSize = new Vector2(34f, 0f);
             value.HorizontalAlignment = HorizontalAlignment.Right;
-            var plus = UiTheme.Button("+", () => _player.AddStat(stat), 34f);
-            plus.CustomMinimumSize = new Vector2(34f, 28f);
-            controls.AddChild(value);
-            controls.AddChild(plus);
-            var row = UiTheme.Row(name, controls);
+            var row = UiTheme.Row(name, value);
             row.TooltipText = desc;
             col.AddChild(row);
-            _bsRows.Add((value, plus));
+            _bsRows.Add((value, null));
         }
         col.AddChild(UiTheme.Dashed(6f));
         _bsDerived = UiTheme.Label("", 13, UiTheme.Cream);
@@ -166,7 +160,8 @@ public partial class Hud
         _bsDerived.CustomMinimumSize = new Vector2(250f, 0f);
         col.AddChild(_bsDerived);
         col.AddChild(new Control { SizeFlagsVertical = Control.SizeFlags.ExpandFill });
-        col.AddChild(UiTheme.Button("สมุดภูตผี", () => OpenWindow("stats"), 250f));
+        _bsUpgrade = UiTheme.Button("อัปสถานะ / สมุดภูตผี", () => OpenWindow("stats"), 250f);
+        col.AddChild(_bsUpgrade);
     }
 
     void RefreshBagStats()
@@ -183,11 +178,17 @@ public partial class Hud
         _bsSt.MaxValue = p.MaxStamina;
         _bsSt.Value = p.Stamina;
         _bsStText.Text = $"{p.Stamina:0} / {p.MaxStamina:0}";
-        _bsPoints.Text = $"แต้มสถานะคงเหลือ {p.StatPoints}";
+        _bsPoints.Text = p.StatPoints > 0 ? $"มีแต้มสถานะ {p.StatPoints} แต้ม — กด \"อัปสถานะ\"" : "ค่าพลังปัจจุบัน";
+        _bsUpgrade.Text = p.StatPoints > 0 ? $"อัปสถานะ ({p.StatPoints})" : "อัปสถานะ / สมุดภูตผี";
         for (int i = 0; i < _bsRows.Count; i++)
         {
-            _bsRows[i].value.Text = p.Attr[i].ToString();
-            _bsRows[i].plus.Disabled = p.StatPoints <= 0;
+            _bsRows[i].value.Text = i switch
+            {
+                Player.Vit => $"{p.MaxHp:0} HP",
+                Player.Str => $"{p.AttackDamage:0.#}",
+                Player.Spi => $"{p.SkillMult * 100f:0}%",
+                _ => $"{p.MaxStamina:0}",
+            };
         }
         _bsDerived.Text = string.Join("\n",
             $"โจมตี {p.AttackDamage:0.#} · คลิกขวา {p.SpecialDamage:0.#}",
