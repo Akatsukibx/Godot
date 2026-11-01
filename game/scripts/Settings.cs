@@ -6,7 +6,7 @@ using System.Linq;
 public static class Settings
 {
     const string FilePath = "user://settings.cfg";
-    const int KeysVersion = 6;
+    const int KeysVersion = 7;
 
     public static float MasterVolume { get; set; } = 0.8f;
     public static float SfxVolume { get; set; } = 1f;
@@ -46,7 +46,6 @@ public static class Settings
         ("banish", "ปราบ"),
         ("release", "ปลดปล่อย"),
         ("inventory", "กระเป๋า"),
-        ("stats", "สถานะตัวละคร"),
         ("quests", "เควส"),
         ("map", "แผนที่"),
         ("craft", "คราฟต์"),
@@ -96,7 +95,6 @@ public static class Settings
         Bind("banish", K(Key.F));
         Bind("release", K(Key.G));
         Bind("inventory", K(Key.Tab));
-        Bind("stats", K(Key.I));
         Bind("quests", K(Key.J));
         Bind("map", K(Key.M));
         Bind("craft"); // crafting now opens from the bag (Tab)

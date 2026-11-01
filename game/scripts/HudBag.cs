@@ -119,6 +119,82 @@ public partial class Hud
 
     static string SlotName(string slot) => Player.EquipSlots.FirstOrDefault(s => s.slot == slot).name ?? slot;
 
+    // The character sheet on the left of the bag: level, EXP, health, stamina, the four stats with their
+    // + buttons, derived numbers and a button to the spirit codex.
+    Label _bsLevel, _bsPoints, _bsDerived;
+    ProgressBar _bsExp, _bsHp, _bsSt;
+    Label _bsHpText, _bsStText;
+    readonly List<(Label value, Button plus)> _bsRows = new();
+
+    void BuildBagStats(Control parent)
+    {
+        var col = Column(250f, 5);
+        parent.AddChild(col);
+        _bsLevel = UiTheme.Label("", 22, UiTheme.Gold);
+        col.AddChild(_bsLevel);
+        (_bsExp, _) = TextBar(new Color(0.95f, 0.78f, 0.2f), 8f, 250f);
+        col.AddChild(_bsExp);
+        (_bsHp, _bsHpText) = TextBar(new Color(0.3f, 0.75f, 0.3f), 18f, 250f);
+        col.AddChild(_bsHp);
+        (_bsSt, _bsStText) = TextBar(new Color(0.25f, 0.6f, 0.95f), 18f, 250f);
+        col.AddChild(_bsSt);
+        col.AddChild(UiTheme.Dashed(6f));
+        _bsPoints = UiTheme.Label("", 15, UiTheme.Gold);
+        col.AddChild(_bsPoints);
+        for (int i = 0; i < Player.StatInfo.Length; i++)
+        {
+            var (name, desc) = Player.StatInfo[i];
+            int stat = i;
+            var controls = new HBoxContainer();
+            controls.AddThemeConstantOverride("separation", 6);
+            var value = UiTheme.Label("0", 18, Colors.White);
+            value.CustomMinimumSize = new Vector2(34f, 0f);
+            value.HorizontalAlignment = HorizontalAlignment.Right;
+            var plus = UiTheme.Button("+", () => _player.AddStat(stat), 34f);
+            plus.CustomMinimumSize = new Vector2(34f, 28f);
+            controls.AddChild(value);
+            controls.AddChild(plus);
+            var row = UiTheme.Row(name, controls);
+            row.TooltipText = desc;
+            col.AddChild(row);
+            _bsRows.Add((value, plus));
+        }
+        col.AddChild(UiTheme.Dashed(6f));
+        _bsDerived = UiTheme.Label("", 13, UiTheme.Cream);
+        _bsDerived.AutowrapMode = TextServer.AutowrapMode.WordSmart;
+        _bsDerived.CustomMinimumSize = new Vector2(250f, 0f);
+        col.AddChild(_bsDerived);
+        col.AddChild(new Control { SizeFlagsVertical = Control.SizeFlags.ExpandFill });
+        col.AddChild(UiTheme.Button("สมุดภูตผี", () => OpenWindow("stats"), 250f));
+    }
+
+    void RefreshBagStats()
+    {
+        var p = _player;
+        int need = GameData.ExpToNext(p.Level);
+        _bsLevel.Text = $"เลเวล {p.Level}";
+        _bsExp.MaxValue = need;
+        _bsExp.Value = p.Exp;
+        _bsExp.TooltipText = $"EXP {p.Exp}/{need}";
+        _bsHp.MaxValue = p.MaxHp;
+        _bsHp.Value = p.Hp;
+        _bsHpText.Text = $"{p.Hp:0} / {p.MaxHp:0}";
+        _bsSt.MaxValue = p.MaxStamina;
+        _bsSt.Value = p.Stamina;
+        _bsStText.Text = $"{p.Stamina:0} / {p.MaxStamina:0}";
+        _bsPoints.Text = $"แต้มสถานะคงเหลือ {p.StatPoints}";
+        for (int i = 0; i < _bsRows.Count; i++)
+        {
+            _bsRows[i].value.Text = p.Attr[i].ToString();
+            _bsRows[i].plus.Disabled = p.StatPoints <= 0;
+        }
+        _bsDerived.Text = string.Join("\n",
+            $"โจมตี {p.AttackDamage:0.#} · คลิกขวา {p.SpecialDamage:0.#}",
+            $"ป้องกัน {p.Defense:0} · พลังจิต {p.SkillMult * 100f:0}%",
+            $"ฟื้นความอึด {p.StaminaRegen:0.#}/วินาที",
+            $"EXP {p.Exp}/{need}");
+    }
+
     void BuildBag(VBoxContainer body)
     {
         // Category tabs (they dim the other kinds of item), the sort button, money and the craft button.
@@ -140,6 +216,7 @@ public partial class Hud
         var h = new HBoxContainer();
         h.AddThemeConstantOverride("separation", 16);
         body.AddChild(h);
+        BuildBagStats(h);
 
         // Character with equipment slots on both sides.
         var left = new VBoxContainer();
@@ -165,7 +242,6 @@ public partial class Hud
         _bagPreview = ModelPreview.CreateEmpty(new Vector2(220f, 330f));
         center.AddChild(_bagPreview);
         _bagStats = UiTheme.Label("", 12, UiTheme.Muted);
-        center.AddChild(_bagStats);
         h.AddChild(right);
 
         _bagGrid = new GridContainer { Columns = 6 };
@@ -290,6 +366,7 @@ public partial class Hud
     void RefreshBag()
     {
         var p = _player;
+        RefreshBagStats();
         if (_bagVersion != p.InventoryVersion)
         {
             _bagVersion = p.InventoryVersion;

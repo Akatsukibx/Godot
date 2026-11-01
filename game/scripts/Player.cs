@@ -665,7 +665,7 @@ public partial class Player : CharacterBody3D
             Hp = MaxHp;
             Stamina = MaxStamina;
             Audio.Play("levelup", 0f, 0f);
-            Game.Toast($"เลเวลอัป! ได้แต้มสถานะ +{Cfg.StatPointsPerLevel} (กด {Settings.BindingText("stats")})");
+            Game.Toast($"เลเวลอัป! ได้แต้มสถานะ +{Cfg.StatPointsPerLevel} (กด {Settings.BindingText("inventory")} เปิดกระเป๋า)");
             Game.Main.Hud.Banner($"เลเวล {Level}", UiTheme.Gold);
             Fx.Ring(GetParent(), GlobalPosition, 4f, new Color(1f, 0.85f, 0.4f), 0.6f);
         }

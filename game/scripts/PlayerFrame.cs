@@ -137,7 +137,7 @@ void fragment() {
         _st.Value = p.Stamina;
         _stText.Text = $"{Mathf.FloorToInt(p.Stamina)} / {p.MaxStamina:0}";
         _points.Visible = p.StatPoints > 0;
-        _points.Text = $"มีแต้มสถานะ {p.StatPoints} แต้ม · กด {Settings.BindingText("stats")}";
+        _points.Text = $"มีแต้มสถานะ {p.StatPoints} แต้ม · กด {Settings.BindingText("inventory")}";
         float frac = Mathf.Clamp(p.Exp / (float)GameData.ExpToNext(p.Level), 0f, 1f);
         if (!Mathf.IsEqualApprox(frac, _expFrac))
         {

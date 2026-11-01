@@ -95,7 +95,7 @@ public partial class Hud : CanvasLayer
 		BuildMenuIcons();
 		BuildBanner();
 		BuildBag(AddWindow("bag", "กระเป๋า", "inventory", RefreshBag));
-		BuildStats(AddWindow("stats", "สถานะตัวละคร", "stats", RefreshStats));
+		BuildStats(AddWindow("stats", "สมุดภูตผี", "inventory", RefreshStats));
 		BuildQuests(AddWindow("quests", "เควส", "quests", RefreshQuests));
 		BuildMap(AddWindow("map", "แผนที่", "map", null));
 		BuildCraft(AddWindow("craft", "คราฟต์", "craft", RefreshCraft));
@@ -449,7 +449,7 @@ public partial class Hud : CanvasLayer
         Place(bar, 0f, 1f, 18f, -18f, Control.GrowDirection.End, Control.GrowDirection.Begin);
         foreach (var (window, icon, label, action) in new[]
                  {
-                     ("stats", "status", "สถานะ", "stats"), ("bag", "bag", "กระเป๋า", "inventory"),
+                     ("bag", "bag", "กระเป๋า / สถานะ", "inventory"),
                      ("quests", "quest", "เควส", "quests"), ("map", "map", "แผนที่", "map"), ("craft", "craft", "คราฟต์", "craft"),
                  })
         {
@@ -1226,7 +1226,7 @@ public partial class Hud : CanvasLayer
             return;
         if (_deathScreen != null && Input.IsActionJustPressed("respawn"))
             Respawn();
-        foreach (var (action, window) in new[] { ("inventory", "bag"), ("stats", "stats"), ("quests", "quests"), ("map", "map"), ("craft", "craft") })
+        foreach (var (action, window) in new[] { ("inventory", "bag"), ("quests", "quests"), ("map", "map"), ("craft", "craft") })
             if (Input.IsActionJustPressed(action))
                 Toggle(_windows[window]);
         Refresh(_player);
