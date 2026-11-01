@@ -40,6 +40,7 @@ public class SaveData
     public int Released { get; set; }
     public int Merit { get; set; }
     public int Money { get; set; }
+    public List<string> OpenedChests { get; set; } = new();
     public string SpawnShrine { get; set; }
     public float Hour { get; set; }
     public QuestSave Quests { get; set; } = new();
@@ -56,6 +57,9 @@ public static class SaveGame
 
     // The slot the running game saves into (0-based).
     public static int Current { get; set; } = 0;
+
+    // Dev runs (screenshots, selftest) must never touch the player's saves.
+    public static bool Disabled { get; set; }
 
     static string PathOf(int slot) => $"{Dir}/slot{slot + 1}.json";
 
@@ -83,6 +87,8 @@ public static class SaveGame
 
     public static void Save(SaveData data)
     {
+        if (Disabled)
+            return;
         DirAccess.MakeDirRecursiveAbsolute(Dir);
         data.SavedAt = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm", System.Globalization.CultureInfo.InvariantCulture);
         using var f = FileAccess.Open(PathOf(Current), FileAccess.ModeFlags.Write);

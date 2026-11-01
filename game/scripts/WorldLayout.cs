@@ -28,6 +28,7 @@ public static partial class WorldBuilder
         _landmarks.Clear();
         _plots.Clear();
         _roadCount = 0;
+        _stallSpots.Clear();
     }
 
     static Vector2 Flat(Vector3 v) => new(v.X, v.Z);

@@ -374,6 +374,7 @@ public partial class Player
         Released = Released,
         Merit = Merit,
         Money = Money,
+        OpenedChests = OpenedChests.ToList(),
         SpawnShrine = SpawnShrine,
         Quests = Quests.Export(),
         BusStops = BusStops.ToList(),
@@ -413,6 +414,9 @@ public partial class Player
         Released = s.Released;
         Merit = s.Merit;
         Money = s.Money;
+        OpenedChests.Clear();
+        foreach (var c in s.OpenedChests ?? new())
+            OpenedChests.Add(c);
         SpawnShrine = s.SpawnShrine ?? SpawnShrine;
         Quests.Import(s.Quests);
         BusStops.Clear();

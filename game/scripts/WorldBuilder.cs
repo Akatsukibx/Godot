@@ -89,6 +89,10 @@ public static partial class WorldBuilder
         CitySigns(city);
         Smithy(city, new Vector3(-20f, 0f, -12f));
         BuildBlocks(city);
+        ScatterRoadside(city, "StreetProps", 0.9f, 110);
+        FenceRoads(city, "LaneFences", 0.45f, new Vector2(4f, 9f), p => Mathf.Abs(p.X) > 20f || Mathf.Abs(p.Y) > 20f);
+        Puddles(city, 28, p => Mathf.Abs(p.X) < Wall - 8f && Mathf.Abs(p.Y) < Wall - 8f);
+        PlaceChests(city, "wiang_mok", 5, p => Mathf.Abs(p.X) < Wall - 14f && Mathf.Abs(p.Y) < Wall - 14f);
         return city;
     }
 
@@ -847,6 +851,10 @@ public static partial class WorldBuilder
         BuildPaddies(world);
         BuildFieldTrees(world);
         BuildThickets(world, 26);
+        ScatterRoadside(world, "FieldProps", 0.8f, 45, p => p.Y > ThungNaShoreZ + 10f);
+        FenceRoads(world, "FieldFences", 0.45f, new Vector2(5f, 11f), p => p.Y > ThungNaShoreZ + 12f && Mathf.Abs(p.X) < Half - 8f);
+        Puddles(world, 22, p => p.Y > ThungNaShoreZ + 12f);
+        PlaceChests(world, "thung_na", 5, p => p.Y > ThungNaShoreZ + 18f);
         BuildFireflies(world, Half);
         return world;
     }

@@ -110,6 +110,7 @@ public partial class Main : Node3D
         WorldBuilder.ApplyDistanceCulling(this);
         AddChild(WorldBuilder.BuildRice(GetTree().GetNodesInGroup("map_plot").OfType<Node3D>()));
         AddChild(WorldBuilder.BuildForest(WorldBuilder.WorldBounds()));
+        AddChild(new CloudLayer { Name = "Clouds" });
         AddChild(WorldBuilder.BuildLilies(GetTree().GetNodesInGroup("lily_field").OfType<Node3D>()));
         Textures.Apply(this);
         foreach (var shrine in GetTree().GetNodesInGroup("shrine").OfType<Node3D>())
@@ -249,6 +250,8 @@ public partial class Main : Node3D
             .ToDictionary(p => p[0].TrimStart('-'), p => p.Length > 1 ? p[1] : "");
         if (args.Count == 0)
             return false;
+        if (args.ContainsKey("screenshot") || args.ContainsKey("selftest") || args.ContainsKey("bake"))
+            SaveGame.Disabled = true;
         float F(string s) => float.Parse(s, System.Globalization.CultureInfo.InvariantCulture);
 
         if (args.TryGetValue("graphics", out var gq))
@@ -381,6 +384,7 @@ public partial class Main : Node3D
                 _seenCutscenes.Add(c);
         }
         Player.GlobalPosition = SpawnPosition();
+        RestoreOpenedChests();
         Player.Died += () => Hud.ShowDeath(RespawnPlayer);
         Player.Quests.Completed += OnQuestCompleted;
         Player.Quests.Accepted += _ => NotifyZone();
@@ -567,6 +571,18 @@ public partial class Main : Node3D
                 text = $"[{Settings.BindingText("interact")}] ไหว้{shrine.GetMeta("shrine_name")}" + (bound ? " (จุดเกิดปัจจุบัน)" : " · ตั้งจุดเกิด");
             }
         }
+        foreach (var chest in GetTree().GetNodesInGroup("chest").OfType<Node3D>())
+        {
+            if (Player.OpenedChests.Contains((string)chest.GetMeta("chest_id")))
+                continue;
+            float d = chest.GlobalPosition.DistanceTo(Player.GlobalPosition);
+            if (d < 3f && d < best)
+            {
+                best = d;
+                _interactTarget = chest;
+                text = $"[{Settings.BindingText("interact")}] เปิดหีบลึกลับ";
+            }
+        }
         foreach (var stop in _busStops.Values)
         {
             float d = stop.GlobalPosition.DistanceTo(Player.GlobalPosition);
@@ -595,10 +611,62 @@ public partial class Main : Node3D
             Hud.ShowDialogue(npc);
             return;
         }
-        if (target.IsInGroup("bus_stop"))
+        if (target.IsInGroup("chest"))
+            OpenChest(target);
+        else if (target.IsInGroup("bus_stop"))
             ShowBusMenu((string)target.GetMeta("stop_id"));
         else
             BindShrine(target);
+    }
+
+    // Mystery chests: money, a rare material or two and now and then something better. Opened once and saved.
+    static readonly Dictionary<string, string[]> ChestLoot = new()
+    {
+        ["wiang_mok"] = new[] { "saeng_winyan", "lek_sanim", "mai_phu", "sai_sin_khat", "ya_hom_yai" },
+        ["thung_na"] = new[] { "khao_san_sek", "namkhang_ratri", "lek_nam_phi", "fang_sap", "ya_hom_yai", "takrut" },
+        ["bueng_bua"] = new[] { "phlueak_winyan", "bai_tani", "sai_bua", "set_tra_phanuek", "ya_hom_yai", "waen_phirot" },
+    };
+
+    void OpenChest(Node3D chest)
+    {
+        string id = (string)chest.GetMeta("chest_id");
+        if (!Player.OpenedChests.Add(id))
+            return;
+        string zone = id[..id.LastIndexOf('_')];
+        var zoneDef = GameData.Zone(zone);
+        int mid = zoneDef == null ? 5 : (zoneDef.LevelMin + zoneDef.LevelMax) / 2;
+        Player.AddMoney(_rng.RandiRange(25, 60) + mid * 8);
+        var pool = ChestLoot.GetValueOrDefault(zone) ?? ChestLoot["wiang_mok"];
+        for (int i = 0; i < 2; i++)
+            Player.AddItem(pool[_rng.RandiRange(0, pool.Length - 1)], _rng.RandiRange(1, 2));
+        if (_rng.Randf() < 0.25f)
+            Player.AddItem(pool[^1], 1);
+        ApplyChestOpen(chest);
+        Audio.Play("levelup", -4f, 0f);
+        Fx.Ring(this, chest.GlobalPosition, 2.5f, new Color(1f, 0.85f, 0.4f), 0.8f);
+        int found = Player.OpenedChests.Count(c => c.StartsWith(zone + "_"));
+        Game.Toast($"เปิดหีบลึกลับ · พบหีบในโซนนี้แล้ว {found}/5", "quest", 4f);
+        SaveNow();
+    }
+
+    // Lid thrown back, glow gone.
+    void ApplyChestOpen(Node3D chest)
+    {
+        if (chest.FindChild("ChestLid", true, false) is Node3D lid)
+        {
+            lid.Position += new Vector3(0f, 0.25f, 0.45f);
+            lid.Rotation = new Vector3(-1.2f, 0f, Mathf.Pi * 0.5f);
+        }
+        foreach (var n in new[] { "GlowYan", "ChestGlow" })
+            if (chest.FindChild(n, true, false) is Node3D g)
+                g.Visible = false;
+    }
+
+    void RestoreOpenedChests()
+    {
+        foreach (var chest in GetTree().GetNodesInGroup("chest").OfType<Node3D>())
+            if (Player.OpenedChests.Contains((string)chest.GetMeta("chest_id")))
+                ApplyChestOpen(chest);
     }
 
     void BindShrine(Node3D shrine)

@@ -77,6 +77,7 @@ public static partial class WorldBuilder
         BuildBuengHamlet(world);
         BuildBuengSights(world);
         BuildBuengTrees(world);
+        PlaceChests(world, "bueng_bua", 5, p => BuengHeight(p.X, p.Y) > 0.25f && BuengHeight(p.X - 4f, p.Y) > 0.2f && BuengHeight(p.X + 4f, p.Y) > 0.2f && BuengHeight(p.X, p.Y + 4f) > 0.2f && BuengHeight(p.X, p.Y - 4f) > 0.2f, p => BuengHeight(p.X, p.Y));
         BuildFireflies(world, Half);
         return world;
     }
