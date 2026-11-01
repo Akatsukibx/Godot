@@ -51,7 +51,7 @@ public partial class Hud
     (string kind, int index, string slot) _bagSel = ("bag", 0, null);
     int _bagVersion = -1;
 
-    const float SlotSize = 54f;
+    const float SlotSize = 62f;
 
     ItemSlot MakeItemSlot(string kind, int index, string slot)
     {
@@ -129,6 +129,7 @@ public partial class Hud
     void BuildBagStats(Control parent)
     {
         var col = Column(250f, 5);
+        col.SizeFlagsVertical = Control.SizeFlags.ExpandFill;
         parent.AddChild(col);
         _bsLevel = UiTheme.Label("", 22, UiTheme.Gold);
         col.AddChild(_bsLevel);
@@ -220,9 +221,9 @@ public partial class Hud
 
         // Character with equipment slots on both sides.
         var left = new VBoxContainer();
-        left.AddThemeConstantOverride("separation", 6);
+        left.AddThemeConstantOverride("separation", 26);
         var right = new VBoxContainer();
-        right.AddThemeConstantOverride("separation", 6);
+        right.AddThemeConstantOverride("separation", 26);
         foreach (var (slot, name) in Player.EquipSlots)
         {
             var col = slot is "helmet" or "armor" or "pants" or "boots" ? left : right;
@@ -235,16 +236,19 @@ public partial class Hud
             wrap.AddChild(UiTheme.Label(name, 11, UiTheme.Muted));
             col.AddChild(wrap);
         }
+        left.Alignment = BoxContainer.AlignmentMode.Center;
+        right.Alignment = BoxContainer.AlignmentMode.Center;
         h.AddChild(left);
         var center = new VBoxContainer();
         center.AddThemeConstantOverride("separation", 4);
         h.AddChild(center);
-        _bagPreview = ModelPreview.CreateEmpty(new Vector2(220f, 330f));
+        _bagPreview = ModelPreview.CreateEmpty(new Vector2(250f, 520f));
         center.AddChild(_bagPreview);
         _bagStats = UiTheme.Label("", 12, UiTheme.Muted);
         h.AddChild(right);
 
         _bagGrid = new GridContainer { Columns = 6 };
+        _bagGrid.SizeFlagsVertical = Control.SizeFlags.ShrinkCenter;
         _bagGrid.AddThemeConstantOverride("h_separation", 4);
         _bagGrid.AddThemeConstantOverride("v_separation", 4);
         for (int i = 0; i < Player.BagSize; i++)
@@ -256,6 +260,8 @@ public partial class Hud
         h.AddChild(_bagGrid);
 
         var detail = Column(220f, 6);
+        detail.Alignment = BoxContainer.AlignmentMode.Center;
+        detail.SizeFlagsVertical = Control.SizeFlags.ExpandFill;
         h.AddChild(detail);
         _bagIcon = UiTheme.IconRect(null, 64f);
         _bagName = Wrapped("", 17, 220f, Colors.White);

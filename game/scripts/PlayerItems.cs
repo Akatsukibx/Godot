@@ -17,7 +17,7 @@ public class ItemStack
 // set bonuses, upgrading at the smith, crafting with success chances, and the save file.
 public partial class Player
 {
-    public const int BagSize = 30;
+    public const int BagSize = 48;
     public const int MaxEnhance = 10;
 
     public static readonly (string slot, string name)[] EquipSlots =

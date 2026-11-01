@@ -75,8 +75,8 @@ public partial class ModelPreview : SubViewportContainer
 		}
 		preview._cam = new Camera3D { Fov = showcase ? 30f : 32f };
 		vp.AddChild(preview._cam);
-		var eye = showcase ? new Vector3(0f, 1.35f, 6.4f) : new Vector3(0f, 1.25f, 4.6f);
-		preview._cam.Transform = new Transform3D(Basis.Identity, eye).LookingAt(new Vector3(0f, showcase ? 1.05f : 0.95f, 0f), Vector3.Up);
+		var eye = showcase ? new Vector3(0f, 1.35f, 6.4f) : new Vector3(0f, 1.1f, 6.1f);
+		preview._cam.Transform = new Transform3D(Basis.Identity, eye).LookingAt(new Vector3(0f, showcase ? 1.05f : 0.9f, 0f), Vector3.Up);
 
 		preview.MouseEntered += () => { if (preview._rig != null) preview._rig.Emote = "wave"; };
 		preview.MouseExited += () => { if (preview._rig != null) preview._rig.Emote = null; };
