@@ -424,6 +424,7 @@ void fragment() {
             Fx.Ring(GetParent(), GlobalPosition, 3f, new Color(1f, 0.4f, 0.2f), 0.5f);
             p.Quests.Notify(p, banish ? "banish" : "release", Def.Id);
             p.GainExp(exp);
+            p.AddMoney(Mathf.Max(1, Mathf.RoundToInt(Def.Exp * 0.6f * (night ? 1.3f : 1f))));
         }
         else
         {
@@ -437,6 +438,7 @@ void fragment() {
             Fx.Ring(GetParent(), GlobalPosition, 3f, new Color(0.7f, 0.85f, 1f), 0.8f);
             p.Quests.Notify(p, banish ? "banish" : "release", Def.Id);
             p.GainExp(exp);
+            p.AddMoney(Mathf.Max(1, Mathf.RoundToInt(Def.Exp * 0.25f)));
         }
         Vanish();
     }

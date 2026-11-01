@@ -45,6 +45,8 @@ public partial class Hud
     ModelPreview _bagPreview;
     TextureRect _bagIcon;
     Label _bagName, _bagInfo, _bagDesc, _bagFooter, _bagStats;
+    Label _bagMoney;
+    string _bagFilter = "";
     Button _bagUse, _bagUnequip;
     (string kind, int index, string slot) _bagSel = ("bag", 0, null);
     int _bagVersion = -1;
@@ -119,8 +121,21 @@ public partial class Hud
 
     void BuildBag(VBoxContainer body)
     {
-        var tools = new HBoxContainer { Alignment = BoxContainer.AlignmentMode.End };
-        tools.AddChild(UiTheme.Button("⚒  คราฟต์", () => OpenWindow("craft"), 160f));
+        // Category tabs (they dim the other kinds of item), the sort button, money and the craft button.
+        var tools = new HBoxContainer();
+        tools.AddThemeConstantOverride("separation", 6);
+        foreach (var (key, label) in new[] { ("", "ทั้งหมด"), ("weapon", "อาวุธ"), ("armor", "ชุด"), ("jewelry", "เครื่องประดับ"), ("potion", "ยา"), ("material", "วัตถุดิบ") })
+        {
+            string k = key;
+            var tab = UiTheme.Button(label, () => { _bagFilter = k; _bagVersion = -1; }, 0f);
+            tab.CustomMinimumSize = new Vector2(0f, 34f);
+            tools.AddChild(tab);
+        }
+        tools.AddChild(new Control { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill });
+        _bagMoney = UiTheme.Label("", 18, UiTheme.Gold);
+        tools.AddChild(_bagMoney);
+        tools.AddChild(UiTheme.Button("จัดเรียง", () => { _player.SortBag(); }, 110f));
+        tools.AddChild(UiTheme.Button("⚒  คราฟต์", () => OpenWindow("craft"), 130f));
         body.AddChild(tools);
         var h = new HBoxContainer();
         h.AddThemeConstantOverride("separation", 16);
@@ -326,6 +341,9 @@ public partial class Hud
             _bagUse.Disabled = d.Equip != null && !p.CanEquip(d);
             _bagUnequip.Visible = _bagSel.kind == "equip";
         }
+        _bagMoney.Text = $"● {p.Money} เบี้ย";
+        for (int i = 0; i < Player.BagSize; i++)
+            _bagSlots[i].Modulate = _bagFilter == "" || p.Bag[i] == null || Player.CategoryOf(p.Bag[i].Def) == _bagFilter ? Colors.White : new Color(1f, 1f, 1f, 0.28f);
         _bagFooter.Text = $"บุญ {p.Merit} · ปราบ {p.Banished} · ปลดปล่อย {p.Released} · ช่องว่าง {p.Bag.Count(s => s == null)}/{Player.BagSize}";
     }
 

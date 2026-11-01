@@ -1,4 +1,5 @@
 using Godot;
+using System.Linq;
 using System.Collections.Generic;
 
 // Main menu, pause menu and the settings screen. Runs while the tree is paused, and decides
@@ -66,12 +67,8 @@ public partial class Menus : CanvasLayer
         outer.AddChild(new Control { CustomMinimumSize = new Vector2(0f, 18f) });
         MenuPanel(outer, out var v);
         if (SaveGame.Exists)
-            v.AddChild(MenuButton("เล่นต่อ", () =>
-            {
-                CloseMainMenu();
-                Game.Main.ContinueGame();
-            }));
-        v.AddChild(MenuButton(SaveGame.Exists ? "เริ่มเกมใหม่" : "เริ่มเกม", () =>
+            v.AddChild(MenuButton("เลือกตัวละคร", () => ShowCharacterSelect()));
+        v.AddChild(MenuButton(SaveGame.Exists ? "สร้างตัวละครใหม่" : "เริ่มเกม", () =>
         {
             CloseMainMenu();
             Game.Main.OpenClassSelect();
@@ -87,7 +84,7 @@ public partial class Menus : CanvasLayer
             GetTree().Quit();
         }));
         outer.AddChild(new Control { CustomMinimumSize = new Vector2(0f, 10f) });
-        outer.AddChild(Centered("ต้นแบบรอบที่ 4 · เล่นคนเดียว", 14, UiTheme.Muted));
+        outer.AddChild(Centered("ต้นแบบ · เล่นคนเดียว", 14, UiTheme.Muted));
     }
 
     static Button MenuButton(string text, System.Action action)
@@ -97,6 +94,84 @@ public partial class Menus : CanvasLayer
         b.Alignment = HorizontalAlignment.Left;
         b.AddThemeFontSizeOverride("font_size", 22);
         return b;
+    }
+
+    // ---------- character slots ----------
+
+    // The list of saved characters: play, delete (with a confirmation), or start a new one in a free slot.
+    public void ShowCharacterSelect(string notice = null)
+    {
+        CloseMainMenu();
+        _mainMenu = UiTheme.FullScreenOverlay(new Color(0.01f, 0.01f, 0.04f, 0.55f), out var outer, 12);
+        _root.AddChild(_mainMenu);
+        outer.AddChild(Centered("เลือกตัวละคร", 44, UiTheme.Gold));
+        if (notice != null)
+            outer.AddChild(Centered(notice, 16, new Color(1f, 0.6f, 0.4f)));
+        MenuPanel(outer, out var v);
+        for (int i = 0; i < SaveGame.Slots; i++)
+        {
+            int slot = i;
+            var save = SaveGame.Load(slot);
+            var row = new HBoxContainer();
+            row.AddThemeConstantOverride("separation", 8);
+            var def = save == null ? null : GameData.Classes.FirstOrDefault(c => c.Id == save.ClassId);
+            string text = save == null || def == null
+                ? $"ช่อง {slot + 1}  ·  ว่าง — สร้างตัวละครใหม่"
+                : $"ช่อง {slot + 1}  ·  {(string.IsNullOrWhiteSpace(save.Name) ? def.Name : save.Name)}  ·  {def.Name} Lv.{save.Level}  ·  {save.Money} เบี้ย  ·  {save.SavedAt}";
+            var play = MenuButton(text, () =>
+            {
+                CloseMainMenu();
+                if (save == null || def == null)
+                {
+                    SaveGame.Current = slot;
+                    Game.Main.OpenClassSelectInSlot(slot);
+                }
+                else
+                    Game.Main.ContinueGame(slot);
+            });
+            play.CustomMinimumSize = new Vector2(760f, 52f);
+            play.AddThemeFontSizeOverride("font_size", 18);
+            row.AddChild(play);
+            if (save != null)
+            {
+                var del = UiTheme.Button("ลบ", () => ConfirmDelete(slot, save.Name ?? def?.Name ?? $"ช่อง {slot + 1}"), 80f);
+                del.CustomMinimumSize = new Vector2(80f, 52f);
+                row.AddChild(del);
+            }
+            v.AddChild(row);
+        }
+        v.AddChild(MenuButton("← กลับ", () =>
+        {
+            CloseMainMenu();
+            ShowMainMenu();
+        }));
+    }
+
+    void ConfirmDelete(int slot, string name)
+    {
+        var dim = new ColorRect { Color = new Color(0f, 0f, 0f, 0.7f), MouseFilter = Control.MouseFilterEnum.Stop };
+        dim.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
+        _root.AddChild(dim);
+        var center = new CenterContainer();
+        center.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
+        dim.AddChild(center);
+        var panel = UiTheme.Panel();
+        center.AddChild(panel);
+        var col = new VBoxContainer();
+        col.AddThemeConstantOverride("separation", 14);
+        panel.AddChild(col);
+        col.AddChild(UiTheme.Heading($"ลบ “{name}” ?", 26));
+        col.AddChild(UiTheme.Label("ตัวละครและของทั้งหมดในช่องนี้จะหายไป กู้คืนไม่ได้", 16, UiTheme.Muted));
+        var buttons = new HBoxContainer { Alignment = BoxContainer.AlignmentMode.Center };
+        buttons.AddThemeConstantOverride("separation", 16);
+        buttons.AddChild(UiTheme.Button("ยกเลิก", () => dim.QueueFree(), 160f));
+        buttons.AddChild(UiTheme.Button("ลบถาวร", () =>
+        {
+            SaveGame.Delete(slot);
+            dim.QueueFree();
+            ShowCharacterSelect();
+        }, 160f));
+        col.AddChild(buttons);
     }
 
     void CloseMainMenu()

@@ -39,7 +39,11 @@ public static class SkinModel
 		}
 	}
 
-	public static bool Available => Scene != null;
+	// Off: characters use the original box rig and its hand-written animations. Flip to true to use the
+	// Unreal-skeleton mannequin and the animation library (kept working for a later swap to a real model).
+	public static bool Enabled = false;
+
+	public static bool Available => Enabled && Scene != null;
 
 	const string ShaderCode = @"
 shader_type spatial;
@@ -145,7 +149,7 @@ void fragment() {
 
 	public static Node3D Build(string name, Models.Look k)
 	{
-		var scene = Scene;
+		var scene = Enabled ? Scene : null;
 		if (scene == null)
 			return null;
 		var fbx = scene.Instantiate<Node3D>();

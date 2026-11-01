@@ -84,6 +84,7 @@ public class QuestLog
         foreach (var (id, n) in q.Rewards.Items)
             p.AddItem(id, n);
         p.GainExp(q.Rewards.Exp);
+        p.AddMoney(Mathf.Max(5, Mathf.RoundToInt(q.Rewards.Exp * 0.4f)));
         Completed?.Invoke(q);
         Refresh(p);
     }

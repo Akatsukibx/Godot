@@ -304,6 +304,57 @@ public partial class Player
         return true;
     }
 
+    // ---------- money (เบี้ย) and sorting ----------
+
+    public void AddMoney(int n)
+    {
+        if (n <= 0)
+            return;
+        Money += n;
+        Game.Toast($"ได้ {n} เบี้ย", null, 2f);
+        Changed();
+    }
+
+    public bool SpendMoney(int n)
+    {
+        if (Money < n)
+            return false;
+        Money -= n;
+        Changed();
+        return true;
+    }
+
+    public static string CategoryOf(ItemDef d) => d.Equip switch
+    {
+        "weapon" or "offhand" => "weapon",
+        "helmet" or "armor" or "pants" or "boots" => "armor",
+        "necklace" or "ring" or "charm" => "jewelry",
+        _ => d.Use != null ? "potion" : "material",
+    };
+
+    static readonly string[] CategoryOrder = { "weapon", "armor", "jewelry", "potion", "material" };
+
+    // Merges stacks of the same item, then orders the bag by category, rarity (rare first) and name.
+    public void SortBag()
+    {
+        var items = Bag.Where(s => s != null).ToList();
+        var merged = new List<ItemStack>();
+        foreach (var s in items)
+        {
+            var into = s.Def.Stackable ? merged.FirstOrDefault(m => m.Id == s.Id && m.Plus == s.Plus) : null;
+            if (into != null)
+                into.Count += s.Count;
+            else
+                merged.Add(s);
+        }
+        var sorted = merged.OrderBy(s => System.Array.IndexOf(CategoryOrder, CategoryOf(s.Def))).ThenByDescending(s => s.Def.Rarity)
+            .ThenBy(s => s.Def.Name, System.StringComparer.Ordinal).ThenByDescending(s => s.Plus).ToList();
+        System.Array.Clear(Bag);
+        for (int i = 0; i < sorted.Count && i < BagSize; i++)
+            Bag[i] = sorted[i];
+        Changed();
+    }
+
     // ---------- save ----------
 
     public SaveData ToSave() => new()
@@ -322,6 +373,7 @@ public partial class Player
         Banished = Banished,
         Released = Released,
         Merit = Merit,
+        Money = Money,
         SpawnShrine = SpawnShrine,
         Quests = Quests.Export(),
         BusStops = BusStops.ToList(),
@@ -360,6 +412,7 @@ public partial class Player
         Banished = s.Banished;
         Released = s.Released;
         Merit = s.Merit;
+        Money = s.Money;
         SpawnShrine = s.SpawnShrine ?? SpawnShrine;
         Quests.Import(s.Quests);
         BusStops.Clear();

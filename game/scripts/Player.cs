@@ -31,6 +31,7 @@ public partial class Player : CharacterBody3D
     public int Banished { get; set; }
     public int Released { get; set; }
     public int Merit { get; set; }
+    public int Money { get; private set; }
     public bool Dead { get; private set; }
     public bool Sprinting { get; private set; }
     public float WaterDepth { get; private set; }

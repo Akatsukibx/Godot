@@ -186,11 +186,35 @@ public partial class Main : Node3D
             ff.Amount = q == 0 ? 30 : 70;
     }
 
-    public void OpenClassSelect() => Hud.ShowClassSelect(GameData.Classes, def => Hud.AskName(def, name => StartGame(def, null, name)));
-
-    public void ContinueGame()
+    public void OpenClassSelectInSlot(int slot)
     {
-        var save = SaveGame.Load();
+        Hud.ShowClassSelect(GameData.Classes, def => Hud.AskName(def, name =>
+        {
+            SaveGame.Current = slot;
+            StartGame(def, null, name);
+        }));
+    }
+
+    // A new character goes into the first free slot (when all are full the player is sent to delete one).
+    public void OpenClassSelect()
+    {
+        int free = SaveGame.FirstFreeSlot();
+        if (free < 0)
+        {
+            Menus.ShowCharacterSelect("ช่องเก็บตัวละครเต็ม ลบตัวละครหนึ่งตัวก่อนสร้างตัวใหม่");
+            return;
+        }
+        Hud.ShowClassSelect(GameData.Classes, def => Hud.AskName(def, name =>
+        {
+            SaveGame.Current = free;
+            StartGame(def, null, name);
+        }));
+    }
+
+    public void ContinueGame(int slot = 0)
+    {
+        SaveGame.Current = slot;
+        var save = SaveGame.Load(slot);
         var def = GameData.Classes.FirstOrDefault(c => c.Id == save?.ClassId);
         if (def == null)
         {
@@ -439,6 +463,7 @@ public partial class Main : Node3D
         NotifyZone();
         if (!silent)
         {
+            SaveNow();
             Hud.ZoneTitle(zone);
             Weather.Roll();
         }
@@ -781,6 +806,16 @@ public partial class Main : Node3D
     public override void _Process(double delta)
     {
         float dt = (float)delta;
+        _autosave -= dt;
+        if (_autosave <= 0f)
+        {
+            _autosave = 120f;
+            if (Player != null && !Player.Dead && !Cutscene.Active)
+            {
+                SaveNow();
+                Game.Toast("บันทึกอัตโนมัติ", null, 1.2f);
+            }
+        }
         UpdateCamera(dt);
         foreach (var ff in GetTree().GetNodesInGroup("fireflies").OfType<GpuParticles3D>())
             ff.Emitting = DayNight.NightFactor > 0.5f && Weather.Intensity < 0.5f;
@@ -802,6 +837,8 @@ public partial class Main : Node3D
     }
 
     // ---------- ghosts ----------
+
+    float _autosave = 120f;
 
     void UpdateSpawning(float dt)
     {
