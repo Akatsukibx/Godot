@@ -151,6 +151,12 @@ public class QuestLog
         .Where(q => q != null && _progress.ContainsKey(q.Id));
 
     public QuestDef Tracked(Player p) => PinnedActive.FirstOrDefault() ?? Active.OrderBy(q => q.Main ? 0 : 1).FirstOrDefault();
+    // Main quests slotted into the story after release: (new quests, the quest before, the quest after).
+    static readonly (string[] inserted, string before, string after)[] StoryInserts =
+    {
+        (new[] { "m7a_first_scarecrow", "m7b_lanterns", "m7c_giant" }, "m7_seal_clue", "m8_bridge"),
+    };
+
     public QuestSave Export() => new()
     {
         Progress = _progress.ToDictionary(kv => kv.Key, kv => kv.Value.ToArray()),
@@ -169,6 +175,12 @@ public class QuestLog
         _pinned.AddRange(s.Pinned ?? new());
         foreach (var id in s.Done)
             _done.Add(id);
+        // Old saves: quests added later in the middle of the main story count as done for anyone who is
+        // already past them, so nobody is sent back or left with a locked next step.
+        foreach (var (inserted, before, after) in StoryInserts)
+            if (_done.Contains(before) && (_done.Contains(after) || s.Progress.ContainsKey(after)))
+                foreach (var id in inserted)
+                    _done.Add(id);
         foreach (var (id, counts) in s.Progress)
         {
             var q = GameData.Quests.FirstOrDefault(x => x.Id == id);

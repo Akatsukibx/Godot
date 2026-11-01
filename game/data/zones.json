@@ -20,7 +20,14 @@
 	"scene": "thung_na", "centerX": 0, "centerZ": -372, "sizeX": 372, "sizeZ": 372,
 	"levelMin": 1, "levelMax": 15, "levelText": "1–15",
 	"ghosts": [ "hun_lai_ka", "phi_pong", "phi_tai_hong" ], "alleyOnly": false, "maxGhostsDay": 10, "maxGhostsNight": 16,
-	"boss": { "ghost": "boss_hun_yak", "x": 100, "z": -30, "respawn": 600, "lair": "ทุ่งตะวันออก" },
+	"boss": { "ghost": "boss_hun_yak", "x": 100, "z": -30, "respawn": 600, "lair": "ทุ่งตะวันออก",
+	  "summon": { "offering": { "fang_sap": 8 }, "minLevel": 8, "time": "any", "text": "กองฟางสาปแปดฟ่อนบนแท่นหน้าหุ่นยักษ์ แล้วจุดไฟ" } },
+	"spawnGroups": [
+	  { "id": "tn_west_field", "name": "แปลงนาหุ่นตะวันตก", "ghosts": [ "hun_lai_ka" ], "x": -90, "z": -40, "radius": 22, "count": 4, "respawn": 45, "leash": 32 },
+	  { "id": "tn_pong_grove", "name": "ดงผีโพง", "ghosts": [ "phi_pong" ], "x": -120, "z": 110, "radius": 18, "count": 3, "respawn": 60, "leash": 30, "time": "night" },
+	  { "id": "tn_tai_hong", "name": "คันนาตายโหง", "ghosts": [ "phi_tai_hong", "phi_pong" ], "x": 60, "z": -70, "radius": 18, "count": 3, "respawn": 75, "leash": 30, "time": "night" },
+	  { "id": "tn_east_field", "name": "แปลงนาตะวันออก", "ghosts": [ "hun_lai_ka", "phi_pong" ], "x": 130, "z": 110, "radius": 20, "count": 3, "respawn": 50, "leash": 30 }
+	],
 	"rainChance": 0.3, "worldX": 1, "worldY": 0,
 	"exits": [
 	  { "to": "wiang_mok", "side": "south", "label": "ทางลงเวียงหมอก" },
@@ -33,7 +40,13 @@
 	"scene": "bueng_bua", "centerX": 0, "centerZ": -744, "sizeX": 372, "sizeZ": 372,
 	"levelMin": 15, "levelMax": 25, "levelText": "15–25",
 	"ghosts": [ "phi_phrai", "phi_krahang", "nang_tani" ], "alleyOnly": false, "maxGhostsDay": 8, "maxGhostsNight": 14,
-	"boss": { "ghost": "boss_krasue", "x": 90, "z": -112, "respawn": 900, "lair": "เกาะตะเคียน" },
+	"boss": { "ghost": "boss_krasue", "x": 90, "z": -112, "respawn": 900, "lair": "เกาะตะเคียน",
+	  "summon": { "offering": { "sai_bua": 5, "khi_phueng": 1 }, "minLevel": 18, "time": "night", "text": "วางสายบัวแช่ผีห้าสายกับขี้ผึ้งปลุกเสกใต้ต้นตะเคียน กลางคืนเท่านั้น" } },
+	"spawnGroups": [
+	  { "id": "bb_phrai_channel", "name": "ร่องน้ำผีพราย", "ghosts": [ "phi_phrai" ], "x": 100, "z": 60, "radius": 30, "count": 3, "respawn": 60, "leash": 28 },
+	  { "id": "bb_krahang_marsh", "name": "ดงกระหัง", "ghosts": [ "phi_krahang" ], "x": -60, "z": -20, "radius": 20, "count": 3, "respawn": 70, "leash": 32, "time": "night" },
+	  { "id": "bb_tani_forest", "name": "ป่าไม้ตายนางตานี", "ghosts": [ "nang_tani" ], "x": -110, "z": -110, "radius": 18, "count": 3, "respawn": 80, "leash": 30 }
+	],
 	"rainChance": 0.4, "worldX": 1, "worldY": -1,
 	"exits": [ { "to": "thung_na", "side": "south", "label": "สะพานไม้สู่ทุ่งนา" } ]
   },

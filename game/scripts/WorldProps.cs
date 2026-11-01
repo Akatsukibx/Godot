@@ -553,6 +553,24 @@ public static partial class WorldBuilder
 				var kite = Shapes.Box(g, new Vector3(-0.8f, 0.35f, 0.6f), new Vector3(0.5f, 0.5f, 0.02f), new Color(0.85f, 0.3f, 0.25f), 0f, "ClothKite");
 				kite.Rotation = new Vector3(-1.3f, 0f, Mathf.Pi * 0.25f);
 				break;
+			case "hia_tong": // a glass-topped counter of amulets and gold chains
+				Table(new Vector3(0f, 0f, -1.1f), new Vector3(1.6f, 0f, 0.6f));
+				Shapes.Box(g, new Vector3(0f, 0.86f, -1.1f), new Vector3(1.5f, 0.12f, 0.55f), new Color(0.75f, 0.85f, 0.9f, 0.45f), 0f, "GlassCase");
+				for (int i = 0; i < 5; i++)
+					Shapes.Sphere(g, new Vector3(-0.6f + i * 0.3f, 0.84f, -1.1f), 0.05f, new Color(1f, 0.8f, 0.3f), 0.6f, "GoldAmulet");
+				break;
+			case "nong_fai": // a pile of sealed mystery boxes
+				Table(new Vector3(0f, 0f, -1.1f), new Vector3(1.4f, 0f, 0.6f));
+				for (int i = 0; i < 4; i++)
+					Shapes.Box(g, new Vector3(-0.45f + i * 0.3f, 0.92f, -1.1f), new Vector3(0.24f, 0.24f, 0.24f), i == 2 ? new Color(0.8f, 0.62f, 0.18f) : new Color(0.55f, 0.22f, 0.36f), 0f, "WoodBox");
+				Shapes.Box(g, new Vector3(-0.3f, 1.16f, -1.1f), new Vector3(0.22f, 0.22f, 0.22f), new Color(0.55f, 0.22f, 0.36f), 0f, "WoodBox");
+				break;
+			case "pa_jim": // sacks of rice and bundles of straw, an iron scrap basket
+				foreach (var x in new[] { -0.8f, 0f, 0.8f })
+					Shapes.Cylinder(g, new Vector3(x, 0.3f, -1f), 0.28f, 0.32f, 0.6f, new Color(0.78f, 0.72f, 0.58f), 0f, "SackCloth");
+				Shapes.Cylinder(g, new Vector3(1.4f, 0.25f, -0.5f), 0.3f, 0.25f, 0.5f, Straw, 0f, "BasketWeave");
+				Shapes.Solid(g, new Vector3(0f, 0.3f, -1f), new Vector3(2.2f, 0.6f, 0.6f));
+				break;
 		}
 		Textures.Apply(g);
 	}

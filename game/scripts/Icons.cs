@@ -124,6 +124,16 @@ public static class Icons
             "<path d='M22 18c0-8 20-8 20 0' fill='none' stroke='#7a4a2a' stroke-width='4'/>" +
             "<path d='M14 24h36l4 30a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4z' fill='#b06a3a' stroke='#5a3018' stroke-width='2'/>" +
             "<path d='M12 32h40' stroke='#7a3e1a' stroke-width='3'/><rect x='27' y='28' width='10' height='9' rx='2' fill='#e8c060'/>"),
+        ["box"] = Svg(
+            "<path d='M10 24l22-10 22 10v26l-22 10-22-10z' fill='#8a3a5a' stroke='#3a1428' stroke-width='2'/>" +
+            "<path d='M10 24l22 10 22-10M32 34v26' fill='none' stroke='#3a1428' stroke-width='2'/>" +
+            "<path d='M21 19l22 10v8' fill='none' stroke='#e8c060' stroke-width='4'/>" +
+            "<text x='32' y='52' font-size='16' text-anchor='middle' fill='#ffe08a' font-weight='bold'>?</text>"),
+        ["box_gold"] = Svg(
+            "<path d='M10 24l22-10 22 10v26l-22 10-22-10z' fill='#c89a2a' stroke='#5a4010' stroke-width='2'/>" +
+            "<path d='M10 24l22 10 22-10M32 34v26' fill='none' stroke='#5a4010' stroke-width='2'/>" +
+            "<path d='M21 19l22 10v8' fill='none' stroke='#b0302a' stroke-width='4'/>" +
+            "<text x='32' y='52' font-size='16' text-anchor='middle' fill='#fff6d0' font-weight='bold'>?</text>"),
         ["status"] = Svg(
             "<circle cx='32' cy='18' r='10' fill='#e9e2c8' stroke='#6a5a3a' stroke-width='2'/>" +
             "<path d='M12 56c0-14 9-22 20-22s20 8 20 22z' fill='#9a3a2a' stroke='#5a1a12' stroke-width='2'/>" +

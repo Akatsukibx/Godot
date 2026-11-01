@@ -100,6 +100,7 @@ public partial class Hud : CanvasLayer
 		BuildMap(AddWindow("map", "แผนที่", "map", null));
 		BuildCraft(AddWindow("craft", "คราฟต์", "craft", RefreshCraft));
 		BuildEnhance(AddWindow("enhance", "ตีบวกอุปกรณ์ · ลุงมั่น", "interact", RefreshEnhance));
+		BuildShop(AddWindow("shop", "ร้านค้า", "interact", RefreshShop));
 		BuildDialogue();
 		SetGameplayVisible(false);
 	}
@@ -450,7 +451,7 @@ public partial class Hud : CanvasLayer
         foreach (var (window, icon, label, action) in new[]
                  {
                      ("bag", "bag", "กระเป๋า / สถานะ", "inventory"),
-                     ("quests", "quest", "เควส", "quests"), ("map", "map", "แผนที่", "map"), ("craft", "craft", "คราฟต์", "craft"),
+                     ("quests", "quest", "เควส", "quests"), ("map", "map", "แผนที่", "map"), // crafting opens from the bag
                  })
         {
             var col = new VBoxContainer();
@@ -793,7 +794,7 @@ public partial class Hud : CanvasLayer
             _recipeIcon.Texture = Icons.Get(result.Icon);
             _recipeName.Text = sel.Count > 1 ? $"{result.Name} x{sel.Count}" : result.Name;
             string cls = result.Class != null ? $"\n(ใช้ได้เฉพาะ{GameData.Classes.FirstOrDefault(c => c.Id == result.Class)?.Name})" : "";
-            _recipeDesc.Text = $"[{GameData.RarityNames[result.Rarity]}] {result.Description}{cls}\nโอกาสสำเร็จ {Player.CraftChance(sel) * 100f:0}%" + (Player.CraftChance(sel) < 1f ? " · พลาดแล้ววัตถุดิบหาย" : "");
+            _recipeDesc.Text = $"[{GameData.RarityNames[result.Rarity]}] {result.Description}{cls}";
             _recipeName.AddThemeColorOverride("font_color", GameData.RarityColor(result.Rarity));
             foreach (var c in _recipeIngredients.GetChildren())
                 c.QueueFree();
@@ -1003,6 +1004,8 @@ public partial class Hud : CanvasLayer
                     SetAdvance(null, "");
                 }), true);
         }
+        if (_dlgNpc.Def.Shop is string shop && GameData.Shops.TryGetValue(shop, out var shopDef))
+            Option($"▸  {shopDef.Name} (ซื้อ / ขาย)", () => { CloseWindows(); OpenShop(shop); }, true);
         if (id == "lung_man")
             Option("▸  ตีบวกอุปกรณ์", () => { CloseWindows(); OpenEnhance(); });
         if (id == "khon_khap")

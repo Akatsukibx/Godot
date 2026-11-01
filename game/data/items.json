@@ -62,4 +62,7 @@
   { "id": "takrut", "name": "ตะกรุดสายสิญจน์", "icon": "takrut", "rarity": 2, "description": "ตะกรุดถักสายสิญจน์", "equip": "charm", "hp": 30, "stamina": 20 },
   { "id": "khrueang_rang_khao", "name": "เครื่องรางรวงข้าว", "icon": "takrut", "rarity": 3, "description": "รวงข้าวเรืองแสงผูกสายบัว คุ้มกันคนทำนา", "equip": "charm", "hp": 50, "attack": 6 },
   { "id": "takrut_mae_bua", "name": "ตะกรุดผมแม่บัว", "icon": "takrut", "rarity": 4, "description": "ถักจากปอยผมแม่บัว ขลังที่สุดในบึง", "equip": "charm", "hp": 80, "stamina": 30, "skill": 0.15 }
+,
+  { "id": "klong_sum", "name": "กล่องสุ่มของขลัง", "icon": "box", "rarity": 1, "price": 150, "use": "box", "description": "กล่องผนึกจากตลาดมืด เปิดแล้วได้ของสวมใส่หรือวัตถุดิบหนึ่งชิ้น (ระดับดี–หายาก)", "box": ["pha_yan_hua", "pha_yan_suea", "pha_yan_kang", "pha_yan_thao", "soi_prakham", "mit_san_sai", "lo_mai_yan", "saeng_winyan", "pha_yan_kao", "khao_san_sek", "lek_nam_phi", "khi_phueng", "waen_phirot", "takrut", "sai_sin_hua", "sai_sin_thao"] },
+  { "id": "klong_sum_thong", "name": "กล่องสุ่มทองคำ", "icon": "box_gold", "rarity": 3, "price": 900, "use": "box", "description": "กล่องปิดทองลงอักขระ เปิดแล้วได้ของหายากขึ้นไปหนึ่งชิ้น", "box": ["sai_sin_hua", "sai_sin_suea", "sai_sin_kang", "sai_sin_thao", "lo_sai_sin", "waen_phirot", "takrut", "khrueang_rang_khao", "namkhang_ratri", "phlueak_winyan", "khao_rueang", "yan_maha_ut", "dab_saksit", "mit_ngao_chan"] }
 ]

@@ -59,6 +59,16 @@ public partial class Player
         RefreshEquipmentVisuals();
     }
 
+    // Throws a whole bag slot away for good.
+    public void DiscardSlot(int index)
+    {
+        if (index < 0 || index >= BagSize || Bag[index] == null)
+            return;
+        Game.Toast($"ทิ้ง {Bag[index].Name}{(Bag[index].Count > 1 ? $" x{Bag[index].Count}" : "")} แล้ว", Bag[index].Def.Icon);
+        Bag[index] = null;
+        Changed();
+    }
+
     public bool AddItem(string id, int count = 1, int plus = 0)
     {
         if (!GameData.Items.TryGetValue(id, out var def))
@@ -147,6 +157,8 @@ public partial class Player
         var item = stack.Def;
         if (item.Equip != null)
             return Equip(index);
+        if (item.Use == "box")
+            return OpenBox(index);
         if (item.Use != "heal")
             return false;
         if (Hp >= MaxHp)
@@ -159,6 +171,30 @@ public partial class Player
         stack.Count--;
         if (stack.Count <= 0)
             Bag[index] = null;
+        Changed();
+        return true;
+    }
+
+    // A mystery box: one random thing from its list (never a weapon for another class).
+    bool OpenBox(int index)
+    {
+        var stack = Bag[index];
+        var pool = (stack.Def.Box ?? new()).Where(id => GameData.Items.TryGetValue(id, out var d) && (d.Class == null || d.Class == Def.Id)).ToList();
+        if (pool.Count == 0)
+            return false;
+        if (stack.Count == 1 ? false : Bag.All(s => s != null))
+        {
+            Game.Toast("กระเป๋าเต็ม เปิดกล่องไม่ได้");
+            return false;
+        }
+        stack.Count--;
+        if (stack.Count <= 0)
+            Bag[index] = null;
+        var got = GameData.Items[pool[(int)(GD.Randi() % (uint)pool.Count)]];
+        AddItem(got.Id);
+        Audio.Play("levelup", -6f, 0f);
+        Fx.Ring(GetParent(), GlobalPosition, 2.2f, GameData.RarityColor(got.Rarity), 0.6f);
+        Game.Toast($"เปิด{stack.Def.Name}ได้ {got.Name} [{GameData.RarityNames[got.Rarity]}]", got.Icon, 5f);
         Changed();
         return true;
     }
@@ -281,9 +317,7 @@ public partial class Player
 
     public bool CanCraft(RecipeDef r) => r.Ingredients.All(kv => ItemCount(kv.Key) >= kv.Value);
 
-    public static float CraftChance(RecipeDef r) =>
-        GameData.Config.CraftSuccess[Mathf.Clamp(GameData.Items[r.Result].Rarity, 0, GameData.Config.CraftSuccess.Length - 1)];
-
+    // Crafting always works: having the ingredients is enough.
     public bool Craft(RecipeDef r)
     {
         if (Dead || !CanCraft(r))
@@ -291,12 +325,6 @@ public partial class Player
         foreach (var (id, n) in r.Ingredients)
             RemoveItem(id, n);
         var item = GameData.Items[r.Result];
-        if (GD.Randf() >= CraftChance(r))
-        {
-            Audio.Play("hurt", -4f, 0f);
-            Game.Toast($"คราฟต์{item.Name}ล้มเหลว · วัตถุดิบเสียหาย", item.Icon);
-            return false;
-        }
         AddItem(r.Result, r.Count);
         Audio.Play("levelup", -8f, 0f);
         Game.Toast($"คราฟต์สำเร็จ: {item.Name} x{r.Count}", item.Icon);
@@ -322,6 +350,47 @@ public partial class Player
         Money -= n;
         Changed();
         return true;
+    }
+
+    // ---------- shops ----------
+
+    bool HasRoomFor(ItemDef d) => Bag.Any(s => s == null) || d.Stackable && Bag.Any(s => s?.Id == d.Id);
+
+    public bool Buy(ItemDef d, int count = 1)
+    {
+        int price = GameData.ItemPrice(d) * count;
+        if (Money < price)
+        {
+            Game.Toast("เบี้ยไม่พอ");
+            return false;
+        }
+        if (!HasRoomFor(d) || !d.Stackable && Bag.Count(s => s == null) < count)
+        {
+            Game.Toast("กระเป๋าเต็ม");
+            return false;
+        }
+        SpendMoney(price);
+        AddItem(d.Id, count);
+        Audio.Play("heal", -10f, 0f);
+        Game.Toast($"ซื้อ {d.Name}{(count > 1 ? $" x{count}" : "")} · -{price} เบี้ย", d.Icon, 2.5f);
+        return true;
+    }
+
+    // Sells from one bag slot (upgraded gear fetches more).
+    public void Sell(int index, int count)
+    {
+        var s = Bag[index];
+        if (s == null)
+            return;
+        count = Mathf.Clamp(count, 1, s.Count);
+        int gain = Mathf.RoundToInt(GameData.SellPrice(s.Def) * (1f + s.Plus * 0.25f)) * count;
+        s.Count -= count;
+        if (s.Count <= 0)
+            Bag[index] = null;
+        Money += gain;
+        Audio.Play("heal", -10f, 0f);
+        Game.Toast($"ขาย {s.Name}{(count > 1 ? $" x{count}" : "")} · +{gain} เบี้ย", s.Def.Icon, 2.5f);
+        Changed();
     }
 
     public static string CategoryOf(ItemDef d) => d.Equip switch

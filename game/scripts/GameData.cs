@@ -116,6 +116,8 @@ public class ItemDef
     public float Defense { get; set; }
     public string Set { get; set; }
     public string Color { get; set; }
+    public int Price { get; set; } // shop price in เบี้ย; 0 = worked out from grade and stats (GameData.ItemPrice)
+    public List<string> Box { get; set; } // use "box": a mystery box that opens into one of these
     public string Element { get; set; } // weapons: overrides the class's attack element (see Elements)
     public bool Stackable => Equip == null;
 }
@@ -203,6 +205,15 @@ public class NpcDef
     public float WanderRadius { get; set; } = 5f;
     // Height above the zone ground, for people standing on piers and rafts.
     public float Y { get; set; }
+    // Shop this person runs (data/shops.json), if any.
+    public string Shop { get; set; }
+}
+
+public class ShopDef
+{
+    public string Id { get; set; }
+    public string Name { get; set; } = "";
+    public List<string> Items { get; set; } = new();
 }
 
 public class CutsceneLineDef
@@ -245,6 +256,32 @@ public class BossDef
     public float Z { get; set; }
     public float Respawn { get; set; } = 600f;
     public string Lair { get; set; } = "";
+    public SummonDef Summon { get; set; } = new();
+}
+
+// What it takes to call a zone boss out at its altar: an offering, a level and (maybe) the hour.
+public class SummonDef
+{
+    public Dictionary<string, int> Offering { get; set; } = new();
+    public int MinLevel { get; set; } = 1;
+    public string Time { get; set; } = "any"; // any / day / night
+    public string Text { get; set; } = "";
+}
+
+// A pack of ghosts that lives in one place: it refills to Count, a fallen member comes back after
+// Respawn seconds, and members never chase further than Leash from the centre.
+public class SpawnGroupDef
+{
+    public string Id { get; set; }
+    public string Name { get; set; } = "";
+    public List<string> Ghosts { get; set; } = new();
+    public float X { get; set; }
+    public float Z { get; set; }
+    public float Radius { get; set; } = 14f;
+    public int Count { get; set; } = 3;
+    public float Respawn { get; set; } = 60f;
+    public float Leash { get; set; } = 30f;
+    public string Time { get; set; } = "any"; // any / day / night
 }
 
 public class ZoneDef
@@ -265,6 +302,7 @@ public class ZoneDef
     public int LevelMax { get; set; } = 1;
     public string LevelText { get; set; } = "";
     public List<string> Ghosts { get; set; } = new();
+    public List<SpawnGroupDef> SpawnGroups { get; set; } = new();
     public bool AlleyOnly { get; set; }
     public int MaxGhostsDay { get; set; }
     public int MaxGhostsNight { get; set; }
@@ -350,6 +388,7 @@ public static class GameData
     public static List<ZoneDef> Zones { get; private set; }
     public static Dictionary<string, NpcDef> Npcs { get; private set; }
     public static Dictionary<string, SetDef> Sets { get; private set; }
+    public static Dictionary<string, ShopDef> Shops { get; private set; }
 
     public static readonly string[] RarityNames = { "ปกติ", "ดี", "หายาก", "ล้ำค่า", "ตำนาน" };
     public static readonly Color[] RarityColors =
@@ -377,8 +416,25 @@ public static class GameData
         Zones = Read<List<ZoneDef>>("res://data/zones.json");
         Npcs = Read<List<NpcDef>>("res://data/npcs.json").ToDictionary(n => n.Id);
         Sets = Read<List<SetDef>>("res://data/sets.json").ToDictionary(s => s.Id);
+        Shops = Read<List<ShopDef>>("res://data/shops.json").ToDictionary(s => s.Id);
         Cutscenes = Read<List<CutsceneDef>>("res://data/cutscenes.json").ToDictionary(c => c.Id);
     }
+
+    // Buying price in เบี้ย: the item's own price, else by grade and kind (gear also by its stats).
+    public static int ItemPrice(ItemDef d)
+    {
+        if (d.Price > 0)
+            return d.Price;
+        int r = d.Rarity + 1;
+        if (d.Equip != null)
+            return 40 * r * r + Mathf.RoundToInt((d.Attack + d.Defense) * 6f + (d.Hp + d.Stamina) * 2f + d.Skill * 400f);
+        if (d.Use == "heal")
+            return Mathf.RoundToInt(d.Amount * 0.6f * r);
+        return 6 * r * r;
+    }
+
+    // Shops buy back at a third of the price.
+    public static int SellPrice(ItemDef d) => Mathf.Max(1, ItemPrice(d) / 3);
 
     public static string ItemName(string id) => Items.TryGetValue(id, out var item) ? item.Name : id;
     public static string ItemIcon(string id) => Items.TryGetValue(id, out var item) ? item.Icon : null;

@@ -127,6 +127,8 @@ public partial class Main : Node3D
         }
         foreach (var dock in GetTree().GetNodesInGroup("boat_dock").OfType<Node3D>().ToList())
             RowBoat.Moor(dock);
+        // Altars sit on the ground, so wait until the physics world has the zones in it.
+        GetTree().CreateTimer(0.5).Timeout += BuildSpawnSites;
         foreach (var def in GameData.Npcs.Values)
         {
             var zone = GameData.Zone(def.Zone);
@@ -326,7 +328,12 @@ public partial class Main : Node3D
                     case "pause": Input.ParseInputEvent(new InputEventAction { Action = "pause", Pressed = true }); break;
                     case "class": OpenClassSelect(); break;
                     case "talk": Hud.ShowDialogue(_npcs.OrderBy(n => n.GlobalPosition.DistanceTo(Player.GlobalPosition)).First()); break;
-                    default: Hud.OpenWindow(screen); break;
+                    default:
+                        if (screen.StartsWith("shop:"))
+                            Hud.OpenShop(screen[5..]);
+                        else
+                            Hud.OpenWindow(screen);
+                        break;
                 }
             };
         }
@@ -616,6 +623,16 @@ public partial class Main : Node3D
                 text = $"[{Settings.BindingText("interact")}] เปิดหีบลึกลับ";
             }
         }
+        foreach (var (zoneId, altar) in _altars)
+        {
+            float d = altar.GlobalPosition.DistanceTo(Player.GlobalPosition);
+            if (d < 3.5f && d < best)
+            {
+                best = d;
+                _interactTarget = altar;
+                text = $"[{Settings.BindingText("interact")}] แท่นอัญเชิญ{GameData.GhostName(GameData.Zone(zoneId).Boss.Ghost)}";
+            }
+        }
         foreach (var stop in _busStops.Values)
         {
             float d = stop.GlobalPosition.DistanceTo(Player.GlobalPosition);
@@ -654,6 +671,8 @@ public partial class Main : Node3D
             else
                 boat.Board(Player);
         }
+        else if (target.IsInGroup("boss_altar"))
+            ShowAltarMenu(GameData.Zone((string)target.GetMeta("zone_id")));
         else if (target.IsInGroup("chest"))
             OpenChest(target);
         else if (target.IsInGroup("bus_stop"))
@@ -776,6 +795,8 @@ public partial class Main : Node3D
         yield return ("บึงบัวสาย: หมู่บ้านชาวบึง", bueng + new Vector3(-95f, 0.8f, 60f));
         yield return ("บึงบัวสาย: ศาลาร้าง", bueng + new Vector3(70f, 0.8f, 30f));
         yield return ("บึงบัวสาย: ป่าไม้ตาย", bueng + new Vector3(-110f, 0.8f, -100f));
+        yield return ("บึงบัวสาย: ท่าเรือลุงพุก", bueng + new Vector3(24f, 0.8f, 158f));
+        yield return ("บึงบัวสาย: ท่าเรือหมู่บ้าน", bueng + new Vector3(-114f, 0.8f, 70f));
     }
 
     // Admin warp for testing (Settings > ทดสอบ, or clicking the map while admin mode is on).
@@ -955,7 +976,7 @@ public partial class Main : Node3D
     {
         // Ghosts far from the player fade away so each zone only keeps the ones nearby.
         foreach (var g in Ghost.All.ToArray())
-            if (!g.Gone && !g.Weakened && g.GlobalPosition.DistanceTo(Player.GlobalPosition) > (g.Def.Boss ? 130f : 85f))
+            if (!g.Gone && !g.Weakened && g.GlobalPosition.DistanceTo(Player.GlobalPosition) > (g.Def.Boss ? 130f : g.Group != null ? 125f : 85f))
                 g.Vanish();
 
         _spawnTimer -= dt;
@@ -964,7 +985,7 @@ public partial class Main : Node3D
         bool night = DayNight.IsNight;
         _spawnTimer = night ? Cfg.SpawnIntervalNight : Cfg.SpawnIntervalDay;
         var zone = CurrentZone;
-        int alive = Ghost.All.Count(g => !g.Gone && g.Zone == zone.Id);
+        int alive = Ghost.All.Count(g => !g.Gone && g.Zone == zone.Id && g.Group == null && !g.Def.Boss);
         if (zone.Ghosts.Count == 0 || alive >= (night ? zone.MaxGhostsNight : zone.MaxGhostsDay))
             return;
         var def = PickGhost(zone, night);
@@ -991,10 +1012,12 @@ public partial class Main : Node3D
         return pool.Last().def;
     }
 
-    void SpawnGhost(ZoneDef zone, GhostDef def, Vector3? at = null)
+    // Puts a ghost of this kind in the zone: at `at` if given, inside the circle `area` (a spawn group),
+    // in an alley (town), in a paddy (scarecrows) or somewhere around the player.
+    Ghost SpawnGhost(ZoneDef zone, GhostDef def, Vector3? at = null, (Vector3 c, float r)? area = null)
     {
         Vector3? found = at;
-        if (found == null && zone.AlleyOnly)
+        if (found == null && zone.AlleyOnly && area == null)
         {
             // Town ghosts appear in dark alleys spread across the city, away from the central plaza
             // and never right next to the player.
@@ -1016,7 +1039,12 @@ public partial class Main : Node3D
             {
                 Vector3 pos;
                 // Scarecrows stand in paddies; everything else appears around the player.
-                if (def.Behavior == "statue" && plots.Count > 0)
+                if (area is { } circle)
+                {
+                    float a = _rng.Randf() * Mathf.Tau, rr = circle.r * Mathf.Sqrt(_rng.Randf());
+                    pos = circle.c + new Vector3(Mathf.Cos(a) * rr, 0f, Mathf.Sin(a) * rr);
+                }
+                else if (def.Behavior == "statue" && plots.Count > 0)
                     pos = plots[_rng.RandiRange(0, plots.Count - 1)].GlobalPosition + new Vector3(_rng.RandfRange(-4f, 4f), 0f, _rng.RandfRange(-4f, 4f));
                 else
                 {
@@ -1027,14 +1055,14 @@ public partial class Main : Node3D
                 bool terrainOk = def.Aquatic ? depth > 0.9f : def.Flying || depth <= 0f;
                 bool ok = zone.Contains(pos) && terrainOk && !InSanctuary(pos)
                     && pos.DistanceTo(zone.Center) > Cfg.SafeZoneRadius + 7f
-                    && pos.DistanceTo(Player.GlobalPosition) > 10f
+                    && pos.DistanceTo(Player.GlobalPosition) > (area != null ? 6f : 10f)
                     && Mathf.Abs(pos.X - zone.CenterX) < zone.SizeX * 0.5f - 3f;
                 if (ok)
                     found = def.Aquatic && WaterSurfaceAt(pos) is float s ? pos with { Y = s - 0.85f } : pos with { Y = GroundAt(pos) };
             }
         }
         if (found is not Vector3 spot)
-            return;
+            return null;
 
         var ghost = new Ghost { Name = def.Id };
         AddChild(ghost);
@@ -1042,6 +1070,7 @@ public partial class Main : Node3D
         ghost.Zone = zone.Id;
         ghost.GlobalPosition = spot + Vector3.Up * 0.2f;
         ghost.Home = spot;
+        return ghost;
     }
 
     // Height of the ground (or a pier) under a point.
@@ -1059,27 +1088,20 @@ public partial class Main : Node3D
 
     public bool InSanctuary(Vector3 p) => _sanctuaries.Any(s => new Vector2(p.X - s.c.X, p.Z - s.c.Z).Length() < s.r);
 
-    // Each zone's boss waits at its lair; it appears when the player comes near and returns some
-    // minutes after being banished or released.
+    // Zone bosses no longer wait at their lair: they are summoned at its altar (see MainSpawns).
+    // This only notes when one goes down, so the altar can count down its rest.
     void UpdateBosses()
     {
         double now = Time.GetTicksMsec() / 1000.0;
         foreach (var zone in GameData.Zones.Where(z => z.Boss != null && z.Scene != null))
         {
-            var lair = zone.Center + new Vector3(zone.Boss.X, 0f, zone.Boss.Z);
             bool alive = Ghost.All.Any(g => !g.Gone && g.Def.Id == zone.Boss.Ghost);
             if (alive)
-            {
                 _bossRespawnAt[zone.Id] = -1;
-                continue;
-            }
-            if (_bossRespawnAt.TryGetValue(zone.Id, out var at) && at < 0)
-                _bossRespawnAt[zone.Id] = at = now + zone.Boss.Respawn; // just went down
-            if (now < at || Player.GlobalPosition.DistanceTo(lair) > 70f || !GameData.Ghosts.TryGetValue(zone.Boss.Ghost, out var def))
-                continue;
-            SpawnGhost(zone, def, lair with { Y = GroundAt(lair) });
-            _bossRespawnAt[zone.Id] = -1;
+            else if (_bossRespawnAt.TryGetValue(zone.Id, out var at) && at < 0)
+                _bossRespawnAt[zone.Id] = now + zone.Boss.Respawn; // just went down
         }
+        UpdateSpawnGroups(now);
     }
 
     public Ghost NearestBoss(float range) => Ghost.All

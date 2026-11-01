@@ -512,6 +512,41 @@ public partial class Menus : CanvasLayer
         if (Settings.AdminMode && Game.Player != null)
             ToggleRow("โหมดบิน", $"บินทะลุสิ่งกีดขวาง · Space ขึ้น · Ctrl ลง · Shift บินเร็ว · เปิด/ปิดด้วยปุ่ม {Settings.BindingText("fly")}", Game.Player.Flying, on => Game.Player.SetFlying(on));
         if (Settings.AdminMode && Game.Player != null)
+        {
+            // Spawn testing: call any ghost in front of you, wake the nearest boss, clear everything.
+            Button Small(string text, System.Action a, float w = 120f)
+            {
+                var b = UiTheme.Button(text, () => { a(); CloseSettings(); if (_pauseMenu != null) ClosePause(); }, w);
+                b.CustomMinimumSize = new Vector2(w, 32f);
+                return b;
+            }
+            var ghosts = new HFlowContainer();
+            ghosts.AddThemeConstantOverride("h_separation", 4);
+            ghosts.AddThemeConstantOverride("v_separation", 4);
+            ghosts.CustomMinimumSize = new Vector2(420f, 0f);
+            foreach (var g in GameData.Ghosts.Values.Where(g => !g.Boss))
+            {
+                var def = g;
+                ghosts.AddChild(Small(def.Name, () => Game.Main.AdminSpawn(def)));
+            }
+            AddRow("เรียกผีตรงหน้า", "เกิดทันทีห่างไป 6 เมตรตรงที่หันหน้าอยู่ และตื่นแม้เป็นกลางวัน", ghosts);
+            var tools = new HFlowContainer();
+            tools.AddThemeConstantOverride("h_separation", 4);
+            tools.CustomMinimumSize = new Vector2(420f, 0f);
+            tools.AddChild(Small("เรียกบอสใกล้สุด", Game.Main.AdminSummonBoss, 150f));
+            tools.AddChild(Small("ล้างผีทั้งหมด", Game.Main.AdminClearGhosts, 150f));
+            tools.AddChild(Small(Game.Main.GroupMarkersVisible ? "ซ่อนจุดเกิดกลุ่ม" : "แสดงจุดเกิดกลุ่ม", Game.Main.AdminToggleGroupMarkers, 150f));
+            tools.AddChild(Small("+1000 เบี้ย", () => Game.Player.AddMoney(1000)));
+            tools.AddChild(Small("+1 เลเวล", () => Game.Player.GainExp(GameData.ExpToNext(Game.Player.Level))));
+            tools.AddChild(Small("ของถวายบอส", () =>
+            {
+                foreach (var z in GameData.Zones.Where(z => z.Boss?.Summon != null))
+                    foreach (var (id, n) in z.Boss.Summon.Offering)
+                        Game.Player.AddItem(id, n);
+            }, 150f));
+            AddRow("เครื่องมือทดสอบการเกิด", "บอสที่เรียกจากที่นี่ไม่ต้องใช้ของถวายและไม่สนเวลา · ล้างผีจะรีเซ็ตเวลาเกิดใหม่ของกลุ่มและแท่นบอสด้วย", tools);
+        }
+        if (Settings.AdminMode && Game.Player != null)
             foreach (var (name, pos) in Game.Main.WarpPoints())
             {
                 var p = pos;

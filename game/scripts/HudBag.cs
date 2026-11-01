@@ -47,7 +47,8 @@ public partial class Hud
     Label _bagName, _bagInfo, _bagDesc, _bagFooter, _bagStats;
     Label _bagMoney;
     string _bagFilter = "";
-    Button _bagUse, _bagUnequip;
+    Button _bagUse, _bagUnequip, _bagDiscard;
+    int _discardArmed = -1;
     (string kind, int index, string slot) _bagSel = ("bag", 0, null);
     int _bagVersion = -1;
 
@@ -280,7 +281,22 @@ public partial class Hud
                 _player.Unequip(_bagSel.slot);
             _bagVersion = -1;
         }, 140f);
-        foreach (var b in new[] { _bagUse, _bagUnequip })
+        // Throw away: the first press asks, the second press (on the same slot) does it.
+        _bagDiscard = UiTheme.Button("ทิ้ง", () =>
+        {
+            if (_bagSel.kind != "bag")
+                return;
+            if (_discardArmed != _bagSel.index)
+            {
+                _discardArmed = _bagSel.index;
+                _bagDiscard.Text = "กดอีกครั้งเพื่อทิ้ง";
+                return;
+            }
+            _player.DiscardSlot(_bagSel.index);
+            _discardArmed = -1;
+            _bagVersion = -1;
+        }, 140f);
+        foreach (var b in new[] { _bagUse, _bagUnequip, _bagDiscard })
             b.CustomMinimumSize = new Vector2(140f, 34f);
         detail.AddChild(_bagIcon);
         detail.AddChild(_bagName);
@@ -289,6 +305,7 @@ public partial class Hud
         detail.AddChild(_bagDesc);
         detail.AddChild(_bagUse);
         detail.AddChild(_bagUnequip);
+        detail.AddChild(_bagDiscard);
 
         _bagFooter = UiTheme.Label("", 13, UiTheme.Muted);
         body.AddChild(UiTheme.Dashed(6f));
@@ -342,7 +359,7 @@ public partial class Hud
             Line("ความอึด", d.Stamina * s.Scale, (worn?.Def.Stamina ?? 0f) * (worn?.Scale ?? 1f));
             Line("พลังจิต", d.Skill * s.Scale, (worn?.Def.Skill ?? 0f) * (worn?.Scale ?? 1f), true);
             if (Elements.Of(d.Element) is { } el)
-                sb.AppendLine($"• ธาตุ{el.Name} {el.Glyph}: ศัตรูที่โดน{el.EffectText}");
+                sb.AppendLine($"• ธาตุ{el.Name} {el.Glyph} (แรงขึ้นกับผีที่แพ้ธาตุนี้)");
             if (d.Set != null && GameData.Sets.TryGetValue(d.Set, out var set))
                 sb.AppendLine($"• เซ็ต {set.Name}");
             if (d.Class != null)
@@ -400,7 +417,7 @@ public partial class Hud
             _bagName.Text = _bagSel.kind == "equip" ? $"ช่อง{SlotName(_bagSel.slot)}ว่าง" : "ช่องว่าง";
             _bagInfo.Text = "ลากของมาวางเพื่อสวมใส่หรือจัดเรียง";
             _bagDesc.Text = "ดับเบิลคลิกหรือคลิกขวาที่ของเพื่อใช้ / สวมใส่ / ถอด";
-            _bagUse.Visible = _bagUnequip.Visible = false;
+            _bagUse.Visible = _bagUnequip.Visible = _bagDiscard.Visible = false;
         }
         else
         {
@@ -426,6 +443,12 @@ public partial class Hud
             _bagUse.Text = d.Equip != null ? "สวมใส่" : "ใช้";
             _bagUse.Disabled = d.Equip != null && !p.CanEquip(d);
             _bagUnequip.Visible = _bagSel.kind == "equip";
+            _bagDiscard.Visible = _bagSel.kind == "bag";
+        }
+        if (_discardArmed != (_bagSel.kind == "bag" ? _bagSel.index : -2))
+        {
+            _discardArmed = -1;
+            _bagDiscard.Text = "ทิ้ง";
         }
         _bagMoney.Text = $"● {p.Money} เบี้ย";
         for (int i = 0; i < Player.BagSize; i++)

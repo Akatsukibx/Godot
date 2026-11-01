@@ -1,0 +1,10 @@
+[
+  { "id": "armory", "name": "ร้านอาวุธและเกราะ", "items": ["dab_nam_phi", "yan_takiang", "mit_ngao", "lo_mai_yan", "mit_san_sai", "pha_yan_hua", "pha_yan_suea", "pha_yan_kang", "pha_yan_thao", "sai_sin_hua", "sai_sin_thao"] },
+  { "id": "medicine", "name": "ร้านยาหอม", "items": ["ya_hom", "ya_hom_yai", "yan_kan_taek"] },
+  { "id": "jewelry", "name": "ร้านเครื่องประดับ", "items": ["soi_prakham", "waen_phirot", "takrut"] },
+  { "id": "materials", "name": "ร้านวัตถุดิบ", "items": ["fang_sap", "sai_sin_khat", "mai_phu", "lek_sanim", "pha_yan_kao", "khao_san_sek", "khi_phueng"] },
+  { "id": "mystery", "name": "ร้านกล่องสุ่ม", "items": ["klong_sum", "klong_sum_thong"] },
+  { "id": "field_kitchen", "name": "ครัวป้าบัวคำ", "items": ["ya_hom", "ya_hom_yai"] },
+  { "id": "floating_market", "name": "แพลอยแม่จันทร์เพ็ญ", "items": ["ya_hom", "fang_sap", "khao_san_sek", "sai_sin_khat", "lek_nam_phi", "lo_sai_sin", "sai_sin_suea", "sai_sin_kang"] },
+  { "id": "herbalist", "name": "ร้านสมุนไพรป้าแย้ม", "items": ["ya_hom", "ya_hom_yai", "sai_bua", "khi_phueng", "soi_prakham"] }
+]
